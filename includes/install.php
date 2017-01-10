@@ -2,11 +2,6 @@
 
 function affiliate_wp_install() {
 
-	// Bail if AffiliateWP is already installed.
-	if( ! get_option( 'affwp_is_installed' ) ) {
-		return;
-	}
-
 	// Create affiliate caps
 	$roles = new Affiliate_WP_Capabilities;
 	$roles->add_caps();
