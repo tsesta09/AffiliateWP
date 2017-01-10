@@ -97,9 +97,13 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		// Add a pending referral.
 		add_filter( 'wpcf7_submit', array( $this, 'add_pending_referral' ), 10, 2 );
 
+		// Adjust return and cancel url values with form-specific variables.
+		add_filter( 'wpcf7_submit', array( $this, 'adjust_return_urls' ), 19, 2 );
+
 		// Process paypal1 redirect after generating the initial referral.
 		remove_action( 'wpcf7_mail_sent', 'cf7pp_after_send_mail' );
 		add_action( 'wpcf7_submit', 'cf7pp_after_send_mail', 20, 2 );
+
 
 		// Mark referral complete.
 		add_action( 'wp_footer', array( $this, 'mark_referral_complete' ), 9999 );
@@ -108,16 +112,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		add_action( 'wp_footer', array( $this, 'revoke' ), 9999 );
 
 		// Inject inline redirect
-		add_action( 'wp_footer', array( $this, 'redirect' ), 9999 );
-
-
-		/**
-		 * paypal2
-		 */
-
-		// Hook on the correct CF7 action
-		remove_action( 'wpcf7_add_shortcode', 'contact_form_7_paypal_submit' );
-		add_action( 'wpcf7_add_form_tag',     'contact_form_7_paypal_submit', 10, 3 );
+		add_action( 'wpcf7_control_init', array( $this, 'redirect' ), 9999 );
 
 		// Set reference
 		add_filter( 'affwp_referral_reference_column', array( $this, 'reference_link' ), 10, 2 );
@@ -604,6 +599,37 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	    die();
 	}
 
+	public function adjust_return_urls( $contactform, $result ) {
+
+		$form_id = absint( $contactform->id() );
+
+		if ( ! $form_id ) {
+			return false;
+		}
+
+		$form    = get_post( $form_id );
+		$paypal1 = get_post_meta( $form_id, '_cf7pp_enable', true );
+
+		if ( false === $paypal1 ) {
+			return false;
+		}
+
+		$paypal1_options = get_option( 'cf7pp_options' );
+
+		$amount      = get_post_meta( $form_id, '_cf7pp_price',  true );
+		$description = get_post_meta( $form_id, '_cf7pp_name',   true );
+		$sku         = get_post_meta( $form_id, '_cf7pp_id',     true );
+
+		// Add meta to the return and cancel urls.
+		$args = '?form_id=' . $form_id . '&amount=' . $amount . '&description=' . $description . '&sku=' . $sku;
+
+		$return_url = esc_url( $this->return_url . $args );
+		$cancel_url = esc_url( $this->cancel_url . $args );
+
+		update_option( $paypal1_options['return'], $return_url );
+		update_option( $paypal1_options['cancel'], $cancel_url );
+	}
+
 	/**
 	 * Inject inline js to provide $_GET args on form submission.
 	 *
@@ -704,7 +730,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 * @since 2.0
 	 *
 	 * @param object $contact_form CF7 form submission object.
-	 * @param object $result      Submitted CF7 form submission data.
+	 * @param object $result       Submitted CF7 form submission data.
 	 */
 	public function add_pending_referral( $contactform, $result ) {
 
