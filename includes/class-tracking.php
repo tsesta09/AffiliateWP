@@ -783,10 +783,10 @@ class Affiliate_WP_Tracking {
 			$link = remove_query_arg( $referral_var, $link );
 
 			// Remove a pretty referral ID or username.
-			preg_match( "/$referral_var\/(\w+)\//", $link, $pretty_matches );
+			preg_match( "/\/$referral_var\/(\w+)\//", $link, $pretty_matches );
 
 			if ( ! empty( $pretty_matches[0] ) ) {
-				$link = str_replace( $pretty_matches[0], '', $link );
+				$link = str_replace( $pretty_matches[0], '/', $link );
 			}
 		}
 
