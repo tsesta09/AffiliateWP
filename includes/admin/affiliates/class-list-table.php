@@ -162,16 +162,17 @@ class AffWP_Affiliates_Table extends List_Table {
 	 */
 	public function get_columns() {
 		$columns = array(
-			'cb'           => '<input type="checkbox" />',
-			'name'         => __( 'Name', 'affiliate-wp' ),
-			'affiliate_id' => __( 'Affiliate ID', 'affiliate-wp' ),
-			'username'     => __( 'Username', 'affiliate-wp' ),
-			'earnings'     => __( 'Paid Earnings', 'affiliate-wp' ),
-			'rate'     	   => __( 'Rate', 'affiliate-wp' ),
-			'unpaid'       => __( 'Unpaid Referrals', 'affiliate-wp' ),
-			'referrals'    => __( 'Paid Referrals', 'affiliate-wp' ),
-			'visits'       => __( 'Visits', 'affiliate-wp' ),
-			'status'       => __( 'Status', 'affiliate-wp' ),
+			'cb'              => '<input type="checkbox" />',
+			'name'            => __( 'Name', 'affiliate-wp' ),
+			'affiliate_id'    => __( 'Affiliate ID', 'affiliate-wp' ),
+			'username'        => __( 'Username', 'affiliate-wp' ),
+			'earnings'        => __( 'Paid Earnings', 'affiliate-wp' ),
+			'unpaid_earnings' => __( 'Unpaid Earnings', 'affiliate-wp' ),
+			'rate'     	      => __( 'Rate', 'affiliate-wp' ),
+			'unpaid'          => __( 'Unpaid Referrals', 'affiliate-wp' ),
+			'referrals'       => __( 'Paid Referrals', 'affiliate-wp' ),
+			'visits'          => __( 'Visits', 'affiliate-wp' ),
+			'status'          => __( 'Status', 'affiliate-wp' ),
 		);
 
 		/**
@@ -193,15 +194,16 @@ class AffWP_Affiliates_Table extends List_Table {
 	 */
 	public function get_sortable_columns() {
 		return array(
-			'name'         => array( 'name',         false ),
-			'affiliate_id' => array( 'affiliate_id', false ),
-			'username'     => array( 'username',     false ),
-			'earnings'     => array( 'earnings',     false ),
-			'rate'         => array( 'rate',         false ),
-			'unpaid'       => array( 'unpaid',       false ),
-			'referrals'    => array( 'referrals',    false ),
-			'visits'       => array( 'visits',       false ),
-			'status'       => array( 'status',       false )
+			'name'            => array( 'name',            false ),
+			'affiliate_id'    => array( 'affiliate_id',    false ),
+			'username'        => array( 'username',        false ),
+			'earnings'        => array( 'earnings',        false ),
+			'unpaid_earnings' => array( 'unpaid_earnings', false ),
+			'rate'            => array( 'rate',            false ),
+			'unpaid'          => array( 'unpaid',          false ),
+			'referrals'       => array( 'referrals',       false ),
+			'visits'          => array( 'visits',          false ),
+			'status'          => array( 'status',          false )
 		);
 	}
 
@@ -423,7 +425,7 @@ class AffWP_Affiliates_Table extends List_Table {
 	 * @access public
 	 * @since  1.0
 	 *
-	 * @param \AffWP\Affiliate $affiliate   The current affiliate object.
+	 * @param \AffWP\Affiliate $affiliate The current affiliate object.
 	 * @return string Affiliate paid earnings link.
 	 */
 	function column_earnings( $affiliate ) {
@@ -436,6 +438,29 @@ class AffWP_Affiliates_Table extends List_Table {
 		 * @param \AffWP\Affiliate $affiliate The current affiliate object.
 		 */
 		return apply_filters( 'affwp_affiliate_table_earnings', $value, $affiliate );
+	}
+
+	/**
+	 * Renders the Unpaid Earnings column in the affiliates list table.
+	 *
+	 * @access public
+	 * @since  2.0
+	 *
+	 * @param \AffWP\Affiliate $affiliate The current affiliate object.
+	 * @return string Affiliate paid earnings link.
+	 */
+	function column_unpaid_earnings( $affiliate ) {
+		$value = affwp_get_affiliate_unpaid_earnings( $affiliate, true );
+
+		/**
+		 * Filters the Unpaid Earnings column data for the affiliates list table.
+		 *
+		 * @since 2.0
+		 *
+		 * @param string           $value     Data shown in the Unpaid Earnings column.
+		 * @param \AffWP\Affiliate $affiliate The current affiliate object.
+		 */
+		return apply_filters( 'affwp_affiliate_table_unpaid_earnings', $value, $affiliate );
 	}
 
 	/**
