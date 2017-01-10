@@ -142,7 +142,7 @@ jQuery(document).ready( function($) {
 		 * @type {prototype Object} AFFWP.debug_utility  An AFFWP.debug_utility object.
 		 *
 		 * @since 2.0
-		 * @var
+		 * @var   item The cookie item name.
 		 */
 		function affwp_get_cookie_item( item ) {
 			var re    = new RegExp(item + "=([^;]+)");
@@ -150,36 +150,97 @@ jQuery(document).ready( function($) {
 			return (value != null) ? unescape(value[1]) : null;
 		}
 
+		// Short-circuiting, and saving a parse operation
+
+		/**
+		 * Checks whether a given value is an integer, with support for floating-point.
+		 *
+		 * @since  2.0
+		 *
+		 * @param  {int}     value  The value to check.
+		 * @return {boolean}        True if value is an integer, otherwise false.
+		 */
+		function affwp_debug_is_int( value ) {
+			var i;
+
+			if ( isNaN( value ) ) {
+				return false;
+			}
+
+			i = parseFloat( value );
+
+			return ( i | 0 ) === i;
+		}
+
+		/**
+		 * Assert two values are equal.
+		 *
+		 * @since  2.0
+		 *
+		 * @param  {mixed string|int} a  String or integer.
+		 * @param  {mixed string|int} b  String or integer.
+		 * @return void
+		 */
 		function affwp_debug_tests_assert_equals( a, b ) {
 			if ( 1 !== AFFWP.debug ) {
 				return false;
 			}
 
-			console.assert( a === b );
+			console.assert( a === b, 'AffiliateWP: Assertion failed, values not equal.' );
 		}
 
+		/**
+		 * Assert two values are not equal.
+		 *
+		 * @since  2.0
+		 *
+		 * @param  {mixed string|int} a String or integer.
+		 * @param  {mixed string|int} b String or integer.
+		 *
+		 * @return void
+		 */
 		function affwp_debug_tests_assert_not_equals( a, b ) {
 			if ( 1 !== AFFWP.debug ) {
 				return false;
 			}
 
-			console.assert( a !== b );
+			console.assert( a !== b, 'AffiliateWP: Assertion failed, values are equal.' );
 		}
 
+		/**
+		 * Asserts value a is greater than value b.
+		 *
+		 * @since  2.0
+		 *
+		 * @param  {int} a Integer.
+		 * @param  {int} b Integer.
+		 *
+		 * @return void
+		 */
 		function affwp_debug_tests_assert_greater_than( a, b ) {
-			if ( 1 !== AFFWP.debug ) {
+			if ( 1 !== AFFWP.debug || ! affwp_debug_is_int( a ) || ! affwp_debug_is_int( b ) ) {
 				return false;
 			}
 
-			console.assert( a > b );
+			console.assert( a > b, 'AffiliateWP: Assertion failed, primary value is less than secondary value.' );
 		}
 
+		/**
+		 * Asserts value a is less than value b.
+		 *
+		 * @since  2.0
+		 *
+		 * @param  {int} a Integer.
+		 * @param  {int} b Integer.
+		 *
+		 * @return void
+		 */
 		function affwp_debug_tests_assert_less_than( a, b ) {
-			if ( 1 !== AFFWP.debug ) {
+			if ( 1 !== AFFWP.debug || ! affwp_debug_is_int( a ) || ! affwp_debug_is_int( b ) ) {
 				return false;
 			}
 
-			console.assert( a < b );
+			console.assert( a < b, 'AffiliateWP: Assertion failed, primary value is greater than secondary value.' );
 		}
 
 		/**
@@ -189,7 +250,7 @@ jQuery(document).ready( function($) {
 		 * @return {array} An array of debug variables.
 		 */
 		function affwp_debug_inline_vars() {
-			vars = {
+			var vars = {
 				ajax_url        : JSON.stringify( affwp_scripts.ajaxurl ),
 				ref             : JSON.stringify( AFFWP.referral_var ? AFFWP.referral_var : affwp_get_cookie_item( 'affwp_ref' ) ),
 				visit_cookie    : JSON.stringify( affwp_get_cookie_item( 'affwp_ref_visit_id' ) ),
@@ -255,14 +316,21 @@ jQuery(document).ready( function($) {
 		 *
 		 * @return void
 		 */
-		function affwp_debug_output( heading = '', debugData ) {
-			var heading = 'Available debug data:';
+		function affwp_debug_output() {
 
-			console.affwp( heading );
-			console.log( '\n' );
-			console.table( affwp_debug_inline_vars() );
-			console.affwp( 'Integrations' );
-			console.table( affwp_debug_get_integrations() );
+			console.affwp( 'Available debug data: ' + '\n' + JSON.stringify(
+				Object(
+						affwp_debug_inline_vars()
+					)
+				)
+			);
+
+			console.affwp( 'Integrations' + '\n' + JSON.stringify(
+				Object.values(
+						affwp_debug_get_integrations()
+					)
+				)
+			);
 		}
 
 		/**
@@ -293,9 +361,11 @@ jQuery(document).ready( function($) {
 		 *
 		 * @return void
 		 */
-		console.affwp = function( message ) {
-			console.log( '%c' + ' * AffiliateWP: ' + message, affwpConsoleStyles + ' *' );
-		}
+		console.affwp = function(){
+			Array.prototype.unshift.call(
+			arguments, '%c' + ' * AffiliateWP: ', affwpConsoleStyles + ' *' );
+			console.log.apply( console, arguments );
+		};
 
 		// Print debug info to the console.
 		affwp_debug_output();
