@@ -162,15 +162,5 @@ class Affiliate_WP_WPForms extends Affiliate_WP_Base {
 
 	}
 
-	/**
-	 * Revoke referral on refund
-	 *
-	 * @access public
-	 * @since 2.0
-	*/
-	public function revoke_referral_on_refund() {
-
-	}
-
 }
 new Affiliate_WP_WPForms;
