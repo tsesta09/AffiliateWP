@@ -238,8 +238,10 @@ jQuery(document).ready(function($) {
 					// Handle the Are You Sure (AYS) if present on the form element.
 					var ays = $( this ).data( 'ays' );
 
-					if ( ays.length && ! confirm( ays ) ) {
-						return;
+					if ( ays !== undefined ) {
+						if ( ! confirm( ays ) ) {
+							return;
+						}
 					}
 
 					var data = {
