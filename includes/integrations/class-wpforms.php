@@ -56,6 +56,11 @@ class Affiliate_WP_WPForms extends Affiliate_WP_Base {
 
 		// prevent referral creation unless referrals enabled for the form
 		if ( ! $form_data['settings']['affwp_allow_referrals'] ) {
+
+			if ( $this->debug ) {
+				$this->log( 'Referral not created because referrals are not enabled onform.' );
+			}
+
 			return;
 		}
 
@@ -76,7 +81,7 @@ class Affiliate_WP_WPForms extends Affiliate_WP_Base {
 				$this->log( 'Referral not created because affiliate\'s own account was used.' );
 			}
 
-			return false;
+			return;
 		}
 
 		// get referral total
