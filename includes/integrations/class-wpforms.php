@@ -13,6 +13,8 @@ class Affiliate_WP_WPForms extends Affiliate_WP_Base {
 		$this->context = 'wpforms';
 
 		add_action( 'wpforms_process_complete', array( $this, 'add_pending_referral' ), 10, 4 );
+		add_action( 'wpforms_paypal_standard_process_complete', array( $this, 'mark_referral_complete' ), 10, 4 );
+		add_action( 'wpforms_stripe_process_complete', array( $this, 'mark_referral_complete' ), 10, 4 );
 		add_action( 'wpforms_form_settings_general', array( $this, 'add_settings' ) );
 		add_filter( 'affwp_referral_reference_column', array( $this, 'reference_link' ), 10, 2 );
 
@@ -105,7 +107,7 @@ class Affiliate_WP_WPForms extends Affiliate_WP_Base {
 	 * @access  public
 	 * @since   2.0
 	*/
-	public function mark_referral_complete( $entry_id = 0 ) {
+	public function mark_referral_complete( $fields, $form_data, $entry_id, $data ) {
 		$this->complete_referral( $entry_id );
 	}
 
