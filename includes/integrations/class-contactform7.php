@@ -514,6 +514,27 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 	}
 
+	/**
+	 * Get PayPal meta for the given CF7 form ID.
+	 *
+	 * @since  2.0
+	 *
+	 * @param  int    $form_id Form ID.
+	 *
+	 * @return array  $data    Array of post meta for the given form ID.
+	 */
+	public function get_paypal_meta( $form_id ) {
+
+		$data = array(
+			'enabled'     => get_post_meta( $form_id, '_cf7pp_enable', true ),
+			'email'       => get_post_meta( $form_id, '_cf7pp_email',  true ),
+			'amount'      => get_post_meta( $form_id, '_cf7pp_price',  true ),
+			'description' => get_post_meta( $form_id, '_cf7pp_name',   true ),
+			'sku'         => get_post_meta( $form_id, '_cf7pp_id',     true )
+		);
+
+		return $data;
+	}
 
 	/**
 	 * Adds PayPal add-on meta to the form object.
@@ -550,7 +571,41 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	}
 
 	/**
-	 * Inject inline js to provide a $_GET args on form submission.
+	 * Provide CF7 form meta via ajax.
+	 *
+	 * @since  2.0
+	 *
+	 * @return void
+	 * @see    affwp_cf7_ajax
+	 */
+	public function ajax_get_paypal_meta(){
+
+		if ( isset( $_REQUEST ) ) {
+			$form_id = $_REQUEST['form_id'];
+
+		}
+
+	    $enabled     = get_post_meta( $form_id, '_cf7pp_enable', true );
+		$amount      = get_post_meta( $form_id, '_cf7pp_price',  true );
+		$description = get_post_meta( $form_id, '_cf7pp_name',   true );
+		$sku         = get_post_meta( $form_id, '_cf7pp_id',     true );
+
+	    $response = array(
+	        'success'     => true,
+	        'form_id'     => $form_id,
+	        'enabled'     => $enabled,
+	        'amount'      => $amount,
+	        'description' => $description,
+	        'sku'         => $sku
+	    );
+
+	    echo json_encode( $response );
+
+	    die();
+	}
+
+	/**
+	 * Inject inline js to provide $_GET args on form submission.
 	 *
 	 * @since  2.0
 	 *
@@ -558,14 +613,62 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 */
 	public function redirect() {
 
+		// Bail if CF7 hooks ahven't occurred on the page.
 		if ( ! did_action( 'wpcf7_init' ) ) {
 			return;
 		}
+
 	?>
 
 	<!-- AffiliateWP -->
 	<script type='text/javascript'>
 		jQuery(document).ready(function ($) {
+
+			var affwp_cf7_form = $('.wpcf7-form');
+		    var affwp_cf7_form_cancel = $(".wpcf7-form input[name='cancel_return']").attr('value');
+			var affwp_cf7_form_return = $(".wpcf7-form input[name='return']").attr('value');
+		    var affwp_cf7_action = affwp_cf7_form.attr('action');
+		    var affwp_cf7_form_id = affwp_cf7_action.substring( affwp_cf7_action.lastIndexOf("#wpcf7-f") + 8, affwp_cf7_action.lastIndexOf("-p"));
+		    var affwp_cf7_args = '';
+
+			$.ajax({
+				type: "POST",
+				data: {
+					action: 'affwp_cf7_ajax',
+					form_id: affwp_cf7_form_id
+				},
+				url: affwp_scripts.ajaxurl,
+				success: function (response) {
+					if( response ) {
+
+						console.log( '[AffiliateWP : CF7] Ajax response: ' + '\n' + response );
+
+						var affwp_cf7_ajax_form_id = response.form_id ? response.form_id : false;
+
+						if ( ! affwp_cf7_ajax_form_id ) {
+							return;
+						}
+
+						var affwp_cf7_ajax_amount      = response.amount ? response.amount : 0;
+						var affwp_cf7_ajax_description = response.description ? response.description : '';
+						var affwp_cf7_ajax_sku         = response.sku ? response.sku : '';
+
+						affwp_cf7_args = 'form_id=' + affwp_cf7_ajax_form_id + '&amount=' + affwp_cf7_ajax_amount + '&description=' + affwp_cf7_ajax_description + '&sku=' + affwp_cf7_ajax_sku;
+
+						affwp_cf7_form.attr('action', affwp_cf7_action + affwp_cf7_args);
+
+						$(".wpcf7-form input[name='cancel_return']").attr('value', affwp_cf7_form_cancel + affwp_cf7_args );
+
+		    			$(".wpcf7-form input[name='return']").attr('value', affwp_cf7_form_return + affwp_cf7_args);
+
+					}
+				}
+
+				}).fail(function (response) {
+					if ( window.console && window.console.log ) {
+						console.log( response );
+					}
+			});
 
 		  function affwp_cf7_redirect_args() {
 
@@ -577,25 +680,12 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		    	return;
 		    }
 
-		    var affwp_cf7_form = $('.wpcf7-form');
-		    var affwp_cf7_form_cancel = $(".wpcf7-form input[name='cancel_return']").attr('value');
-			var affwp_cf7_form_return = $(".wpcf7-form input[name='return']").attr('value');
-		    var affwp_cf7_action = affwp_cf7_form.attr('action');
-		    var affwp_cf7_form_id = affwp_cf7_action.substring( affwp_cf7_action.lastIndexOf("#wpcf7-f") + 8, affwp_cf7_action.lastIndexOf("-p"));
-		    var affwp_cf7_args = '?form_id=' + affwp_cf7_form_id;
-
-
-		    if (isNaN(affwp_cf7_form_id)) {
+		    if (isNaN( affwp_cf7_form_id ) ) {
 			    console.log( '[AffiliateWP] Could not determine originating CF7 form ID.' );
 		    	return;
 		    }
 
 		    console.log( '[AffiliateWP] Originating CF7 form ID: ' + affwp_cf7_form_id);
-
-		    affwp_cf7_form.attr('action', affwp_cf7_action + affwp_cf7_args);
-
-		    $(".wpcf7-form input[name='cancel_return']").attr('value', affwp_cf7_form_cancel + affwp_cf7_args );
-		    $(".wpcf7-form input[name='return']").attr('value', affwp_cf7_form_return + affwp_cf7_args);
 
 		  }
 
