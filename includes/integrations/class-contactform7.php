@@ -625,11 +625,11 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		jQuery(document).ready(function ($) {
 
 			var affwp_cf7_form = $('.wpcf7-form');
-		    var affwp_cf7_form_cancel = $(".wpcf7-form input[name='cancel_return']").attr('value');
+			var affwp_cf7_form_cancel = $(".wpcf7-form input[name='cancel_return']").attr('value');
 			var affwp_cf7_form_return = $(".wpcf7-form input[name='return']").attr('value');
-		    var affwp_cf7_action = affwp_cf7_form.attr('action');
-		    var affwp_cf7_form_id = affwp_cf7_action.substring( affwp_cf7_action.lastIndexOf("#wpcf7-f") + 8, affwp_cf7_action.lastIndexOf("-p"));
-		    var affwp_cf7_args = '';
+			var affwp_cf7_action = affwp_cf7_form.attr('action');
+			var affwp_cf7_form_id = affwp_cf7_action.substring( affwp_cf7_action.lastIndexOf("#wpcf7-f") + 8, affwp_cf7_action.lastIndexOf("-p"));
+			var affwp_cf7_args = '';
 
 			$.ajax({
 				type: "POST",
