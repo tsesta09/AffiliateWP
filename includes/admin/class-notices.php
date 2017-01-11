@@ -412,7 +412,7 @@ class Affiliate_WP_Admin_Notices {
 			?>
 			<div class="notice notice-info is-dismissible">
 				<p><?php _e( 'Your database needs to be upgraded following the latest AffiliateWP update.', 'affiliate-wp-' ); ?></p>
-				<?php if ( version_compare( AFFILIATEWP_VERSION, '2.0', '=' ) ) : ?>
+				<?php if ( version_compare( AFFILIATEWP_VERSION, '2.0', '<=' ) ) : ?>
 					<form method="post" class="affwp-batch-form" data-batch_id="recount-affiliate-stats" data-nonce="<?php echo esc_attr( wp_create_nonce( 'recount-affiliate-stats_step_nonce' ) ); ?>">
 						<p>
 							<?php submit_button( __( 'Upgrade Database', 'affiliate-wp' ), 'secondary', 'v20-recount-unpaid-earnings', false ); ?>
