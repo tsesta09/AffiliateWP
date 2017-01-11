@@ -188,8 +188,10 @@ class Recount_Affiliate_Stats extends Utils\Batch_Process implements Batch\With_
 		// Clean up.
 		affiliate_wp()->utils->data->delete( "{$this->batch_id}_affiliate_totals" );
 
+		$version = get_option( 'affwp_version' );
+
 		// Clean up from the upgrade database path.
-		if ( version_compare( AFFILIATEWP_VERSION, '2.0', '=' ) ) {
+		if ( version_compare( $version, '2.0', '<=' ) ) {
 			affiliate_wp()->settings->set( array( 'affwp_upgrade_needed' => false ), $save = true );
 		}
 
