@@ -477,14 +477,12 @@ class Affiliate_WP_Admin_Notices {
 
 		$display = false;
 
-		switch( AFFILIATEWP_VERSION ) {
-			case '2.0':
-				if ( affiliate_wp()->settings->get( 'affwp_upgrade_needed', false ) ) {
-					$display = true;
-				}
-				break;
+		$version = get_option( 'affwp_version' );
 
-			default : break;
+		if ( version_compare( $version, '2.0', '<=' ) ) {
+			if ( affiliate_wp()->settings->get( 'affwp_upgrade_needed', false ) ) {
+				$display = true;
+			}
 		}
 
 		return $display;
