@@ -151,7 +151,9 @@ class Recount_Affiliate_Stats extends Utils\Batch_Process implements Batch\With_
 			case 'done':
 				// Only display this message at the end of the db upgrade routine.
 				if ( affiliate_wp()->settings->get( 'affwp_upgrade_needed', false ) ) {
-					if ( version_compare( AFFILIATEWP_VERSION, '2.0', '=' ) ) {
+					$version = get_option( 'affwp_version' );
+
+					if ( version_compare( $version, '2.0', '<=' ) ) {
 						$message = __( 'Your database has been successfully upgraded.', 'affiliate-wp' );
 					}
 				} else {
