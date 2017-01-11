@@ -411,6 +411,7 @@ class Affiliate_WP_Admin_Notices {
 		$version = get_option( 'affwp_version' );
 
 		if ( $this->display_db_upgrade_notice( $version ) ) {
+			affwp_enqueue_admin_js();
 			?>
 			<div class="notice notice-info is-dismissible">
 				<p><?php _e( 'Your database needs to be upgraded following the latest AffiliateWP update.', 'affiliate-wp-' ); ?></p>
