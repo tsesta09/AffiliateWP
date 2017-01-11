@@ -408,11 +408,13 @@ class Affiliate_WP_Admin_Notices {
 
 		}
 
-		if ( $this->display_db_upgrade_notice() ) {
+		$version = get_option( 'affwp_version' );
+
+		if ( $this->display_db_upgrade_notice( $version ) ) {
 			?>
 			<div class="notice notice-info is-dismissible">
 				<p><?php _e( 'Your database needs to be upgraded following the latest AffiliateWP update.', 'affiliate-wp-' ); ?></p>
-				<?php if ( version_compare( AFFILIATEWP_VERSION, '2.0', '<=' ) ) : ?>
+				<?php if ( version_compare( $version, '2.0', '<=' ) ) : ?>
 					<form method="post" class="affwp-batch-form" data-batch_id="recount-affiliate-stats" data-nonce="<?php echo esc_attr( wp_create_nonce( 'recount-affiliate-stats_step_nonce' ) ); ?>">
 						<p>
 							<?php submit_button( __( 'Upgrade Database', 'affiliate-wp' ), 'secondary', 'v20-recount-unpaid-earnings', false ); ?>
@@ -471,13 +473,12 @@ class Affiliate_WP_Admin_Notices {
 	 * @access public
 	 * @since  2.0
 	 *
+	 * @param string $version Current AffiliateWP version.
 	 * @return bool Whether to display the Upgrade tab. Default false.
 	 */
-	public function display_db_upgrade_notice() {
+	public function display_db_upgrade_notice( $version ) {
 
 		$display = false;
-
-		$version = get_option( 'affwp_version' );
 
 		if ( version_compare( $version, '2.0', '<=' ) ) {
 			if ( affiliate_wp()->settings->get( 'affwp_upgrade_needed', false ) ) {
