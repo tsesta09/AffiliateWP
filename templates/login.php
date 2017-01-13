@@ -23,12 +23,12 @@ affiliate_wp()->login->print_errors();
 
 		<p>
 			<label for="affwp-login-user-login"><?php _e( 'Username', 'affiliate-wp' ); ?></label>
-			<input id="affwp-login-user-login" class="required" type="text" name="affwp_user_login" title="<?php esc_attr_e( 'Username', 'affiliate-wp' ); ?>" />
+			<input id="affwp-login-user-login" type="text" name="affwp_user_login" title="<?php esc_attr_e( 'Username', 'affiliate-wp' ); ?>" />
 		</p>
 
 		<p>
 			<label for="affwp-login-user-pass"><?php _e( 'Password', 'affiliate-wp' ); ?></label>
-			<input id="affwp-login-user-pass" class="password required" type="password" name="affwp_user_pass" />
+			<input id="affwp-login-user-pass" class="password" type="password" name="affwp_user_pass" />
 		</p>
 
 		<p>

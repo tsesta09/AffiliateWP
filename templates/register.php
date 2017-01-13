@@ -62,17 +62,17 @@ if ( is_user_logged_in() ) {
 
 		<p>
 			<label for="affwp-user-name"><?php _e( 'Your Name', 'affiliate-wp' ); ?></label>
-			<input id="affwp-user-name" class="required" type="text" name="affwp_user_name" value="<?php if( ! empty( $user_name ) ) { echo $user_name; } ?>" title="<?php esc_attr_e( 'Your Name', 'affiliate-wp' ); ?>" />
+			<input id="affwp-user-name" type="text" name="affwp_user_name" value="<?php if( ! empty( $user_name ) ) { echo $user_name; } ?>" title="<?php esc_attr_e( 'Your Name', 'affiliate-wp' ); ?>" />
 		</p>
 
 		<p>
 			<label for="affwp-user-login"><?php _e( 'Username', 'affiliate-wp' ); ?></label>
-			<input id="affwp-user-login" class="required" type="text" name="affwp_user_login" maxlength="60" value="<?php if( ! empty( $user_login ) ) { echo $user_login; } ?>" title="<?php esc_attr_e( 'Username', 'affiliate-wp' ); ?>"<?php echo $disabled; ?> />
+			<input id="affwp-user-login" type="text" name="affwp_user_login" maxlength="60" value="<?php if( ! empty( $user_login ) ) { echo $user_login; } ?>" title="<?php esc_attr_e( 'Username', 'affiliate-wp' ); ?>"<?php echo $disabled; ?> />
 		</p>
 
 		<p>
 			<label for="affwp-user-email"><?php _e( 'Account Email', 'affiliate-wp' ); ?></label>
-			<input id="affwp-user-email" class="required" type="email" name="affwp_user_email" value="<?php if( ! empty( $user_email ) ) { echo $user_email; } ?>" title="<?php esc_attr_e( 'Email Address', 'affiliate-wp' ); ?>"<?php echo $disabled; ?> />
+			<input id="affwp-user-email" type="email" name="affwp_user_email" value="<?php if( ! empty( $user_email ) ) { echo $user_email; } ?>" title="<?php esc_attr_e( 'Email Address', 'affiliate-wp' ); ?>"<?php echo $disabled; ?> />
 		</p>
 
 		<p>
@@ -82,7 +82,7 @@ if ( is_user_logged_in() ) {
 
 		<p>
 			<label for="affwp-user-url"><?php _e( 'Website URL', 'affiliate-wp' ); ?></label>
-			<input id="affwp-user-url" class="required" type="url" name="affwp_user_url" value="<?php if( ! empty( $url ) ) { echo $url; } ?>" title="<?php esc_attr_e( 'Website URL', 'affiliate-wp' ); ?>" />
+			<input id="affwp-user-url" type="url" name="affwp_user_url" value="<?php if( ! empty( $url ) ) { echo $url; } ?>" title="<?php esc_attr_e( 'Website URL', 'affiliate-wp' ); ?>" />
 		</p>
 
 		<p>
@@ -94,12 +94,12 @@ if ( is_user_logged_in() ) {
 
 			<p>
 				<label for="affwp-user-pass"><?php _e( 'Password', 'affiliate-wp' ); ?></label>
-				<input id="affwp-user-pass" class="password required" type="password" name="affwp_user_pass" />
+				<input id="affwp-user-pass" class="password" type="password" name="affwp_user_pass" />
 			</p>
 
 			<p>
 				<label for="affwp-user-pass2"><?php _e( 'Confirm Password', 'affiliate-wp' ); ?></label>
-				<input id="affwp-user-pass2" class="password required" type="password" name="affwp_user_pass2" />
+				<input id="affwp-user-pass2" class="password" type="password" name="affwp_user_pass2" />
 			</p>
 
 		<?php endif; ?>
@@ -115,7 +115,7 @@ if ( is_user_logged_in() ) {
 		<?php if ( ! empty( $terms_of_use ) ) : ?>
 			<p>
 				<label class="affwp-tos" for="affwp-tos">
-					<input id="affwp-tos" class="required" type="checkbox" name="affwp_tos" />
+					<input id="affwp-tos" type="checkbox" name="affwp_tos" />
 					<?php printf( __( 'Agree to our <a href="%s" target="_blank">Terms of Use</a>', 'affiliate-wp' ), esc_url( get_permalink( affiliate_wp()->settings->get( 'terms_of_use' ) ) ) ); ?>
 				</label>
 			</p>
