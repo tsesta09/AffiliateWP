@@ -23,18 +23,18 @@ class Registry {
 	private $batch_ids = array();
 
 	/**
-	 * Instantiates the batch processor class.
+	 * Initializes the batch registry.
 	 *
 	 * @access public
 	 * @since  2.0
 	 */
-	public function __construct() {
+	public function init() {
 
 		$this->includes();
 		$this->register_core_processes();
 
 		/**
-		 * Fires during instantiation of the batch processing script.
+		 * Fires during instantiation of the batch processing registry.
 		 *
 		 * @since 2.0
 		 *

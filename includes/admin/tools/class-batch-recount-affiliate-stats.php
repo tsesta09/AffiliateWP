@@ -129,7 +129,8 @@ class Recount_Affiliate_Stats extends Utils\Batch_Process implements Batch\With_
 			return 'done';
 		}
 
-		affwp_increase_affiliate_unpaid_earnings( $affiliate_id, floatval( $affiliate_totals[ $affiliate_id ] ) );
+		// Replace unpaid earnings for the current affiliate.
+		affwp_increase_affiliate_unpaid_earnings( $affiliate_id, floatval( $affiliate_totals[ $affiliate_id ] ), $replace = true );
 
 		$this->set_current_count( absint( $current_count ) + 1 );
 
@@ -149,25 +150,16 @@ class Recount_Affiliate_Stats extends Utils\Batch_Process implements Batch\With_
 		switch( $code ) {
 
 			case 'done':
-				// Only display this message at the end of the db upgrade routine.
-				if ( affiliate_wp()->settings->get( 'affwp_upgrade_needed', false ) ) {
-					$version = get_option( 'affwp_version' );
+				$final_count = $this->get_current_count();
 
-					if ( version_compare( $version, '2.0', '<=' ) ) {
-						$message = __( 'Your database has been successfully upgraded.', 'affiliate-wp' );
-					}
-				} else {
-					$final_count = $this->get_current_count();
-
-					$message = sprintf(
-						_n(
-							'%s affiliate&#8217;s was successfully processed.',
-							'%s affiliates&#8217; were successfully processed.',
-							$final_count,
-							'affiliate-wp'
-						), number_format_i18n( $final_count )
-					);
-				}
+				$message = sprintf(
+					_n(
+						'%s affiliate&#8217;s was successfully processed.',
+						'%s affiliates&#8217; were successfully processed.',
+						$final_count,
+						'affiliate-wp'
+					), number_format_i18n( $final_count )
+				);
 				break;
 
 			default:
@@ -187,13 +179,6 @@ class Recount_Affiliate_Stats extends Utils\Batch_Process implements Batch\With_
 	public function finish() {
 		// Clean up.
 		affiliate_wp()->utils->data->delete( "{$this->batch_id}_affiliate_totals" );
-
-		$version = get_option( 'affwp_version' );
-
-		// Clean up from the upgrade database path.
-		if ( version_compare( $version, '2.0', '<=' ) ) {
-			affiliate_wp()->settings->set( array( 'affwp_upgrade_needed' => false ), $save = true );
-		}
 
 		$this->delete_counts();
 

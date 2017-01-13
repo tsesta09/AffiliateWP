@@ -27,6 +27,15 @@ class Affiliate_WP_Utilities {
 	public $data;
 
 	/**
+	 * Upgrades class instance variable.
+	 *
+	 * @access public
+	 * @since  2.0
+	 * @var    \Affiliate_WP_Upgrades
+	 */
+	public $upgrades;
+
+	/**
 	 * Instantiates the utilities class.
 	 *
 	 * @access public
@@ -46,6 +55,7 @@ class Affiliate_WP_Utilities {
 	public function includes() {
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/utilities/class-batch-process-registry.php';
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/utilities/class-data-storage.php';
+		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/class-upgrades.php';
 	}
 
 	/**
@@ -55,8 +65,12 @@ class Affiliate_WP_Utilities {
 	 * @since  2.0
 	 */
 	public function setup_objects() {
-		$this->batch = new Utils\Batch_Process\Registry;
-		$this->data  = new Utils\Data_Storage;
+		$this->batch    = new Utils\Batch_Process\Registry;
+		$this->upgrades = new Affiliate_WP_Upgrades( $this );
+		$this->data     = new Utils\Data_Storage;
+
+		// Initialize batch registry after loading the upgrades class.
+		$this->batch->init();
 	}
 
 	/**

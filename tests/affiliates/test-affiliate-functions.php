@@ -1206,7 +1206,40 @@ class Tests extends UnitTestCase {
 		// Increase by 10.
 		affwp_increase_affiliate_unpaid_earnings( self::$affiliates[0], 10 );
 
-		$this->assertSame( floatval( 10 ), affwp_get_affiliate_unpaid_earnings( self::$affiliates[0] ) );
+		$result = affwp_get_affiliate_unpaid_earnings( self::$affiliates[0] );
+
+		$this->assertSame( floatval( 10 ), $result );
+		$this->assertSame( $current + 10, $result );
+	}
+
+	/**
+	 * @covers ::affwp_increase_affiliate_unpaid_earnings()
+	 */
+	public function test_increase_affiliate_unpaid_earnings_with_replace_false_should_only_increase_unpaid_earnings() {
+		$current = affwp_get_affiliate_unpaid_earnings( self::$affiliates[0] );
+
+		// Increase by 10.
+		affwp_increase_affiliate_unpaid_earnings( self::$affiliates[0], 10, $replace = false );
+
+		$result = affwp_get_affiliate_unpaid_earnings( self::$affiliates[0] );
+
+		$this->assertSame( floatval( 10 ), $result );
+		$this->assertSame( $current + 10, $result );
+	}
+
+	/**
+	 * @covers ::affwp_increase_affiliate_unpaid_earnings()
+	 */
+	public function test_increase_affiliate_unpaid_earnings_with_replace_true_should_replace_unpaid_earnings() {
+		$current = affwp_get_affiliate_unpaid_earnings( self::$affiliates[0] );
+
+		// Replace with 12.
+		affwp_increase_affiliate_unpaid_earnings( self::$affiliates[0], 12, $replace = true );
+
+		$result = affwp_get_affiliate_unpaid_earnings( self::$affiliates[0] );
+
+		$this->assertSame( floatval( 12 ), $result );
+		$this->assertNotSame( $current, $result );
 	}
 
 	/**

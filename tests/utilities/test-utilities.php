@@ -58,6 +58,13 @@ class Tests extends UnitTestCase {
 	}
 
 	/**
+	 * @covers \Affiliate_WP_Utilities::$upgrades
+	 */
+	public function test_upgrades_should_be_an_Affiliate_WP_Upgrades_instance() {
+		$this->assertInstanceOf( 'Affiliate_WP_Upgrades', self::$utils->upgrades );
+	}
+
+	/**
 	 * @covers \Affiliate_WP_Utilities::process_post_data()
 	 */
 	public function test_process_post_data_should_return_data_unchanged_if_old_key_empty() {

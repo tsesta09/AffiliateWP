@@ -7,6 +7,15 @@
 class Affiliate_WP_Admin_Notices {
 
 	/**
+	 * Current AffiliateWP version.
+	 *
+	 * @access private
+	 * @since  2.0
+	 * @var    string
+	 */
+	private $version;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0
@@ -15,6 +24,8 @@ class Affiliate_WP_Admin_Notices {
 	public function __construct() {
 
 		add_action( 'admin_notices', array( $this, 'show_notices' ) );
+		add_action( 'admin_notices', array( $this, 'upgrade_notices' ) );
+
 		add_action( 'affwp_dismiss_notices', array( $this, 'dismiss_notices' ) );
 	}
 
@@ -407,23 +418,31 @@ class Affiliate_WP_Admin_Notices {
 			}
 
 		}
+	}
 
-		$version = get_option( 'affwp_version' );
+	/**
+	 * Displays upgrade notices.
+	 *
+	 * @access public
+	 * @since  2.0
+	 */
+	public function upgrade_notices() {
 
-		if ( $this->display_db_upgrade_notice( $version ) ) {
+		// TODO: switch && to || before final release.
+		if ( version_compare( $this->version, '2.0', '<' ) && ! affwp_has_upgrade_completed( 'upgrade_v20_recount_unpaid_earnings' ) ) :
+
+			// Enqueue admin JS for the batch processor.
+			affwp_enqueue_admin_js();
 			?>
 			<div class="notice notice-info is-dismissible">
 				<p><?php _e( 'Your database needs to be upgraded following the latest AffiliateWP update.', 'affiliate-wp-' ); ?></p>
-				<?php if ( version_compare( $version, '2.0', '<=' ) ) : ?>
-					<form method="post" class="affwp-batch-form" data-batch_id="recount-affiliate-stats" data-nonce="<?php echo esc_attr( wp_create_nonce( 'recount-affiliate-stats_step_nonce' ) ); ?>">
-						<p>
-							<?php submit_button( __( 'Upgrade Database', 'affiliate-wp' ), 'secondary', 'v20-recount-unpaid-earnings', false ); ?>
-						</p>
-					</form>
-				<?php endif; // 2.0 ?>
+				<form method="post" class="affwp-batch-form" data-batch_id="recount-affiliate-stats-upgrade" data-nonce="<?php echo esc_attr( wp_create_nonce( 'recount-affiliate-stats-upgrade_step_nonce' ) ); ?>">
+					<p>
+						<?php submit_button( __( 'Upgrade Database', 'affiliate-wp' ), 'secondary', 'v20-recount-unpaid-earnings', false ); ?>
+					</p>
+				</form>
 			</div>
-			<?php
-		}
+		<?php endif;
 	}
 
 	/**
@@ -465,28 +484,6 @@ class Affiliate_WP_Admin_Notices {
 			wp_redirect( remove_query_arg( array( 'affwp_action', 'affwp_notice' ) ) );
 			exit;
 		}
-	}
-
-	/**
-	 * Determines whether to display the upgrade database notice.
-	 *
-	 * @access public
-	 * @since  2.0
-	 *
-	 * @param string $version Current AffiliateWP version.
-	 * @return bool Whether to display the Upgrade tab. Default false.
-	 */
-	public function display_db_upgrade_notice( $version ) {
-
-		$display = false;
-
-		if ( version_compare( $version, '2.0', '<=' ) ) {
-			if ( affiliate_wp()->settings->get( 'affwp_upgrade_needed', false ) ) {
-				$display = true;
-			}
-		}
-
-		return $display;
 	}
 
 }

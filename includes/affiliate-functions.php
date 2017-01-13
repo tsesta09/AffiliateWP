@@ -748,9 +748,11 @@ function affwp_decrease_affiliate_earnings( $affiliate, $amount = '' ) {
  *
  * @param \AffWP\Affiliate|int $affiliate Affiliate object or ID.
  * @param float                $amount    Amount to increase unpaid earnings by.
+ * @param bool                 $replace   Optional. Whether to replace the current unpaid earnings count.
+ *                                        Default false.
  * @return float|false New unpaid earnings value upon successful update, otherwise false.
  */
-function affwp_increase_affiliate_unpaid_earnings( $affiliate, $amount ) {
+function affwp_increase_affiliate_unpaid_earnings( $affiliate, $amount, $replace = false ) {
 	if ( ! $affiliate = affwp_get_affiliate( $affiliate ) ) {
 		return false;
 	}
@@ -759,7 +761,12 @@ function affwp_increase_affiliate_unpaid_earnings( $affiliate, $amount ) {
 		return false;
 	}
 
-	$unpaid_earnings = affwp_get_affiliate_unpaid_earnings( $affiliate );
+	if ( false === $replace ) {
+		$unpaid_earnings = affwp_get_affiliate_unpaid_earnings( $affiliate );
+	} else {
+		$unpaid_earnings = 0;
+	}
+
 	$unpaid_earnings += $amount;
 	$unpaid_earnings = round( $unpaid_earnings, affwp_get_decimal_count() );
 
