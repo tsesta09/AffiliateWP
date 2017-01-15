@@ -62,7 +62,6 @@ function affwp_referrals_admin() {
 					<p>
 						<span class="affwp-ajax-search-wrap">
 							<input type="text" name="user_name" id="user_name" class="affwp-user-search" autocomplete="off" placeholder="<?php _e( 'Affiliate name', 'affiliate-wp' ); ?>" />
-							<input type="hidden" name="user_id" id="user_id" value=""/>
 						</span>
 
 						<input type="text" class="affwp-datepicker" autocomplete="off" name="from" placeholder="<?php _e( 'From - mm/dd/yyyy', 'affiliate-wp' ); ?>"/>
