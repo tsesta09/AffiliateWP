@@ -423,4 +423,68 @@ abstract class Affiliate_WP_DB {
 
 		return $_object;
 	}
+
+	/**
+	 * Builds a date query for the given column use WP_Date_Query.
+	 *
+	 * @access public
+	 * @since  2.1
+	 *
+	 * @see \WP_Date_Query
+	 *
+	 * @param array  $query_args  Top-level query arguments.
+	 * @param string $where       WHERE clause.
+	 * @param string $date_column Optional. Date column. Default 'date'.
+	 * @return string WHERE clause SQL for the date query or empty string.
+	 */
+	public function get_date_sql( $query_args, $where, $date_column = 'date' ) {
+		$sql = '';
+
+		$date_query_args = array();
+
+		if( is_array( $query_args['date'] ) ) {
+
+			if( ! empty( $query_args['date']['start'] ) ) {
+
+				// 'after' (reversed) because 'inclusive'.
+				$date_query_args['after'] = $query_args['date']['start'];
+			}
+
+			if ( ! empty( $query_args['date']['end'] ) ) {
+
+				// 'before' (reversed) because 'inclusive'.
+				$date_query_args['before'] = $query_args['date']['end'];
+
+			}
+
+		} else {
+
+			$date_query_args[]['year']  = date( 'Y', strtotime( $query_args['date'] ) );
+			$date_query_args[]['month'] = date( 'm', strtotime( $query_args['date'] ) );
+			$date_query_args[]['day']   = date( 'd', strtotime( $query_args['date'] ) );
+
+		}
+
+		if ( ! empty( $date_query_args ) ) {
+			// Whitelist the 'date' column.
+			add_filter( 'date_query_valid_columns', function( $columns ) use ( $date_column ) {
+				$columns[] = $date_column;
+				return $columns;
+			} );
+
+			$sql .= empty( $where  ) ? " WHERE 1=1" : " AND";
+
+			$date_query_args['column'] = $date_column;
+
+			if ( ! empty( $date_query_args['before'] ) && ! empty( $date_query_args['after'] ) ) {
+				$date_query_args['inclusive'] = true;
+			}
+
+			$date_query = new \WP_Date_Query( array( $date_query_args ) );
+
+			$sql .= $date_query->get_sql();
+		}
+
+		return $sql;
+	}
 }
