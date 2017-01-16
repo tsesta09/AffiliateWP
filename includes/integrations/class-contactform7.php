@@ -98,11 +98,11 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		add_filter( 'wpcf7_submit', array( $this, 'add_pending_referral' ), 10, 2 );
 
 		// Adjust return and cancel url values with form-specific variables.
-		add_filter( 'wpcf7_submit', array( $this, 'adjust_return_urls' ), 19, 2 );
+		// add_filter( 'wpcf7_submit', array( $this, 'adjust_return_urls' ), 19, 2 );
 
 		// Process paypal1 redirect after generating the initial referral.
 		remove_action( 'wpcf7_mail_sent', 'cf7pp_after_send_mail' );
-		add_action( 'wpcf7_submit', 'cf7pp_after_send_mail', 20, 2 );
+		add_action( 'wpcf7_submit', 'affwp_cf7_paypal_redirect', 9999, 2 );
 
 
 		// Mark referral complete.
@@ -599,6 +599,16 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	    die();
 	}
 
+	/**
+	 * TODO: remove in favor of direct manipulation of paypal redirect output.
+	 *
+	 * @since  [since]
+	 *
+	 * @param  [type]  $contactform [description]
+	 * @param  [type]  $result      [description]
+	 *
+	 * @return [type]               [description]
+	 */
 	public function adjust_return_urls( $contactform, $result ) {
 
 		$form_id = absint( $contactform->id() );
@@ -628,6 +638,46 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		update_option( $paypal1_options['return'], $return_url );
 		update_option( $paypal1_options['cancel'], $cancel_url );
+	}
+
+	/**
+	 * Returns PayPal form submission meta as argument strings, allowing for transactions to be trackable by AffiliateWP.
+	 *
+	 * @since  2.0
+	 *
+	 * @param  object             $contactform  CF7 form object.
+	 * @param  object             $result       Modified CF7 form object.
+	 *
+	 * @return mixed|bool|string  $url_args     A string containing query parameters, used in paypal redirects. Returns false if parameters could not be determined.
+	 */
+	public function get_url_args( $cf7 ) {
+
+		$form_id = absint( $cf7->id() );
+
+		if ( ! $form_id ) {
+			return false;
+		}
+
+		$form    = get_post( $form_id );
+		$paypal1 = get_post_meta( $form_id, '_cf7pp_enable', true );
+
+		if ( false === $paypal1 ) {
+			return false;
+		}
+
+		$paypal1_options = get_option( 'cf7pp_options' );
+
+		$amount      = get_post_meta( $form_id, '_cf7pp_price',  true );
+		$description = get_post_meta( $form_id, '_cf7pp_name',   true );
+		$sku         = get_post_meta( $form_id, '_cf7pp_id',     true );
+
+		// Add meta to the return and cancel urls.
+		$args = '?form_id=' . $form_id . '&amount=' . $amount . '&description=' . $description . '&sku=' . $sku;
+
+		$url_args = esc_url( $args );
+
+		return $url_args;
+
 	}
 
 	/**
