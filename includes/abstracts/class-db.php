@@ -1,4 +1,7 @@
 <?php
+/** Core WP_Date_Query class */
+require_once ABSPATH . WPINC . '/date.php';
+
 /**
  * Affiliate_WP_DB base class.
  *
