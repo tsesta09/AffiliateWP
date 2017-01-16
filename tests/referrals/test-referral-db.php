@@ -134,6 +134,8 @@ class Referrals_DB_Tests extends UnitTestCase {
 	 * @covers Affiliate_WP_Referrals_DB::count_by_status()
 	 */
 	public function test_count_by_status_should_return_count_of_referrals_created_within_a_month_if_date_is_month() {
+		$this->markTestSkipped( 'See #1925' );
+
 		// Set up 3 pending referrals for six months ago.
 		$this->factory->referral->create_many( 3, array(
 			'affiliate_id' => self::$affiliate_id,
