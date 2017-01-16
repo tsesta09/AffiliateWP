@@ -169,6 +169,13 @@ class Affiliate_WP_Creatives_DB extends Affiliate_WP_DB {
 			}
 		}
 
+		// Date.
+		if( ! empty( $args['date'] ) ) {
+
+			$where .= $this->get_date_sql( $args, $where );
+
+		}
+
 		// There can be only two orders.
 		if ( 'ASC' === strtoupper( $args['order'] ) ) {
 			$order = 'ASC';
