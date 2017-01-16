@@ -675,7 +675,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$sku         = get_post_meta( $form_id, '_cf7pp_id',     true );
 
 		// Add meta to the return and cancel urls.
-		$args = '?form_id=' . $form_id . '&amount=' . $amount . '&description=' . $description . '&sku=' . $sku;
+		$args = '?form_id=' . $form_id . '&sub_time=' . date_i18n( 'U' ) . '&amount=' . $amount . '&description=' . $description . '&sku=' . $sku;
 
 		$url_args = esc_url( $args );
 
@@ -771,11 +771,17 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public function mark_referral_complete( $current_page_id = 0, $reference = '' ) {
 
 		$current_page_id = get_the_ID();
+		$sub_time        = (isset( $_GET['sub_time'] ) ) ? $_GET['sub_time'] : false;
 
-		$reference = (isset( $_GET['reference'] ) ) ? $_GET['reference'] : false;
+		if ( ! $form_id || ! $sub_time ) {
+			return false;
+		}
+
+		// Reconstruct the reference by appending a hyphen and the Unix time to the form ID.
+		$reference = $form_id . '-' . date_i18n( 'U' );
 
 		if ( ! $reference ) {
-			return;
+			return false;
 		}
 
 		$return_url     = $this->return_url;
@@ -809,10 +815,18 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		$current_page_id = get_the_ID();
 
-		$reference = (isset( $_GET['reference'] ) ) ? $_GET['reference'] : false;
+		$form_id     = (isset( $_GET['form_id'] ) ) ? $_GET['reference'] : false;
+		$sub_time    = (isset( $_GET['sub_time'] ) ) ? $_GET['sub_time'] : false;
+
+		if ( ! $form_id || ! $sub_time ) {
+			return false;
+		}
+
+		// Reconstruct the reference by appending a hyphen and the Unix time to the form ID.
+		$reference = $form_id . '-' . date_i18n( 'U' );
 
 		if ( ! $reference ) {
-			return;
+			return false;
 		}
 
 		$cancel_url     = $this->cancel_url;
@@ -844,7 +858,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public function reference_link( $reference, $referral ) {
 
 		// To provide a working link to the CF7 form,
-		// the date is stripped from the reference string.
+		// the Unix date (stored as `sub_time` in submission args) is stripped from the reference string.
 		$reference = strstr( $reference, '-', true );
 
 		$url = admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $reference );
