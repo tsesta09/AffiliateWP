@@ -256,35 +256,7 @@ class Affiliate_WP_DB_Affiliates extends Affiliate_WP_DB {
 		// Affiliates registered on a date or date range
 		if( ! empty( $args['date'] ) ) {
 
-			if( is_array( $args['date'] ) ) {
-
-				$start = date( 'Y-m-d H:i:s', strtotime( $args['date']['start'] ) );
-				$end   = date( 'Y-m-d H:i:s', strtotime( $args['date']['end'] ) );
-
-				if( empty( $where ) ) {
-
-					$where .= " WHERE `date_registered` >= '{$start}' AND `date_registered` <= '{$end}'";
-
-				} else {
-
-					$where .= " AND `date_registered` >= '{$start}' AND `date_registered` <= '{$end}'";
-
-				}
-
-			} else {
-
-				$year  = date( 'Y', strtotime( $args['date'] ) );
-				$month = date( 'm', strtotime( $args['date'] ) );
-				$day   = date( 'd', strtotime( $args['date'] ) );
-
-				if( empty( $where ) ) {
-					$where .= " WHERE";
-				} else {
-					$where .= " AND";
-				}
-
-				$where .= " $year = YEAR ( date_registered ) AND $month = MONTH ( date_registered ) AND $day = DAY ( date_registered )";
-			}
+			$where .= $this->get_date_sql( $args, $where, 'date_registered' );
 
 		}
 

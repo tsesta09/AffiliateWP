@@ -244,39 +244,10 @@ class Affiliate_WP_Visits_DB extends Affiliate_WP_DB {
 
 		}
 
-		// Visits for a date or date range
+		// Visits for a date or date range.
 		if( ! empty( $args['date'] ) ) {
 
-			if( is_array( $args['date'] ) ) {
-
-				if( ! empty( $args['date']['start'] ) ) {
-
-					$where .= empty( $where ) ? "WHERE " : "AND ";
-
-					$start = esc_sql( date( 'Y-m-d H:i:s', strtotime( $args['date']['start'] ) ) );
-
-					$where .= "`date` >= '{$start}' ";
-				}
-
-				if( ! empty( $args['date']['end'] ) ) {
-
-					$where .= empty( $where ) ? "WHERE " : "AND ";
-
-					$end = esc_sql( date( 'Y-m-d H:i:s', strtotime( $args['date']['end'] ) ) );
-
-					$where .= "`date` <= '{$end}' ";
-				}
-
-			} else {
-
-				$year  = date( 'Y', strtotime( $args['date'] ) );
-				$month = date( 'm', strtotime( $args['date'] ) );
-				$day   = date( 'd', strtotime( $args['date'] ) );
-
-				$where .= empty( $where ) ? "WHERE " : "AND ";
-
-				$where .= "$year = YEAR ( date ) AND $month = MONTH ( date ) AND $day = DAY ( date ) ";
-			}
+			$where .= $this->get_date_sql( $args, $where );
 
 		}
 

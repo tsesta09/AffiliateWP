@@ -491,58 +491,7 @@ class Affiliate_WP_Payouts_DB extends Affiliate_WP_DB {
 		// Date.
 		if( ! empty( $args['date'] ) ) {
 
-			if( is_array( $args['date'] ) ) {
-
-				if( ! empty( $args['date']['start'] ) ) {
-
-					if( false !== strpos( $args['date']['start'], ':' ) ) {
-						$format = 'Y-m-d H:i:s';
-					} else {
-						$format = 'Y-m-d 00:00:00';
-					}
-
-					$start = esc_sql( date( $format, strtotime( $args['date']['start'] ) ) );
-
-					if ( ! empty( $where ) ) {
-						$where .= " AND `date` >= '{$start}'";
-					} else {
-						$where .= " WHERE `date` >= '{$start}'";
-					}
-
-				}
-
-				if ( ! empty( $args['date']['end'] ) ) {
-
-					if ( false !== strpos( $args['date']['end'], ':' ) ) {
-						$format = 'Y-m-d H:i:s';
-					} else {
-						$format = 'Y-m-d 23:59:59';
-					}
-
-					$end = esc_sql( date( $format, strtotime( $args['date']['end'] ) ) );
-
-					if( ! empty( $where ) ) {
-						$where .= " AND `date` <= '{$end}'";
-					} else {
-						$where .= " WHERE `date` <= '{$end}'";
-					}
-
-				}
-
-			} else {
-
-				$year  = date( 'Y', strtotime( $args['date'] ) );
-				$month = date( 'm', strtotime( $args['date'] ) );
-				$day   = date( 'd', strtotime( $args['date'] ) );
-
-				if( empty( $where ) ) {
-					$where .= " WHERE";
-				} else {
-					$where .= " AND";
-				}
-
-				$where .= " $year = YEAR ( date ) AND $month = MONTH ( date ) AND $day = DAY ( date )";
-			}
+			$where .= $this->get_date_sql( $args, $where );
 
 		}
 
