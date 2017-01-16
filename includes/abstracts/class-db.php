@@ -481,7 +481,7 @@ abstract class Affiliate_WP_DB {
 				$date_query_args['inclusive'] = true;
 			}
 
-			$date_query = new \WP_Date_Query( array( $date_query_args ) );
+			$date_query = new \WP_Date_Query( array( $date_query_args ), $date_column );
 
 			$sql .= $date_query->get_sql();
 		}
