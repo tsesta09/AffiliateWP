@@ -305,8 +305,7 @@ class Affiliate_WP_Admin_Notices {
 
 					$class = 'error';
 					$message = sprintf(
-						__( 'Your %s is not active for this URL. Please <a href="%s" target="_blank">visit your account page</a> to manage your license key URLs.', 'affiliate-wp' ),
-						$args['name'],
+						__( 'Your license key is not active for this URL. Please <a href="%s" target="_blank">visit your account page</a> to manage your license key URLs.', 'affiliate-wp' ),
 						'https://affiliatewp.com/account/?utm_campaign=admin&utm_source=licenses&utm_medium=invalid'
 					);
 
@@ -316,7 +315,7 @@ class Affiliate_WP_Admin_Notices {
 				case 'license-item_name_mismatch' :
 
 					$class = 'error';
-					$message = sprintf( __( 'This appears to be an invalid license key for %s.', 'affiliate-wp' ), $args['name'] );
+					$message = __( 'This appears to be an invalid license key.', 'affiliate-wp' );
 
 
 					break;
