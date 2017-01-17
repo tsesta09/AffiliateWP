@@ -23,14 +23,6 @@ class Tests extends UnitTestCase {
 	protected static $notices;
 
 	/**
-	 * Capabilities fixture.
-	 *
-	 * @access protected
-	 * @var    \Affiliate_WP_Capabilities
-	 */
-	protected static $capabilities;
-
-	/**
 	 * User fixture for capabilities.
 	 *
 	 * @access protected
@@ -47,12 +39,8 @@ class Tests extends UnitTestCase {
 	 */
 	public static function wpSetUpBeforeClass() {
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/class-notices.php';
-		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/class-capabilities.php';
 
 		self::$notices = new \Affiliate_WP_Admin_Notices;
-
-		self::$capabilities = new \Affiliate_WP_Capabilities;
-		self::$capabilities->add_caps();
 
 		self::$user_id = parent::affwp()->user->create( array(
 			'role' => 'administrator'
@@ -110,6 +98,8 @@ class Tests extends UnitTestCase {
 	 */
 	public function test_show_notices_GET_only( $vars, $expected_html ) {
 		wp_set_current_user( self::$user_id );
+
+		var_dump( get_user_by( 'id', self::$user_id ) );
 
 		$this->_set_request_vars( $vars );
 
