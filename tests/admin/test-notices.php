@@ -143,13 +143,13 @@ class Tests extends UnitTestCase {
 	 */
 	public function data_notices_markup_with_GET() {
 		return array(
-			'settings-updated' => array(
-				array(
-					'settings-updated' => true,
-					'page'             => 'affiliate-wp-settings'
-				),
-				'<div class="updated"><p>Settings updated.</p></div>',
-			),
+//			'settings-updated' => array(
+//				array(
+//					'settings-updated' => true,
+//					'page'             => 'affiliate-wp-settings'
+//				),
+//				'<div class="updated"><p>Settings updated.</p></div>',
+//			),
 			'affwp_message' => array(
 				array(
 					'affwp_notice'  => 'foo',
