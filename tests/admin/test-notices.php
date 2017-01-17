@@ -66,9 +66,6 @@ class Tests extends UnitTestCase {
 	public function setUp() {
 		parent::setUp();
 
-		$roles = new \Affiliate_WP_Capabilities;
-		$roles->add_caps();
-
 		wp_set_current_user( self::$user_id );
 	}
 
@@ -103,6 +100,9 @@ class Tests extends UnitTestCase {
 	 * @param string $expected_html Expected HTML markup (or snippet).
 	 */
 	public function test_show_notices_GET_only( $vars, $expected_html ) {
+		$roles = new \Affiliate_WP_Capabilities;
+		$roles->add_caps();
+
 		wp_set_current_user( self::$user_id );
 
 		$this->_set_request_vars( $vars );
@@ -121,6 +121,9 @@ class Tests extends UnitTestCase {
 	 * @param string $expected_html Expected HTML markup (or snippet).
 	 */
 	public function test_show_notices_affwp_notice( $value, $expected_html ) {
+		$roles = new \Affiliate_WP_Capabilities;
+		$roles->add_caps();
+
 		wp_set_current_user( self::$user_id );
 
 		$this->_set_request_vars( array(
