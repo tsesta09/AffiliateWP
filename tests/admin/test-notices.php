@@ -46,16 +46,11 @@ class Tests extends UnitTestCase {
 			'role' => 'administrator'
 		) );
 
-		wp_set_current_user( self::$user_id );
-
 		affiliate_wp()->settings->set( array(
 			'integrations' => array(
 				'edd' => 'Easy Digital Downloads'
 			)
 		) );
-
-		// Flush the $wp_roles global.
-		parent::_flush_roles();
 	}
 
 	/**
@@ -70,241 +65,480 @@ class Tests extends UnitTestCase {
 	}
 
 	/**
-	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 * Set up before each test.
 	 */
-//	public function test_show_notices_lacking_manage_affiliates_should_return_null() {
-//		wp_set_current_user( 0 );
-//
-//		$this->assertNull( self::$notices->show_notices() );
-//
-//		wp_set_current_user( self::$user_id );
-//	}
+	public function setUp() {
+		parent::setUp();
 
-	/**
-	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
-	 *
-	 * @dataProvider data_notices_markup_with_GET
-	 *
-	 * @param array  $vars          $_GET variables to set.
-	 * @param string $expected_html Expected HTML markup (or snippet).
-	 */
-	public function test_show_notices_GET_only( $vars, $expected_html ) {
-		$roles = new \Affiliate_WP_Capabilities;
-		$roles->add_caps();
-
-		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
-
-		wp_set_current_user( $user_id );
-
-		$this->_set_request_vars( $vars );
-
-		$result = $this->get_notices_echo();
-
-		$this->assertContains( $expected_html, $result );
+		wp_set_current_user( self::$user_id );
 	}
 
 	/**
 	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
-	 *
-	 * @dataProvider data_with_affwp_notice
-	 *
-	 * @param string $value         Value of $_GET['affwp_notice'].
-	 * @param string $expected_html Expected HTML markup (or snippet).
 	 */
-	public function test_show_notices_affwp_notice( $value, $expected_html ) {
-		$roles = new \Affiliate_WP_Capabilities;
-		$roles->add_caps();
+	public function test_show_notices_lacking_manage_affiliates_should_return_null() {
+		wp_set_current_user( 0 );
 
-		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		$this->assertNull( self::$notices->show_notices() );
 
-		wp_set_current_user( $user_id );
+		wp_set_current_user( self::$user_id );
+	}
 
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_settings_updated_GET() {
 		$this->_set_request_vars( array(
-			'affwp_notice' => $value
+			'settings-updated' => true,
+			'page'             => 'affiliate-wp-settings',
 		) );
 
-		$result = $this->notices()->show_notices( false );
+		$expected = '<div class="updated"><p>Settings updated.</p></div>';
 
-		$this->assertContains( $expected_html, $result );
-	}
-	/**
-	 * Data provider for show_notices() tests leveraging only $_GET values.
-	 *
-	 * @return array {
-	 *     @type array {
-	 *         @type string|array $vars           Primary $_GET key.
-	 *         @type string $expected_html The expected HTML when admin bar is rendered.
-	 *     }
-	 * }
-	 */
-	public function data_notices_markup_with_GET() {
-		return array(
-//			'settings-updated' => array(
-//				array(
-//					'settings-updated' => true,
-//					'page'             => 'affiliate-wp-settings'
-//				),
-//				'<div class="updated"><p>Settings updated.</p></div>',
-//			),
-			'affwp_message' => array(
-				array(
-					'affwp_notice'  => 'foo',
-					'affwp_message' => 'AffiliateWP Rocks',
-				),
-				'<div class="updated"><p>AffiliateWP Rocks</p></div>',
-			)
-		);
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
 	}
 
 	/**
-	 * Data provider for show_notices() tests leveraging 'affwp_notice' values.
-	 *
-	 * @return array {
-	 *     @type array {
-	 *         @type string $notice_id     Value passed via $_GET['affwp_notice'].
-	 *         @type string $expected_html The expected HTML when admin bar is rendered.
-	 *     }
-	 * }
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
 	 */
-	public function data_with_affwp_notice() {
-		return array(
-			'affiliate_added_failed' => array(
-				'affiliate_added_failed',
-				'<div class="error"><p>Affiliate wasn&#8217;t added, please try again.</p></div>',
-			),
-			'affiliate_updated' => array(
-				'affiliate_updated',
-				'<div class="updated"><p>Affiliate updated successfully',
-			),
-			'affiliate_update_failed' => array(
-				'affiliate_update_failed',
-				'<div class="error"><p>Affiliate update failed, please try again</p></div>',
-			),
-			'affiliate_deleted' => array(
-				'affiliate_deleted',
-				'<div class="updated"><p>Affiliate account(s) deleted successfully</p></div>',
-			),
-			'affiliate_delete_failed' => array(
-				'affiliate_delete_failed',
-				'<div class="error"><p>Affiliate deletion failed, please try again</p></div>',
-			),
-			'affiliate_activated' => array(
-				'affiliate_activated',
-				'<div class="updated"><p>Affiliate account activated</p></div>',
-			),
-			'affiliate_deactivated' => array(
-				'affiliate_deactivated',
-				'<div class="updated"><p>Affiliate account deactivated</p></div>',
-			),
-			'affiliate_accepted' => array(
-				'affiliate_accepted',
-				'<div class="updated"><p>Affiliate request was accepted</p></div>',
-			),
-			'affiliate_rejected' => array(
-				'affiliate_rejected',
-				'<div class="updated"><p>Affiliate request was rejected</p></div>',
-			),
-			'affiliates_migrated' => array(
-				'affiliates_migrated',
-				'added successfully',
-			),
-			'affiliates_pro_migrated' => array(
-				'affiliates_pro_migrated',
-				'added successfully',
-			),
-			'stats_recounted' => array(
-				'stats_recounted',
-				'<div class="updated"><p>Affiliate stats have been recounted!</p></div>',
-			),
-			'referral_added' => array(
-				'referral_added',
-				'<div class="updated"><p>Referral added successfully</p></div>',
-			),
-			'referral_updated' => array(
-				'referral_updated',
-				'<div class="updated"><p>Referral updated successfully</p></div>',
-			),
-			'referral_update_failed' => array(
-				'referral_update_failed',
-				'<div class="updated"><p>Referral update failed, please try again</p></div>',
-			),
-			'referral_deleted' => array(
-				'referral_deleted',
-				'<div class="updated"><p>Referral deleted successfully</p></div>',
-			),
-			'referral_delete_failed' => array(
-				'referral_delete_failed',
-				'<div class="error"><p>Referral deletion failed, please try again</p></div>',
-			),
-			'creative_updated' => array(
-				'creative_updated',
-				'<div class="updated"><p>Creative updated successfully',
-			),
-			'creative_added' => array(
-				'creative_added',
-				'<div class="updated"><p>Creative added successfully</p></div>',
-			),
-			'creative_deleted' => array(
-				'creative_deleted',
-				'<div class="updated"><p>Creative deleted successfully</p></div>',
-			),
-			'creative_activated' => array(
-				'creative_activated',
-				'<div class="updated"><p>Creative activated</p></div>',
-			),
-			'creative_deactivated' => array(
-				'creative_deactivated',
-				'<div class="updated"><p>Creative deactivated</p></div>',
-			),
-			'settings-imported' => array(
-				'settings-imported',
-				'<div class="updated"><p>Settings successfully imported</p></div>',
-			),
-//			'license-expired' => array(
-//				'license-expired',
-//				'<div class="expired"><p>Your license key expired on',
-//			),
-			'license-revoked' => array(
-				'license-revoked',
-				'<div class="error"><p>Your license key has been disabled.',
-			),
-			'license-missing' => array(
-				'license-missing',
-				'<div class="error"><p>Invalid license.',
-			),
-			'license-invalid' => array(
-				'license-invalid',
-				'<div class="error"><p>Your license key is not active for this URL.',
-			),
-			'license-site_inactive' => array(
-				'license-site_inactive',
-				'<div class="error"><p>Your license key is not active for this URL.',
-			),
-			'license-item_name_mismatch' => array(
-				'license-item_name_mismatch',
-				'<div class="error"><p>This appears to be an invalid license key.</p></div>',
-			),
-			'license-no_activations_left' => array(
-				'license-no_activations_left',
-				'<div class="error"><p>Your license key has reached its activation limit.',
-			),
-			'api_key_generated' => array(
-				'api_key_generated',
-				'<div class="updated"><p>The API keys were successfully generated.</p></div>',
-			),
-			'api_key_failed' => array(
-				'api_key_failed',
-				'<div class="error"><p>The API keys could not be generated.</p></div>',
-			),
-			'api_key_regenerated' => array(
-				'api_key_regenerated',
-				'<div class="updated"><p>The API keys were successfully regenerated.</p></div>',
-			),
-			'api_key_revoked' => array(
-				'api_key_revoked',
-				'<div class="updated"><p>The API keys were successfully revoked.</p></div>',
-			),
-		);
+	public function test_show_notices_affwp_message_GET() {
+		$this->_set_request_vars( array(
+			'affwp_notice'  => 'not_empty',
+			'affwp_message' => 'AffiliateWP Rocks'
+		) );
+
+		$expected = '<div class="updated"><p>AffiliateWP Rocks</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliate_added_failed() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliate_added_failed'
+		) );
+
+		$expected = '<div class="error"><p>Affiliate wasn&#8217;t added, please try again.</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliate_updated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliate_updated'
+		) );
+
+		$expected = '<div class="updated"><p>Affiliate updated successfully';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliate_update_failed() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliate_update_failed'
+		) );
+
+		$expected = '<div class="error"><p>Affiliate update failed, please try again</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliate_deleted() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliate_deleted'
+		) );
+
+		$expected = '<div class="updated"><p>Affiliate account(s) deleted successfully</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliate_delete_failed() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliate_delete_failed'
+		) );
+
+		$expected = '<div class="error"><p>Affiliate deletion failed, please try again</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliate_activated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliate_activated'
+		) );
+
+		$expected = '<div class="updated"><p>Affiliate account activated</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliate_deactivated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliate_deactivated'
+		) );
+
+		$expected = '<div class="updated"><p>Affiliate account deactivated</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliate_accepted() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliate_accepted'
+		) );
+
+		$expected = '<div class="updated"><p>Affiliate request was accepted</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliate_rejected() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliate_rejected'
+		) );
+
+		$expected = '<div class="updated"><p>Affiliate request was rejected</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliates_migrated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliates_migrated'
+		) );
+
+		$expected = 'added successfully';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_affiliates_pro_migrated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'affiliates_pro_migrated'
+		) );
+
+		$expected = 'added successfully';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_stats_recounted() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'stats_recounted'
+		) );
+
+		$expected = '<div class="updated"><p>Affiliate stats have been recounted!</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_referral_added() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'referral_added'
+		) );
+
+		$expected = '<div class="updated"><p>Referral added successfully</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_referral_updated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'referral_updated'
+		) );
+
+		$expected = '<div class="updated"><p>Referral updated successfully</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_referral_update_failed() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'referral_update_failed'
+		) );
+
+		$expected = '<div class="updated"><p>Referral update failed, please try again</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_referral_deleted() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'referral_deleted'
+		) );
+
+		$expected = '<div class="updated"><p>Referral deleted successfully</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_referral_delete_failed() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'referral_delete_failed'
+		) );
+
+		$expected = '<div class="error"><p>Referral deletion failed, please try again</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_creative_updated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'creative_updated'
+		) );
+
+		$expected = '<div class="updated"><p>Creative updated successfully';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_creative_added() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'creative_added'
+		) );
+
+		$expected = '<div class="updated"><p>Creative added successfully</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_creative_deleted() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'creative_deleted'
+		) );
+
+		$expected = '<div class="updated"><p>Creative deleted successfully</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_creative_activated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'creative_activated'
+		) );
+
+		$expected = '<div class="updated"><p>Creative activated</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_creative_deactivated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'creative_deactivated'
+		) );
+
+		$expected = '<div class="updated"><p>Creative deactivated</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_settings_imported() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'settings-imported'
+		) );
+
+		$expected = '<div class="updated"><p>Settings successfully imported</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_license_revoked() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'license-revoked'
+		) );
+
+		$expected = '<div class="error"><p>Your license key has been disabled.';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_license_missing() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'license-missing'
+		) );
+
+		$expected = '<div class="error"><p>Invalid license.';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_license_invalid() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'license-invalid'
+		) );
+
+		$expected = '<div class="error"><p>Your license key is not active for this URL.';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_license_site_inactive() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'license-site_inactive'
+		) );
+
+		$expected = '<div class="error"><p>Your license key is not active for this URL.';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_license_item_name_mismatch() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'license-item_name_mismatch'
+		) );
+
+		$expected = '<div class="error"><p>This appears to be an invalid license key.</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_license_no_activation_left() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'license-no_activations_left'
+		) );
+
+		$expected = '<div class="error"><p>Your license key has reached its activation limit.';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_api_key_generated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'api_key_generated'
+		) );
+
+		$expected = '<div class="updated"><p>The API keys were successfully generated.</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_api_key_failed() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'api_key_failed'
+		) );
+
+		$expected = '<div class="error"><p>The API keys could not be generated.</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_api_key_regenerated() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'api_key_regenerated'
+		) );
+
+		$expected = '<div class="updated"><p>The API keys were successfully regenerated.</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Admin_Notices::show_notices()
+	 */
+	public function test_show_notices_api_key_revoked() {
+		$this->_set_request_vars( array(
+			'affwp_notice' => 'api_key_revoked'
+		) );
+
+		$expected = '<div class="updated"><p>The API keys were successfully revoked.</p></div>';
+
+		$this->assertContains( $expected, self::$notices->show_notices( false ) );
 	}
 
 	/**
@@ -318,11 +552,4 @@ class Tests extends UnitTestCase {
 		}
 	}
 
-	protected function get_notices_echo() {
-		ob_start();
-
-		self::$notices->show_notices();
-
-		return ob_get_clean();
-	}
 }
