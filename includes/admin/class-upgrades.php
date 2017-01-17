@@ -494,7 +494,8 @@ class Affiliate_WP_Upgrades {
 	 */
 	private function v20_upgrade() {
 		// New primitive and meta capabilities.
-		@affiliate_wp()->capabilities->add_caps();
+		$caps = new \Affiliate_WP_Capabilities;
+		$caps->add_caps();
 		$this->log( 'Upgrade: Core capabilities have been upgraded.' );
 
 
