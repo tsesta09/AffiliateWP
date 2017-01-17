@@ -23,35 +23,32 @@ class Affiliate_WP_Admin_Notices {
 	 */
 	public function __construct() {
 
-		add_action( 'admin_notices', array( $this, 'show_notices' ) );
-		add_action( 'admin_notices', array( $this, 'upgrade_notices' ) );
+		add_action( 'admin_notices', array( $this, 'show_notices'        ) );
+		add_action( 'admin_notices', array( $this, 'upgrade_notices'     ) );
+		add_action( 'admin_notices', array( $this, 'integration_notices' ) );
+		add_action( 'admin_notices', array( $this, 'license_notices'     ) );
 
 		add_action( 'affwp_dismiss_notices', array( $this, 'dismiss_notices' ) );
 	}
 
 	/**
-	 * Displays admin notices.
+	 * Outputs general admin notices.
 	 *
+	 * @access public
 	 * @since 1.0
 	 * @since 1.8.3 Notices are hidden for users lacking the 'manage_affiliates' capability
-	 * @access public
+	 *
+	 * @param bool $echo Optional. Whether to echo the output or return. Default true.
+	 * @return string|void Output if `$echo` is false, otherwise void.
 	 */
-	public function show_notices() {
+	public function show_notices( $echo = true ) {
 		// Don't display notices for users who can't manage affiliates.
 		if ( ! current_user_can( 'manage_affiliates' ) ) {
 			return;
 		}
 
-		$integrations = affiliate_wp()->integrations->get_enabled_integrations();
-
-		if( empty( $integrations ) && ! get_user_meta( get_current_user_id(), '_affwp_no_integrations_dismissed', true ) ) {
-			echo '<div class="error">';
-				echo '<p>' . sprintf( __( 'There are currently no AffiliateWP <a href="%s">integrations</a> enabled. If you are using AffiliateWP without any integrations, you may disregard this message.', 'affiliate-wp' ), affwp_admin_url( 'settings', array( 'tab' => 'integrations' ) ) ) . '</p>';
-				echo '<p><a href="' . wp_nonce_url( add_query_arg( array( 'affwp_action' => 'dismiss_notices', 'affwp_notice' => 'no_integrations' ) ), 'affwp_dismiss_notice', 'affwp_dismiss_notice_nonce' ) . '">' . _x( 'Dismiss Notice', 'Integrations', 'affiliate-wp' ) . '</a></p>';
-			echo '</div>';
-		}
-
-		$class = 'updated';
+		$message = '';
+		$class   = 'updated';
 
 		if ( isset( $_GET['settings-updated'] ) && $_GET['settings-updated'] && isset( $_GET['page'] ) && $_GET['page'] == 'affiliate-wp-settings' ) {
 			$message = __( 'Settings updated.', 'affiliate-wp' );
@@ -374,50 +371,14 @@ class Affiliate_WP_Admin_Notices {
 			}
 		}
 
-		if ( ! empty( $message ) ) {
-			echo '<div class="' . esc_attr( $class ) . '"><p>' .  $message  . '</p></div>';
+		$output = $this->prepare_message_for_output( $message, $class );
+
+		if ( true === $echo ) {
+			echo $output;
+		} else {
+			return $output;
 		}
 
-		$license = affiliate_wp()->settings->check_license();
-
-		if ( ! is_wp_error( $license ) && false === get_transient( 'affwp_license_notice' ) ) {
-
-			// Base query args.
-			$notice_query_args = array(
-				'affwp_action' => 'dismiss_notices'
-			);
-
-			if( is_object( $license ) ) {
-
-				$status = $license->license;
-
-			} else {
-
-				$status = $license;
-
-			}
-
-			if ( 'expired' === $status ) {
-
-				$notice_query_args['affwp_notice'] = 'expired_license';
-
-				echo '<div class="error info">';
-					echo '<p>' . __( 'Your license key for AffiliateWP has expired. Please renew your license to re-enable automatic updates.', 'affiliate-wp' ) . '</p>';
-					echo '<p><a href="' . wp_nonce_url( add_query_arg( $notice_query_args ), 'affwp_dismiss_notice', 'affwp_dismiss_notice_nonce' ) . '">' . _x( 'Dismiss Notice', 'License', 'affiliate-wp' ) . '</a></p>';
-				echo '</div>';
-
-			} elseif ( 'valid' !== $status ) {
-
-				$notice_query_args['affwp_notice'] = 'invalid_license';
-
-				echo '<div class="notice notice-info">';
-					echo '<p>' . sprintf( __( 'Please <a href="%s">enter and activate</a> your license key for AffiliateWP to enable automatic updates.', 'affiliate-wp' ), esc_url( affwp_admin_url( 'settings' ) ) ) . '</p>';
-					echo '<p><a href="' . wp_nonce_url( add_query_arg( $notice_query_args ), 'affwp_dismiss_notice', 'affwp_dismiss_notice_nonce' ) . '">' . _x( 'Dismiss Notice', 'License', 'affiliate-wp' ) . '</a></p>';
-				echo '</div>';
-
-			}
-
-		}
 	}
 
 	/**
@@ -443,6 +404,125 @@ class Affiliate_WP_Admin_Notices {
 				</form>
 			</div>
 		<?php endif;
+	}
+
+	/**
+	 * Display admin notices related to integrations.
+	 *
+	 * @access public
+	 * @since  2.1
+	 *
+	 * @param bool $echo Optional. Whether to echo the output or return. Default true.
+	 * @return string|void Output if `$echo` is false, otherwise void.
+	 */
+	public function integration_notices( $echo = true ) {
+		$message = $class = '';
+
+		$integrations = affiliate_wp()->integrations->get_enabled_integrations();
+
+		if( empty( $integrations ) && ! get_user_meta( get_current_user_id(), '_affwp_no_integrations_dismissed', true ) ) {
+			$class = 'error';
+
+			$message .= sprintf( __( 'There are currently no AffiliateWP <a href="%s">integrations</a> enabled. If you are using AffiliateWP without any integrations, you may disregard this message.', 'affiliate-wp' ), affwp_admin_url( 'settings', array( 'tab' => 'integrations' ) ) ) . '</p>';
+			$message .= '<p><a href="' . wp_nonce_url( add_query_arg( array( 'affwp_action' => 'dismiss_notices', 'affwp_notice' => 'no_integrations' ) ), 'affwp_dismiss_notice', 'affwp_dismiss_notice_nonce' ) . '">' . _x( 'Dismiss Notice', 'Integrations', 'affiliate-wp' ) . '</a>';
+		}
+
+		$output = $this->prepare_message_for_output( $message, $class );
+
+		if ( true === $echo ) {
+			echo $output;
+		} else {
+			return $output;
+		}
+
+	}
+
+	/**
+	 * Display admin notices related to licenses.
+	 *
+	 * @access public
+	 * @since  2.1
+	 *
+	 * @param bool $echo Optional. Whether to echo the output or return. Default true.
+	 * @return string|void Output if `$echo` is false, otherwise void.
+	 */
+	public function license_notices( $echo = true ) {
+		$license = affiliate_wp()->settings->check_license();
+
+		$message = $status = $class = $output = '';
+
+		if ( ! is_wp_error( $license ) && false === get_transient( 'affwp_license_notice' ) ) {
+
+			// Base query args.
+			$notice_query_args = array(
+				'affwp_action' => 'dismiss_notices'
+			);
+
+			if( is_object( $license ) ) {
+
+				$status = $license->license;
+
+			} else {
+
+				$status = $license;
+
+			}
+
+			if ( 'expired' === $status ) {
+
+				$notice_query_args['affwp_notice'] = 'expired_license';
+
+				$class = 'error info';
+
+				$message .= __( 'Your license key for AffiliateWP has expired. Please renew your license to re-enable automatic updates.', 'affiliate-wp' ) . '</p>';
+				$message .= '<p><a href="' . wp_nonce_url( add_query_arg( $notice_query_args ), 'affwp_dismiss_notice', 'affwp_dismiss_notice_nonce' ) . '">' . _x( 'Dismiss Notice', 'License', 'affiliate-wp' ) . '</a>';
+
+			} elseif ( 'valid' !== $status ) {
+
+				$notice_query_args['affwp_notice'] = 'invalid_license';
+
+				$class = 'notice notice-info';
+
+				$message .= sprintf( __( 'Please <a href="%s">enter and activate</a> your license key for AffiliateWP to enable automatic updates.', 'affiliate-wp' ), esc_url( affwp_admin_url( 'settings' ) ) ) . '</p>';
+				$message .= '<p><a href="' . wp_nonce_url( add_query_arg( $notice_query_args ), 'affwp_dismiss_notice', 'affwp_dismiss_notice_nonce' ) . '">' . _x( 'Dismiss Notice', 'License', 'affiliate-wp' ) . '</a>';
+
+			}
+
+		}
+
+		$output = $this->prepare_message_for_output( $message, $class );
+
+		if ( true === $echo ) {
+			echo $output;
+		} else {
+			return $output;
+		}
+
+	}
+
+	/**
+	 * Processes message data for output as admin notices.
+	 *
+	 * @access public
+	 * @since  2.1
+	 *
+	 * @param string $message Notice message.
+	 * @param string $class   Notice class.
+	 * @return string Notice markup or empty string if `$message` is empty.
+	 */
+	public function prepare_message_for_output( $message, $class ) {
+
+		if ( ! empty( $message ) ) {
+			$output = sprintf( '<div class="%1$s"><p>%2$s</p></div>',
+				esc_attr( $class ),
+				$message
+			);
+		} else {
+			$output = '';
+		}
+
+		return $output;
+
 	}
 
 	/**
