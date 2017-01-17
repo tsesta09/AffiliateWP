@@ -61,9 +61,9 @@ class Tests extends UnitTestCase {
 	 * @access public
 	 */
 	public function setUp() {
-		wp_set_current_user( self::$user_id );
-
 		parent::setUp();
+
+		wp_set_current_user( self::$user_id );
 	}
 
 	/**
