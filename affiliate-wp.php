@@ -203,6 +203,15 @@ final class Affiliate_WP {
 	public $REST;
 
 	/**
+	 * The capabilities class instance variable.
+	 *
+	 * @access public
+	 * @since  2.0
+	 * @var    Affiliate_WP_Capabilities
+	 */
+	public $capabilities;
+
+	/**
 	 * The utilities class instance variable.
 	 *
 	 * @access public
@@ -465,6 +474,7 @@ final class Affiliate_WP {
 		self::$instance->creative       = new Affiliate_WP_Creatives;
 		self::$instance->rewrites       = new Affiliate_WP_Rewrites;
 		self::$instance->REST           = new Affiliate_WP_REST;
+		self::$instance->capabilities   = new Affiliate_WP_Capabilities;
 		self::$instance->utils          = new Affiliate_WP_Utilities;
 
 		self::$instance->updater();
