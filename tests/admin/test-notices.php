@@ -70,6 +70,8 @@ class Tests extends UnitTestCase {
 	public function setUp() {
 		parent::setUp();
 
+		affiliate_wp()->capabilities->add_caps();
+
 		wp_set_current_user( self::$user_id );
 	}
 
