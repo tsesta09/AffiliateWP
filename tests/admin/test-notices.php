@@ -99,7 +99,7 @@ class Tests extends UnitTestCase {
 	public function test_show_notices_GET_only( $vars, $expected_html ) {
 		wp_set_current_user( self::$user_id );
 
-		var_dump( get_user_by( 'id', self::$user_id ) );
+		var_dump( affiliate_wp() );
 
 		$this->_set_request_vars( $vars );
 
