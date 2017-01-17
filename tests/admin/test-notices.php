@@ -53,6 +53,9 @@ class Tests extends UnitTestCase {
 				'edd' => 'Easy Digital Downloads'
 			)
 		) );
+
+		// Flush the $wp_roles global.
+		parent::_flush_roles();
 	}
 
 	/**
@@ -62,6 +65,9 @@ class Tests extends UnitTestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
+
+		$roles = new \Affiliate_WP_Capabilities;
+		$roles->add_caps();
 
 		wp_set_current_user( self::$user_id );
 	}
@@ -98,8 +104,6 @@ class Tests extends UnitTestCase {
 	 */
 	public function test_show_notices_GET_only( $vars, $expected_html ) {
 		wp_set_current_user( self::$user_id );
-
-		var_dump( affiliate_wp() );
 
 		$this->_set_request_vars( $vars );
 
