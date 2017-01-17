@@ -59,17 +59,6 @@ class Tests extends UnitTestCase {
 	}
 
 	/**
-	 * Sets up before every test.
-	 *
-	 * @access public
-	 */
-	public function setUp() {
-		parent::setUp();
-
-		wp_set_current_user( self::$user_id );
-	}
-
-	/**
 	 * Helper to retrieve the Notices instance.
 	 *
 	 * @access protected
@@ -103,7 +92,9 @@ class Tests extends UnitTestCase {
 		$roles = new \Affiliate_WP_Capabilities;
 		$roles->add_caps();
 
-		wp_set_current_user( self::$user_id );
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $user_id );
 
 		$this->_set_request_vars( $vars );
 
@@ -124,7 +115,9 @@ class Tests extends UnitTestCase {
 		$roles = new \Affiliate_WP_Capabilities;
 		$roles->add_caps();
 
-		wp_set_current_user( self::$user_id );
+		$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $user_id );
 
 		$this->_set_request_vars( array(
 			'affwp_notice' => $value
