@@ -44,7 +44,7 @@ class Affiliate_WP_Admin_Notices {
 	public function show_notices( $echo = true ) {
 		// Don't display notices for users who can't manage affiliates.
 		if ( ! current_user_can( 'manage_affiliates' ) ) {
-			return;
+			return '';
 		}
 
 		$message = '';
