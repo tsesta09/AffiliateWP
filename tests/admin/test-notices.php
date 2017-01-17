@@ -97,6 +97,8 @@ class Tests extends UnitTestCase {
 	 * @param string $expected_html Expected HTML markup (or snippet).
 	 */
 	public function test_show_notices_GET_only( $vars, $expected_html ) {
+		wp_set_current_user( self::$user_id );
+
 		$this->_set_request_vars( $vars );
 
 		$result = $this->get_notices_echo();
@@ -113,6 +115,8 @@ class Tests extends UnitTestCase {
 	 * @param string $expected_html Expected HTML markup (or snippet).
 	 */
 	public function test_show_notices_affwp_notice( $value, $expected_html ) {
+		wp_set_current_user( self::$user_id );
+
 		$this->_set_request_vars( array(
 			'affwp_notice' => $value
 		) );
