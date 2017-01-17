@@ -277,6 +277,13 @@ class Affiliate_WP_WooCommerce extends Affiliate_WP_Base {
 	 */
 	public function mark_referral_complete( $order_id = 0 ) {
 
+		$this->order = apply_filters( 'affwp_get_woocommerce_order', new WC_Order( $order_id ) );
+
+		// If the WC status is 'wc-processing' and a COD order, leave as 'pending'.
+		if ( 'wc-processing' == $order->post_status && 'cod' === get_post_meta( $order_id, '_payment_method', true ) ) {
+			return;
+		}
+
 		$this->complete_referral( $order_id );
 	}
 
