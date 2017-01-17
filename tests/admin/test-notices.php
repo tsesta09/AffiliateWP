@@ -56,17 +56,6 @@ class Tests extends UnitTestCase {
 	}
 
 	/**
-	 * Sets up before every test.
-	 *
-	 * @access public
-	 */
-	public function setUp() {
-		wp_set_current_user( self::$user_id );
-
-		parent::setUp();
-	}
-
-	/**
 	 * Helper to retrieve the Notices instance.
 	 *
 	 * @access protected
@@ -84,6 +73,8 @@ class Tests extends UnitTestCase {
 		wp_set_current_user( 0 );
 
 		$this->assertNull( self::$notices->show_notices() );
+
+		wp_set_current_user( self::$user_id );
 	}
 
 	/**
@@ -97,7 +88,7 @@ class Tests extends UnitTestCase {
 	public function test_show_notices_GET_only( $vars, $expected_html ) {
 		$this->_set_request_vars( $vars );
 
-		$result = $this->get_notices_echo();
+		$result = self::$notices->show_notices( false );
 
 		$this->assertContains( $expected_html, $result );
 	}
@@ -115,7 +106,7 @@ class Tests extends UnitTestCase {
 			'affwp_notice' => $value
 		) );
 
-		$result = $this->notices()->show_notices( false );
+		$result = self::$notices->show_notices( false );
 
 		$this->assertContains( $expected_html, $result );
 	}
