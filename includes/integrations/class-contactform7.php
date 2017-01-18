@@ -864,6 +864,11 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		$referral = affiliate_wp()->referrals->get_by( 'reference', $reference );
 
+		if ( ! $referral ) {
+			error_log('No referral data found when trying to revoke');
+			return false;
+		}
+
 		$this->reject_referral( $reference );
 
 		if ( ! $referral ) {
