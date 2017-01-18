@@ -689,25 +689,21 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 *
 	 * @since  2.0
 	 *
-	 * @return int  $current_page_id The current page ID.
+	 * @return mixed int|bool  $current_page_id The current page ID, or booean false if unable to locate the current page ID.
 	 */
 	public function get_current_page_id() {
+
 		$page = get_queried_object();
+		$current_page_id = $page->ID;
 
-		if ( $page && is_page( $page->ID ) ) {
-
-			$current_page_id = $page->ID;
-			return $current_page_id;
-
-		} else {
+		if ( ! $current_page_id ) {
 
 			global $post;
 			$current_page_id = $post->ID;
 
-			return $current_page_id;
 		}
 
-		return false;
+		return $current_page_id ? $current_page_id : false;
 	}
 
 	/**
@@ -766,23 +762,6 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 			$this->insert_pending_referral( $referral_total, $reference, $description, $sku );
 
-			// Add query args to success and cancel urls.
-			add_query_arg(
-				array(
-					'affiliate_id' => $affiliate_id,
-					'reference'    => $reference
-					),
-				$this->return_url
-			);
-
-			add_query_arg(
-				array(
-					'affiliate_id' => $affiliate_id,
-					'reference'    => $reference
-					),
-				$this->cancel_url
-			);
-
 			if ( empty( $referral_total ) ) {
 				$this->mark_referral_complete( affwp_get_referral( $current_page_id, $reference ) );
 			}
@@ -793,8 +772,8 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 * Updates the referral status when a PayPal refund or transaction completion occurs,
 	 * via the success or cancel pages provided in the PayPal add-ons.
 	 *
-	 * @param  int    $current_page_id  The current page ID.
-	 * @param mixed $reference The referral reference.
+	 * @param int    $current_page_id  The current page ID.
+	 * @param mixed  $reference        The referral reference.
 	 * @since 2.0
 	 */
 	public function mark_referral_complete( $current_page_id = 0, $reference = '' ) {
@@ -808,15 +787,14 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		}
 
 		// Reconstruct the reference by appending a hyphen and the Unix time to the form ID.
-		$reference = $form_id . '-' . date_i18n( 'U' );
+		$reference = $form_id . '-' . $sub_time;
 
 		if ( ! $reference ) {
 			return false;
 		}
 
 		$return_url     = $this->return_url;
-		$return_page    = get_page_by_path( basename( untrailingslashit( $return_url ) ) );
-		$return_page_id = absint( $return_page->ID );
+		$return_page_id = url_to_postid( $return_url );
 
 		// Bail if not on the form page or the return page.
 		if ( ! did_action( 'wpcf7_submit' ) || $return_page_id !== $current_page_id ) {
@@ -825,7 +803,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		$this->complete_referral( $reference );
 
-		$referral    = affiliate_wp()->referrals->get_by( 'reference', $reference, $this->context );
+		$referral    = affiliate_wp()->referrals->get_by( 'reference', $reference );
 
 		$amount      = affwp_currency_filter( affwp_format_amount( $referral->amount ) );
 		$name        = affiliate_wp()->affiliates->get_affiliate_name( $referral->affiliate_id );
@@ -843,9 +821,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 */
 	public function revoke( $current_page_id = 0, $reference = '' ) {
 
-		$current_page_id = get_the_ID();
+		$current_page_id = $this->get_current_page_id();
 
-		$form_id     = (isset( $_GET['form_id'] ) ) ? $_GET['reference'] : false;
+		$form_id     = (isset( $_GET['form_id'] ) )  ? $_GET['form_id']  : false;
 		$sub_time    = (isset( $_GET['sub_time'] ) ) ? $_GET['sub_time'] : false;
 
 		if ( ! $form_id || ! $sub_time ) {
@@ -853,24 +831,32 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		}
 
 		// Reconstruct the reference by appending a hyphen and the Unix time to the form ID.
-		$reference = $form_id . '-' . date_i18n( 'U' );
+		$reference = $form_id . '-' . $sub_time;
 
 		if ( ! $reference ) {
 			return false;
 		}
 
 		$cancel_url     = $this->cancel_url;
-		$cancel_page    = get_page_by_path( basename( untrailingslashit( $cancel_url ) ) );
-		$cancel_page_id = absint( $cancel_page->ID );
+		$cancel_page_id = url_to_postid( $cancel_url );
 
 		// Bail if not on the cancel page
 		if ( $cancel_page_id !== $current_page_id ) {
 			return false;
 		}
 
+
+		$referral = affiliate_wp()->referrals->get_by( 'reference', $reference );
+
 		$this->reject_referral( $reference );
 
-		$referral        = affiliate_wp()->referrals->get_by( 'reference', $reference, $this->context );
+		if ( ! $referral ) {
+			error_log('no referral');
+			error_log( 'Referral object: '. print_r( $referral, true ) );
+		} else {
+			error_log( 'Referral object: '. print_r( $referral, true ) );
+		}
+
 		$amount          = affwp_currency_filter( affwp_format_amount( $referral->amount ) );
 		$name            = affiliate_wp()->affiliates->get_affiliate_name( $referral->affiliate_id );
 		$description     = sprintf( __( 'AffiliateWP: Referral #%d for %s for %s rejected', 'affiliate-wp' ), $referral->referral_id, $amount, $name );
