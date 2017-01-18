@@ -40,7 +40,7 @@ function affwp_cf7_get_url_args( $cf7 ) {
  *
  * @return void
  */
-function affwp_cf7_paypal_redirect( $cf7 ) {
+function affwp_cf7_paypal_redirect( $cf7, $result, $referral_id ) {
 
     global $postid;
 
@@ -51,7 +51,7 @@ function affwp_cf7_paypal_redirect( $cf7 ) {
 
     if ($enable == "1") {
         if ($email == "2") {
-            affwp_cf7_paypal_redirect_output( $cf7 );
+            affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id );
         }
     }
 }
@@ -65,17 +65,19 @@ function affwp_cf7_paypal_redirect( $cf7 ) {
  *
  * @return [type]       [description]
  */
-function affwp_cf7_paypal_redirect_output( $cf7 ) {
+function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
 
     global $postid;
 
-    $post_id = $postid;
-    $enable  = get_post_meta($post_id, "_cf7pp_enable", true);
-    $name    = get_post_meta($post_id, "_cf7pp_name",   true);
-    $price   = get_post_meta($post_id, "_cf7pp_price",  true);
-    $id      = get_post_meta($post_id, "_cf7pp_id",     true);
-    $email   = get_post_meta($post_id, "_cf7pp_email",  true);
-    $options = get_option('cf7pp_options');
+    $post_id     = $postid;
+    $enable      = get_post_meta($post_id, "_cf7pp_enable", true);
+    $name        = get_post_meta($post_id, "_cf7pp_name",   true);
+    $price       = get_post_meta($post_id, "_cf7pp_price",  true);
+    $id          = get_post_meta($post_id, "_cf7pp_id",     true);
+    $email       = get_post_meta($post_id, "_cf7pp_email",  true);
+    $options     = get_option('cf7pp_options');
+
+    $referral_id_string = 'referral_id=' . $referral_id;
 
     foreach ($options as $k => $v ) { $value[$k] = $v; }
 
@@ -196,8 +198,8 @@ function affwp_cf7_paypal_redirect_output( $cf7 ) {
         $language = "th_TH";
     } //Thai
 
-    $affwp_cf7_return = $options['return'] . affwp_cf7_get_url_args( $cf7 );
-    $affwp_cf7_cancel = $options['cancel'] . affwp_cf7_get_url_args( $cf7 );
+    $affwp_cf7_return = $options['return'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string;
+    $affwp_cf7_cancel = $options['cancel'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string;
 
     ?>
     <html>

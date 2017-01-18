@@ -109,7 +109,8 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		// Process paypal1 redirect after generating the initial referral.
 		remove_action( 'wpcf7_mail_sent', 'cf7pp_after_send_mail' );
-		add_action( 'wpcf7_submit', 'affwp_cf7_paypal_redirect', 9999, 2 );
+
+		add_action( 'affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 9999, 3 );
 
 
 		// Mark referral complete.
@@ -693,15 +694,13 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 */
 	public function get_current_page_id() {
 
-		$page = get_queried_object();
-		$current_page_id = $page->ID;
+		global $post;
 
-		if ( ! $current_page_id ) {
-
-			global $post;
-			$current_page_id = $post->ID;
-
+		if ( ! $post ) {
+			return false;
 		}
+
+		$current_page_id = $post->ID;
 
 		return $current_page_id ? $current_page_id : false;
 	}
@@ -762,10 +761,27 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 			$this->insert_pending_referral( $referral_total, $reference, $description, $sku );
 
+			$referral    = affwp_get_referral( $current_page_id, $reference );
+			$referral_id = $referral->referral_id;
+
 			if ( empty( $referral_total ) ) {
 				$this->mark_referral_complete( affwp_get_referral( $current_page_id, $reference ) );
 			}
+
+			/**
+			 * Provides the referral ID to PayPal transaction processes.
+			 * This action is specific to the AffiliateWP Contact Form 7 integration.
+			 *
+			 * @param object $contactform The form object.
+			 * @param object $result      The modified form object.
+			 * @param int    $referral_id The referral ID.
+			 *
+			 * @since 2.0
+			 */
+			do_action( 'affwp_cf7_submit', $contactform, $result, $referral_id );
 		}
+
+
 	}
 
 	/**
@@ -851,8 +867,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$this->reject_referral( $reference );
 
 		if ( ! $referral ) {
-			error_log('no referral');
-			error_log( 'Referral object: '. print_r( $referral, true ) );
+			error_log('No referral could be determined from reference: ' . $reference );
 		} else {
 			error_log( 'Referral object: '. print_r( $referral, true ) );
 		}
