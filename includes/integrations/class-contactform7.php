@@ -110,7 +110,8 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		// Process paypal1 redirect after generating the initial referral.
 		remove_action( 'wpcf7_mail_sent', 'cf7pp_after_send_mail' );
 
-		add_action( 'affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 9999, 3 );
+		add_action( 'wpcf7_submit', 'add_pending_referral', 9999, 3 );
+		add_action( 'affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 10, 3 );
 
 
 		// Mark referral complete.
