@@ -178,6 +178,11 @@ class Affiliate_WP_Referrals_DB extends Affiliate_WP_DB  {
 			return false;
 		}
 
+		// Bail early if there's nothing to update.
+		if ( empty( $data ) ) {
+			return true;
+		}
+
 		if( isset( $data['amount'] ) ) {
 			$data['amount'] = affwp_sanitize_amount( $data['amount'] );
 		}
@@ -212,6 +217,17 @@ class Affiliate_WP_Referrals_DB extends Affiliate_WP_DB  {
 
 				}
 
+			} elseif( 'unpaid' === $referral->status ) {
+
+				if ( $referral->amount > $data['amount'] ) {
+
+					affwp_decrease_affiliate_unpaid_earnings( $referral->amount - $data['amount'] );
+
+				} elseif ( $referral->amount < $data['amount'] ) {
+
+					affwp_increase_affiliate_unpaid_earnings( $data['amount'] - $referral->amount );
+
+				}
 			}
 
 			return $update;
@@ -284,6 +300,7 @@ class Affiliate_WP_Referrals_DB extends Affiliate_WP_DB  {
 	 *     @type string       $fields         Fields to query for. Accepts 'ids' or '*' (all). Default '*'.
 	 * }
 	 * @param   bool  $count  Optional. Whether to return only the total number of results found. Default false.
+	 * @return \AffWP\Referral[]|int|false
 	*/
 	public function get_referrals( $args = array(), $count = false ) {
 

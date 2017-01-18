@@ -93,6 +93,7 @@ class Affiliate_WP_DB_Affiliates extends Affiliate_WP_DB {
 			'payment_email'   => '%s',
 			'status'          => '%s',
 			'earnings'        => '%s',
+			'unpaid_earnings' => '%s',
 			'referrals'       => '%d',
 			'visits'          => '%d',
 			'date_registered' => '%s',
@@ -319,6 +320,11 @@ class Affiliate_WP_DB_Affiliates extends Affiliate_WP_DB {
 				$orderby = 'earnings+0';
 				break;
 
+			case 'unpaid_earnings':
+				// Unpaid earnings.
+				$orderby = 'unpaid_earnings+0';
+				break;
+
 			case 'referrals':
 				// Referrals.
 				$orderby = 'referrals+0';
@@ -483,7 +489,15 @@ class Affiliate_WP_DB_Affiliates extends Affiliate_WP_DB {
 		$add = $this->insert( $args, 'affiliate' );
 
 		if ( $add ) {
-			do_action( 'affwp_insert_affiliate', $add );
+
+			/**
+			 * Fires immediately after an affiliate has been added to the database.
+			 *
+			 * @param array $add The affiliate data being added.
+			 * @param array args The arguments passed to the insert method.
+			 */
+			do_action( 'affwp_insert_affiliate', $add, $args );
+
 			return $add;
 		}
 
@@ -508,6 +522,7 @@ class Affiliate_WP_DB_Affiliates extends Affiliate_WP_DB {
 			payment_email mediumtext NOT NULL,
 			status tinytext NOT NULL,
 			earnings mediumtext NOT NULL,
+			unpaid_earnings mediumtext NOT NULL,
 			referrals bigint(20) NOT NULL,
 			visits bigint(20) NOT NULL,
 			date_registered datetime NOT NULL,

@@ -52,17 +52,7 @@ function affwp_admin_scripts() {
 		return;
 	}
 
-	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-
-	wp_enqueue_script( 'affwp-admin', AFFILIATEWP_PLUGIN_URL . 'assets/js/admin' . $suffix . '.js', array( 'jquery', 'jquery-ui-autocomplete'  ), AFFILIATEWP_VERSION );
-	wp_localize_script( 'affwp-admin', 'affwp_vars', array(
-		'post_id'                 => isset( $post->ID ) ? $post->ID : null,
-		'affwp_version'           => AFFILIATEWP_VERSION,
-		'currency_sign'           => affwp_currency_filter(''),
-		'currency_pos'            => affiliate_wp()->settings->get( 'currency_position', 'before' ),
-		'confirm'                 => __( 'Are you sure you want to generate the payout file? All included referrals will be marked as Paid.', 'affiliate-wp' ),
-		'confirm_delete_referral' => __( 'Are you sure you want to delete this referral?', 'affiliate-wp' ),
-	));
+	affwp_enqueue_admin_js();
 
 	// only enqueue for creatives page
 	if ( isset( $_GET['action'] ) && ( $_GET['action'] == 'add_creative' || $_GET['action'] == 'edit_creative' ) ) {
@@ -100,6 +90,27 @@ function affwp_admin_styles() {
 add_action( 'admin_enqueue_scripts', 'affwp_admin_styles' );
 
 /**
+ * Enqueues and localizes admin.js.
+ *
+ * This is separated so it can be selectively executed outside of affwp admin pages.
+ *
+ * @since 2.0
+ */
+function affwp_enqueue_admin_js() {
+
+	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
+	wp_enqueue_script( 'affwp-admin', AFFILIATEWP_PLUGIN_URL . 'assets/js/admin' . $suffix . '.js', array( 'jquery', 'jquery-ui-autocomplete'  ), AFFILIATEWP_VERSION );
+	wp_localize_script( 'affwp-admin', 'affwp_vars', array(
+		'post_id'                 => isset( $post->ID ) ? $post->ID : null,
+		'affwp_version'           => AFFILIATEWP_VERSION,
+		'currency_sign'           => affwp_currency_filter(''),
+		'currency_pos'            => affiliate_wp()->settings->get( 'currency_position', 'before' ),
+		'confirm_delete_referral' => __( 'Are you sure you want to delete this referral?', 'affiliate-wp' ),
+	) );
+}
+
+/**
  *  Load the frontend scripts and styles
  *
  *  @since 1.0
@@ -114,7 +125,7 @@ function affwp_frontend_scripts_and_styles() {
 	}
 
 	$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
-	wp_register_style( 'affwp-forms', AFFILIATEWP_PLUGIN_URL . 'assets/css/forms' . $suffix . '.css', array( 'dashicons' ), AFFILIATEWP_VERSION );
+	wp_register_style( 'affwp-forms', AFFILIATEWP_PLUGIN_URL . 'assets/css/forms' . $suffix . '.css', array(), AFFILIATEWP_VERSION );
 
 	wp_register_script( 'affwp-recaptcha', 'https://www.google.com/recaptcha/api.js', array(), AFFILIATEWP_VERSION );
 	wp_register_script( 'affwp-frontend', AFFILIATEWP_PLUGIN_URL . 'assets/js/frontend' . $suffix . '.js', array( 'jquery' ), AFFILIATEWP_VERSION );
@@ -142,13 +153,24 @@ function affwp_frontend_scripts_and_styles() {
 	// Always enqueue the 'affwp-forms' stylesheet.
 	affwp_enqueue_style( 'affwp-forms' );
 
-	// Enqueue the 'affwp-recaptcha' script if reCAPTCHA is enabled
-	if ( affwp_is_recaptcha_enabled() ) {
-		affwp_enqueue_script( 'affwp-recaptcha' );
-	}
-
 }
 add_action( 'wp_enqueue_scripts', 'affwp_frontend_scripts_and_styles' );
+
+/**
+ * Filters whether to enqueue reCAPTCHA via AffiliateWP to maintain GravityForms compatibility.
+ *
+ * @since 1.9.8
+ *
+ * @param bool   $enqueue Whether to enqueue the script. Default true.
+ * @return bool Whether to enqueue the script.
+ */
+function affwp_enqueue_recaptcha_gravityforms_compat( $enqueue ) {
+	if ( wp_script_is( 'gform-recaptcha', 'enqueued' ) ) {
+		$enqueue = false;
+	}
+	return $enqueue;
+}
+add_filter( 'affwp_enqueue_script_affwp-recaptcha', 'affwp_enqueue_recaptcha_gravityforms_compat' );
 
 /**
  *  Load the frontend creative styles for the [affiliate_creative] and [affiliate_creatives] shortcodes
