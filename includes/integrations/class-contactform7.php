@@ -684,6 +684,33 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	}
 
 	/**
+	 * Utility function which returns the current page ID.
+	 * Falls back to usage of the $post global.
+	 *
+	 * @since  2.0
+	 *
+	 * @return int  $current_page_id The current page ID.
+	 */
+	public function get_current_page_id() {
+		$page = get_queried_object();
+
+		if ( $page && is_page( $page->ID ) ) {
+
+			$current_page_id = $page->ID;
+			return $current_page_id;
+
+		} else {
+
+			global $post;
+			$current_page_id = $post->ID;
+
+			return $current_page_id;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Adds a referral when a form is submitted.
 	 *
 	 * @since 2.0
@@ -693,14 +720,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 */
 	public function add_pending_referral( $contactform, $result ) {
 
-		$page = get_queried_object();
-
-		if ( $page && is_page( $page->ID ) ) {
-			$current_page_id = $page->ID;
-		} else {
-			global $post;
-			$current_page_id = $post->ID;
-		}
+		$current_page_id = $this->get_current_page_id();
 
 		$form_id = absint( $contactform->id() );
 
@@ -779,8 +799,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 */
 	public function mark_referral_complete( $current_page_id = 0, $reference = '' ) {
 
-		$current_page_id = get_the_ID();
+		$current_page_id = $this->get_current_page_id();
 		$sub_time        = (isset( $_GET['sub_time'] ) ) ? $_GET['sub_time'] : false;
+		$form_id         = (isset( $_GET['form_id']  ) ) ? $_GET['form_id']  : false;
 
 		if ( ! $form_id || ! $sub_time ) {
 			return false;
