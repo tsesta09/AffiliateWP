@@ -41,7 +41,7 @@ function affwp_cf7_get_url_args( $cf7 ) {
  * @return void
  */
 function affwp_cf7_paypal_redirect( $cf7 ) {
-    error_log('inside start redirect caller');
+
     global $postid;
 
     $postid = $cf7->id();
@@ -66,7 +66,7 @@ function affwp_cf7_paypal_redirect( $cf7 ) {
  * @return [type]       [description]
  */
 function affwp_cf7_paypal_redirect_output( $cf7 ) {
-    error_log('inside main function');
+
     global $postid;
 
     $post_id = $postid;
