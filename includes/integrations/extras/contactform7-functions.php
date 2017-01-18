@@ -31,6 +31,8 @@ function affwp_cf7_get_url_args( $cf7 ) {
     return $affwp_cf7->get_url_args( $cf7 );
 }
 
+add_action('affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 10 ,3 );
+
 /**
  * Overrides the default CF7 add-on function.
  *
