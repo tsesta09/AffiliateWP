@@ -693,6 +693,15 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 */
 	public function add_pending_referral( $contactform, $result ) {
 
+		$page = get_queried_object();
+
+		if ( $page && is_page( $page->ID ) ) {
+			$current_page_id = $page->ID;
+		} else {
+			global $post;
+			$current_page_id = $post->ID;
+		}
+
 		$form_id = absint( $contactform->id() );
 
 		if ( ! $form_id ) {
@@ -703,7 +712,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$paypal1 = get_post_meta( $form_id, '_cf7pp_enable', true );
 		$paypal2 = false;
 
-		// Bail if neither PayPal add-on is active and enabled.
+		// Bail if no PayPal add-on is enabled.
 		if ( false === $paypal1 && false === $paypal2 ) {
 			return false;
 		}
