@@ -352,7 +352,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers ::affwp_add_referral()
 	 */
-	public function test_add_referral_with_emty_user_id_empty_affiliate_should_return_zero() {
+	public function test_add_referral_with_empty_user_id_empty_affiliate_should_return_zero() {
 		$this->assertSame( 0, affwp_add_referral( null ) );
 	}
 
@@ -383,6 +383,47 @@ class Tests extends UnitTestCase {
 		) );
 
 		$this->assertInstanceOf( 'AffWP\Referral', affwp_get_referral( $referral_id ) );
+	}
+
+	/**
+	 * @covers ::affwp_add_referral()
+	 */
+	public function test_add_referral_with_un_associated_visit_id_should_store_visit_id() {
+		$referral_id = affwp_add_referral( array(
+			'affiliate_id' => self::$_affiliate_id,
+			'visit_id'     => self::$_visit_id,
+		) );
+
+		$result = affwp_get_referral( $referral_id );
+
+		$this->assertSame( self::$_visit_id, $result->visit_id );
+
+		// Clean up.
+		affwp_delete_referral( $referral_id );
+	}
+
+	/**
+	 * @covers ::affwp_add_referral()
+	 */
+	public function test_add_referral_with_already_associated_visit_id_should_not_store_visit_id() {
+		// Associate the visit.
+		affiliate_wp()->referrals->update_referral( self::$_referral_id, array(
+			'visit_id' => self::$_visit_id
+		) );
+
+		$referral_id = affwp_add_referral( array(
+			'affiliate_id' => self::$_affiliate_id,
+			'visit_id'     => self::$_visit_id,
+		) );
+
+		$result = affwp_get_referral( $referral_id );
+
+		$this->assertNotSame( self::$_visit_id, $result->visit_id );
+		$this->assertSame( 0, $result->visit_id );
+
+		// Clean up.
+		affiliate_wp()->referrals->update_referral( self::$_referral_id, array( 'visit_id' => 0 ) );
+		affwp_delete_referral( $referral_id );
 	}
 
 	/**
