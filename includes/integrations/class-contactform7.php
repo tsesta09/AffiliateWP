@@ -374,14 +374,12 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 				cf7pp_after_send_mail( $contactform );
 
 			}
+
 			return false;
 		}
 
-		$form    = get_post( $form_id );
-		$paypal  = get_post_meta( $form_id, '_cf7pp_enable', true );
-
 		// Bail if PayPal add-on is not enabled.
-		if ( false === $paypal ) {
+		if ( ! get_post_meta( $form_id, '_cf7pp_enable', true ) ) {
 			return false;
 		}
 
