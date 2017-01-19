@@ -762,7 +762,8 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 			$this->insert_pending_referral( $referral_total, $reference, $description, $sku );
 
-			$referral    = affwp_get_referral( $current_page_id, $reference );
+			// $referral    = affwp_get_referral( $reference );
+			$referral    = affiliate_wp()->referrals->get_by( 'reference', $reference );
 			$referral_id = $referral->referral_id;
 
 			if ( empty( $referral_total ) ) {
