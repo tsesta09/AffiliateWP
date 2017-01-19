@@ -796,8 +796,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public function mark_referral_complete( $current_page_id = 0, $reference = '' ) {
 
 		$current_page_id = $this->get_current_page_id();
-		$form_id         = ! empty( $_GET['form_id'] )     ? absint( $_GET['form_id'] )     : false;
-		$referral_id     = ! empty( $_GET['referral_id'] ) ? absint( $_GET['referral_id'] ) : false;
+		$form_id         = ! empty( $_GET['form_id'] )     ? absint( $_GET['form_id'] )         : false;
+		$referral_id     = ! empty( $_GET['referral_id'] ) ? absint( $_GET['referral_id'] )     : false;
+		$txn_id          = ! empty( $_GET['tx'] )          ? sanitize_text_field( $_GET['tx'] ) : false;
 
 		if ( ! $form_id || ! $referral_id ) {
 			if( $this->debug ) {
@@ -821,7 +822,12 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		if( $referral ) {
 
+			if( ! empty( $txn_id ) ) {
+				$referral->set( 'reference', $txn_id, true );
+			}
+
 			$this->complete_referral( $referral );
+
 
 		} else if( $this->debug ) {
 
@@ -903,7 +909,16 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		// To provide a working link to the CF7 form,
 		// the Unix date (stored as `sub_time` in submission args) is stripped from the reference string.
-		$reference = strstr( $reference, '-', true );
+
+		if( false !== strpos( $reference, '-' ) ) {
+
+			$reference = strstr( $reference, '-', true );
+
+		} else {
+
+			return $reference; // Return transaction ID without a link
+
+		}
 
 		$url = admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $reference );
 
