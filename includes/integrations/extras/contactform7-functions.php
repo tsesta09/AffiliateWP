@@ -95,15 +95,17 @@ function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
 
     $referral_id_string = '&referral_id=' . $referral_id;
 
-    foreach ($options as $k => $v ) { $value[$k] = $v; }
+    foreach ($options as $k => $v ) {
+        $value[$k] = $v;
+    }
 
     // live or test mode
-    if ($value['mode'] == "1") {
+    if ( $value['mode'] == "1" ) {
         $account = $value['sandboxaccount'];
-        $path = "sandbox.paypal";
-    } elseif ($value['mode'] == "2")  {
+        $path    = "sandbox.paypal";
+    } elseif ( $value['mode'] == "2" )  {
         $account = $value['liveaccount'];
-        $path = "paypal";
+        $path    = "paypal";
     }
 
     // currency
