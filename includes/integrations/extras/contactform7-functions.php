@@ -203,27 +203,31 @@ function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
     $affwp_cf7_return = $options['return'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string;
     $affwp_cf7_cancel = $options['cancel'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string;
 
+    $form_url = 'https://www.' . $path . '.com/cgi-bin/webscr';
+
     ?>
     <html>
-    <head><title><?php _e('Redirecting to Paypal...', 'affiliate-wp' ); ?></title></head>
-    <body>
-    <form action='https://www.<?php echo $path; ?>.com/cgi-bin/webscr' method='post' name="cf7pp">
-    <input type='hidden' name='cmd' value='_xclick' />
-    <input type='hidden' name='business' value='<?php echo $account; ?>' />
-    <input type='hidden' name='item_name' value='<?php echo $name; ?>' />
-    <input type='hidden' name='currency_code' value='<?php echo $currency; ?>' />
-    <input type='hidden' name='amount' value='<?php echo $price; ?>' />
-    <input type='hidden' name='lc' value='<?php echo $language; ?>'>
-    <input type='hidden' name='item_number' value='<?php echo $id; ?>' />
-    <input type='hidden' name='return' value='<?php echo $affwp_cf7_return; ?>' />
-    <input type='hidden' name='bn' value='WPPlugin_SP'>
-    <input type='hidden' name='cancel_return' value='<?php echo $affwp_cf7_cancel; ?>' />
-    <input type='hidden' name='custom' value='<?php echo $referral_id; ?>'>
-    <img alt='' border='0' style='border:none;display:none;' src='https://www.paypal.com/$language/i/scr/pixel.gif' width='1' height='1'>
-    </form>
-    <script type="text/javascript">
-    document.cf7pp.submit();
-    </script>
-    </body>
+        <head>
+            <title><?php _e('Redirecting to Paypal...', 'affiliate-wp' ); ?></title>
+        </head>
+        <body>
+            <form action='<?php echo esc_url( $form_url ); ?>' method='post' name="cf7pp">
+            <input type='hidden' name='cmd' value='_xclick' />
+            <input type='hidden' name='business' value='<?php echo $account; ?>' />
+            <input type='hidden' name='item_name' value='<?php echo $name; ?>' />
+            <input type='hidden' name='currency_code' value='<?php echo $currency; ?>' />
+            <input type='hidden' name='amount' value='<?php echo $price; ?>' />
+            <input type='hidden' name='lc' value='<?php echo $language; ?>'>
+            <input type='hidden' name='item_number' value='<?php echo $id; ?>' />
+            <input type='hidden' name='return' value='<?php echo esc_url( $affwp_cf7_return ); ?>' />
+            <input type='hidden' name='bn' value='WPPlugin_SP'>
+            <input type='hidden' name='cancel_return' value='<?php echo esc_url( $affwp_cf7_cancel ); ?>' />
+            <input type='hidden' name='custom' value='<?php echo $referral_id; ?>'>
+            <img alt='' border='0' style='border:none;display:none;' src='https://www.paypal.com/$language/i/scr/pixel.gif' width='1' height='1'>
+            </form>
+            <script type="text/javascript">
+            document.cf7pp.submit();
+            </script>
+        </body>
     </html>
 <?php }
