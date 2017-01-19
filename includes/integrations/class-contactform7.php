@@ -305,7 +305,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$all_forms = $this->get_all_forms();
 
 		foreach ( $all_forms as $id => $title ) {
-			array_push( $cf7_forms, '<strong>' . $title . '</strong> <em>(' . __( 'Form ID: ', 'affiliate-wp' ) . $id . ' )</em>' );
+			$cf7_forms[ $id ] = '<strong>' . $title . '</strong> <em>(' . __( 'Form ID: ', 'affiliate-wp' ) . $id . ' )</em>';
 		}
 
 		return $cf7_forms;
@@ -323,6 +323,17 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$enabled = affiliate_wp()->settings->get( 'affwp_cf7_enable_specific_forms' );
 
 		return apply_filters( 'affwp_cf7_enabled_forms', $enabled );
+	}
+
+	/**
+	 * Check if a form has referrals enabled.
+	 *
+	 * @since  2.0
+	 *
+	 * @return $enabled bool True if the form has referrals enabled.
+	 */
+	public function form_enabled( $form_id 	) {
+		return array_key_exists( $form_id, $this->get_enabled_forms() );
 	}
 
 	/**
@@ -371,6 +382,10 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public function get_form_active_gateway( $form_id ) {
 
 		if ( ! $form_id ) {
+			return false;
+		}
+
+		if( ! $this->form_enabled( $form_id ) && ! affiliate_wp()->settings->get( 'affwp_cf7_enable_all_forms', false ) ) {
 			return false;
 		}
 
@@ -621,6 +636,10 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 			return false;
 		}
 
+		if( ! $this->form_enabled( $form_id ) && ! affiliate_wp()->settings->get( 'affwp_cf7_enable_all_forms', false ) ) {
+			return false;
+		}
+
 		$form    = get_post( $form_id );
 		$paypal1 = get_post_meta( $form_id, '_cf7pp_enable', true );
 
@@ -659,6 +678,10 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$form_id = absint( $cf7->id() );
 
 		if ( ! $form_id ) {
+			return false;
+		}
+
+		if( ! $this->form_enabled( $form_id ) && ! affiliate_wp()->settings->get( 'affwp_cf7_enable_all_forms', false ) ) {
 			return false;
 		}
 
@@ -720,6 +743,10 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$form_id = absint( $contactform->id() );
 
 		if ( ! $form_id ) {
+			return false;
+		}
+
+		if( ! $this->form_enabled( $form_id ) && ! affiliate_wp()->settings->get( 'affwp_cf7_enable_all_forms', false ) ) {
 			return false;
 		}
 
