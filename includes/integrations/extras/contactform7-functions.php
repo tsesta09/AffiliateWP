@@ -78,6 +78,11 @@ function affwp_cf7_paypal_redirect( $cf7, $result, $referral_id ) {
  */
 function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
 
+    // Bail if no CF7 form submission object or referral ID is available.
+    if ( ! $cf7 || ! $referral_id ) {
+        return;
+    }
+
     global $postid;
 
     $post_id     = $postid;
