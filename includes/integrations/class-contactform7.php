@@ -291,6 +291,13 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		return $all_forms;
 	}
 
+	/**
+	 * Outputs all Contact Form 7 forms presently created in the site.
+	 *
+	 * @since  2.0
+	 *
+	 * @return $cf7_forms  Array of Contact Form 7 form titles and IDs.
+	 */
 	public function all_forms_multicheck_render() {
 
 		$cf7_forms = array();
@@ -323,7 +330,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 *
 	 * @since  2.0
 	 *
-	 * @return mixed $notice The notice.
+	 * @return string $notice The notice.
 	 */
 	public function gateway_required_notice() {
 		$notice  = '<div class="affwp-notices">';
@@ -341,8 +348,8 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 *
 	 * @since  2.0
 	 *
-	 * @param  mixed  $form_id  The CF7 form ID.
-	 * @return mixed  $form_id  If a custom rate is found, it is returned. Otherwise, a boolean false is returned.
+	 * @param  int    $form_id  The CF7 form ID.
+	 * @return mixed  $rate     A custom referral rate, if one is provided. Otherwise, a boolean false is returned.
 	 */
 	public function get_custom_rate( $form_id ) {
 		if ( ! $form_id ) {
@@ -370,10 +377,6 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		// First paypal add-on
 		$paypal_1 = get_post_meta( $form_id, '_cf7_pp_enable', true );
 
-		// TODO
-		// Second paypal add-on
-		$paypal_2 = get_post_meta( $form_id, 'paypal_2', true );
-
 		$supported = $this->get_supported_gateways();
 
 
@@ -382,14 +385,10 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 			return 'paypal_1';
 
-		} elseif ( $paypal_2 ) {
-
-			return 'paypal_2';
-
 		} else {
 
-			// Bail, since neither of the PayPal payment
-			// gateways are configured for this form ID.
+			// Bail, since neither the PayPal payment
+			// gateway is not configured for this form ID.
 
 			// TODO: Define generic payment gateway support functionality
 			return false;
@@ -585,23 +584,23 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		}
 
-	    $enabled     = get_post_meta( $form_id, '_cf7pp_enable', true );
+		$enabled     = get_post_meta( $form_id, '_cf7pp_enable', true );
 		$amount      = get_post_meta( $form_id, '_cf7pp_price',  true );
 		$description = get_post_meta( $form_id, '_cf7pp_name',   true );
 		$sku         = get_post_meta( $form_id, '_cf7pp_id',     true );
 
-	    $response = array(
-	        'success'     => true,
-	        'form_id'     => $form_id,
-	        'enabled'     => $enabled,
-	        'amount'      => $amount,
-	        'description' => $description,
-	        'sku'         => $sku
-	    );
+		$response = array(
+			'success'     => true,
+			'form_id'     => $form_id,
+			'enabled'     => $enabled,
+			'amount'      => $amount,
+			'description' => $description,
+			'sku'         => $sku
+		);
 
-	    echo json_encode( $response );
+		echo json_encode( $response );
 
-	    die();
+		die();
 	}
 
 	/**
