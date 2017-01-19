@@ -170,7 +170,7 @@ jQuery(document).ready( function($) {
 		 *
 		 * @return void
 		 */
-		function affwp_debug_halt( errorMessage = '' ) {
+		function affwp_debug_halt( errorMessage ) {
 			if ( errorMessage ) {
 				console.affwp( errorMessage );
 				console.log( '\n' );
