@@ -1,11 +1,15 @@
 <?php
-// Procedural functions for the contactform7 integration.
+/**
+ * Procedural functions for the contactform7 integration.
+ * @since 2.0
+ * @see   Affiliate_WP_Contact_Form_7
+ */
 
 add_action('wp_ajax_nopriv_affwp_cf7_ajax', 'affwp_cf7_ajax', 9999 );
 add_action('wp_ajax_affwp_cf7_ajax', 'affwp_cf7_ajax', 9999 );
 
 /**
- * Returns form-specific paypal meta via ajax.
+ * Returns form-specific PayPal meta, via ajax.
  *
  * @since  2.0
  *
@@ -19,11 +23,12 @@ function affwp_cf7_ajax() {
 
 /**
  * Wrapper for Affiliate_WP_Contact_Form_7::get_url_args.
- * Returns query args for use in paypal return or cancel urls.
+ * Returns primary query arguments for use in PayPal return or cancel urls.
  *
- * @since  2.0
+ * @param  $cf7    CF7 form submission object.
+ * @return string  The url query arguments.
  * @see    Affiliate_WP_Contact_Form_7::get_url_args
- * @return string The url uery arguments.
+ * @since  2.0
  */
 function affwp_cf7_get_url_args( $cf7 ) {
     $affwp_cf7 = new Affiliate_WP_Contact_Form_7;
@@ -38,7 +43,9 @@ add_action( 'affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 10, 3 );
  *
  * @since  2.0
  *
- * @param  object  $cf7 The CF7 form submission object.
+ * @param  object  $cf7          CF7 form submission object.
+ * @param  object  $result       Modified CF7 form object.
+ * @param  object  $referral_id  Referral ID.
  *
  * @return void
  */
@@ -63,9 +70,11 @@ function affwp_cf7_paypal_redirect( $cf7, $result, $referral_id ) {
  *
  * @since  2.0
  *
- * @param  [type]  $cf7 [description]
+ * @param  object  $cf7          CF7 form object.
+ * @param  object  $result       Modified CF7 form object.
+ * @param  object  $referral_id  Referral ID.
  *
- * @return [type]       [description]
+ * @return void
  */
 function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
 
