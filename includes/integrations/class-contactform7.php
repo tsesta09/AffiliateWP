@@ -3,19 +3,7 @@
 /**
  * Contact Form 7 integration class.
  *
- * This integration provides support for four total plugins:
- *
- * - `contact-form-7`
- * - `contact-form-7-paypal-add-on`
- * - `contact-form-7-paypal-extension`
- *
- * - Plugins `contact-form-7` are required for use of either paypal add-on.
- * - Plugins `contact-form-7` and one of the above-noted PayPal add-ons are required.
- *
- * For brevity, within this class:
- *
- * - `contact-form-7-paypal-add-on` plugin is referenced as `paypal1`.
- * - `contact-form-7-paypal-extension` plugin is referenced as `paypal2`.
+ * This integration provides support for Contact Form 7 and one of the PayPal add-ons, https://wordpress.org/plugins/contact-form-7-paypal-add-on/
  *
  * @since 2.0
  */
@@ -71,13 +59,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		// Add PayPal meta to the contact form submision object.
 		add_action( 'wpcf7_submit', array( $this, 'add_paypal_meta' ), 1, 2 );
 
-		// Add a pending referral.
-		add_filter( 'wpcf7_submit', array( $this, 'add_pending_referral' ), 10, 2 );
-
-		// Process paypal1 redirect after generating the initial referral.
+		// Process paypal redirect after generating the initial referral.
 		remove_action( 'wpcf7_mail_sent', 'cf7pp_after_send_mail' );
-
-		add_action( 'wpcf7_submit', array( $this, 'add_pending_referral' ), 9999, 2 );
+		add_action( 'wpcf7_submit', array( $this, 'add_pending_referral' ), 10, 2 );
 		add_action( 'affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 10, 3 );
 
 		// Mark referral complete.
