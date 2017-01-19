@@ -796,8 +796,8 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public function mark_referral_complete( $current_page_id = 0, $reference = '' ) {
 
 		$current_page_id = $this->get_current_page_id();
-		$form_id         = (isset( $_GET['form_id']  ) ) ? $_GET['form_id']  : false;
-		$referral_id     = (isset( $_GET['referral_id']  ) ) ? $_GET['referral_id']  : false;
+		$form_id         = ! empty( $_GET['form_id'] )     ? absint( $_GET['form_id'] )     : false;
+		$referral_id     = ! empty( $_GET['referral_id'] ) ? absint( $_GET['referral_id'] ) : false;
 
 		if ( ! $form_id || ! $referral_id ) {
 			if( $this->debug ) {
@@ -810,20 +810,25 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$return_page_id = url_to_postid( $return_url );
 
 		// Bail if not on the return page.
-		if ( $return_page_id !== $current_page_id ) {
+		if ( (int) $return_page_id !== (int) $current_page_id ) {
 			if( $this->debug ) {
-				$this->log( 'CF7 integration: The specified return page ID does not match the current page ID.' );
+				$this->log( 'CF7 integration: The specified success page ID does not match the current page ID.' );
 			}
 			return false;
 		}
 
-		$this->complete_referral( $referral_id );
+		$referral = affwp_get_referral( $referral_id );
 
-		$referral    = affiliate_wp()->referrals->get_by( 'referral_id', $referral_id );
+		if( $referral ) {
 
-		$amount      = affwp_currency_filter( affwp_format_amount( $referral->amount ) );
-		$name        = affiliate_wp()->affiliates->get_affiliate_name( $referral->affiliate_id );
-		$description = sprintf( __( 'AffiliateWP: Referral #%d for %s recorded for %s', 'affiliate-wp' ), $referral->referral_id, $amount, $name );
+			$this->complete_referral( $referral );
+
+		} else if( $this->debug ) {
+
+			$this->log( sprintf( 'CF7 integration: Referral could not be retrieved during mark_referral_complete(). ID given: %d.' ), $referral_id );
+
+		}
+
 	}
 
 	/**
@@ -838,9 +843,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public function revoke( $current_page_id = 0, $reference = '' ) {
 
 		$current_page_id = $this->get_current_page_id();
+		$form_id         = ! empty( $_GET['form_id'] )     ? absint( $_GET['form_id'] )     : false;
+		$referral_id     = ! empty( $_GET['referral_id'] ) ? absint( $_GET['referral_id'] ) : false;
 
-		$form_id     = (isset( $_GET['form_id'] ) )  ? $_GET['form_id']  : false;
-		$referral_id = (isset( $_GET['referral_id']  ) ) ? $_GET['referral_id']  : false;
 
 		if ( ! $form_id || ! $referral_id ) {
 			if( $this->debug ) {
@@ -853,30 +858,27 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$cancel_page_id = url_to_postid( $cancel_url );
 
 		// Bail if not on the cancel page
-		if ( $cancel_page_id !== $current_page_id ) {
+		if ( (int) $cancel_page_id !== (int) $current_page_id ) {
 			if( $this->debug ) {
 				$this->log( 'CF7 integration: The specified cancel page ID does not match the current page ID.' );
 			}
-			return false;
-		}
-
-
-		$referral = affiliate_wp()->referrals->get_by( 'referral_id', $referral_id );
-
-		if ( ! $referral ) {
-
-			if( $this->debug ) {
-				$this->log( 'No referral data found when trying to revoke via CF7 integration.' );
-			}
 
 			return false;
+
 		}
 
-		$this->reject_referral( $referral_id );
+		$referral = affwp_get_referral( $referral_id );
 
-		$amount          = affwp_currency_filter( affwp_format_amount( $referral->amount ) );
-		$name            = affiliate_wp()->affiliates->get_affiliate_name( $referral->affiliate_id );
-		$description     = sprintf( __( 'AffiliateWP: Referral #%d for %s for %s rejected', 'affiliate-wp' ), $referral->referral_id, $amount, $name );
+		if( $referral ) {
+
+			$this->reject_referral( $referral );
+
+		} else if( $this->debug ) {
+
+			$this->log( sprintf( 'CF7 integration: Referral could not be retrieved during revoke(). ID given: %d.' ), $referral_id );
+
+		}
+
 	}
 
 	/**
@@ -891,6 +893,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public function reference_link( $reference, $referral ) {
 
 		if ( ! $referral ) {
+
 			if( $this->debug ) {
 				$this->log( 'CF7 integration: No referral data found when attempting to add a referral reference.' );
 			}
