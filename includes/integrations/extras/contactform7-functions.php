@@ -80,7 +80,6 @@ function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
     $options     = get_option('cf7pp_options');
 
     $referral_id_string = 'referral_id=' . $referral_id;
-    $custom_string      = 'custom=' . $referral_id;
 
     foreach ($options as $k => $v ) { $value[$k] = $v; }
 
@@ -201,8 +200,8 @@ function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
         $language = "th_TH";
     } //Thai
 
-    $affwp_cf7_return = $options['return'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string . $custom_string;
-    $affwp_cf7_cancel = $options['cancel'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string . $custom_string;
+    $affwp_cf7_return = $options['return'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string;
+    $affwp_cf7_cancel = $options['cancel'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string;
 
     ?>
     <html>
