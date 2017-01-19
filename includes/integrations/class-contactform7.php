@@ -213,7 +213,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 * @return $enabled bool True if the form has referrals enabled.
 	 */
 	public function form_enabled( $form_id 	) {
-		return array_key_exists( $form_id, $this->get_enabled_forms() );
+		$enabled = array_key_exists( $form_id, $this->get_enabled_forms() ) ? true : false;
+
+		return (bool) $enabled;
 	}
 
 	/**
