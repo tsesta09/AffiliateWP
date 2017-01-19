@@ -202,6 +202,10 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$enabled = array();
 		$enabled = affiliate_wp()->settings->get( 'affwp_cf7_enable_specific_forms' );
 
+		if ( empty( $enabled ) ) {
+			$enabled = array();
+		}
+
 		return apply_filters( 'affwp_cf7_enabled_forms', $enabled );
 	}
 
