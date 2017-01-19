@@ -801,6 +801,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$form_id         = (isset( $_GET['form_id']  ) ) ? $_GET['form_id']  : false;
 
 		if ( ! $form_id || ! $sub_time ) {
+			if( $this->debug ) {
+				$this->log( 'CF7 integration: The form ID or submission time could not be determined.' );
+			}
 			return false;
 		}
 
@@ -808,14 +811,20 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$reference = $form_id . '-' . $sub_time;
 
 		if ( ! $reference ) {
+			if( $this->debug ) {
+				$this->log( 'CF7 integration: No reference could be determined when attempting to mark a referral complete.' );
+			}
 			return false;
 		}
 
 		$return_url     = $this->return_url;
 		$return_page_id = url_to_postid( $return_url );
 
-		// Bail if not on the form page or the return page.
-		if ( ! did_action( 'wpcf7_submit' ) || $return_page_id !== $current_page_id ) {
+		// Bail if not on the return page.
+		if ( $return_page_id !== $current_page_id ) {
+			if( $this->debug ) {
+				$this->log( 'CF7 integration: The specified return page ID does not match the current page ID.' );
+			}
 			return false;
 		}
 
@@ -852,6 +861,11 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$reference = $form_id . '-' . $sub_time;
 
 		if ( ! $reference ) {
+
+			if( $this->debug ) {
+				$this->log( 'No referral reference could be determined while attempting to revoke a CF7 integration referral.' );
+			}
+
 			return false;
 		}
 
@@ -860,6 +874,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		// Bail if not on the cancel page
 		if ( $cancel_page_id !== $current_page_id ) {
+			if( $this->debug ) {
+				$this->log( 'CF7 integration: The specified cancel page ID does not match the current page ID.' );
+			}
 			return false;
 		}
 
@@ -867,17 +884,15 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$referral = affiliate_wp()->referrals->get_by( 'reference', $reference );
 
 		if ( ! $referral ) {
-			error_log('No referral data found when trying to revoke');
+
+			if( $this->debug ) {
+				$this->log( 'No referral data found when trying to revoke via CF7 integration.' );
+			}
+
 			return false;
 		}
 
 		$this->reject_referral( $reference );
-
-		if ( ! $referral ) {
-			error_log('No referral could be determined from reference: ' . $reference );
-		} else {
-			error_log( 'Referral object: '. print_r( $referral, true ) );
-		}
 
 		$amount          = affwp_currency_filter( affwp_format_amount( $referral->amount ) );
 		$name            = affiliate_wp()->affiliates->get_affiliate_name( $referral->affiliate_id );
