@@ -30,15 +30,6 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public $doc_url;
 
 	/**
-	 * The supported CF7 payment gateway integrations.
-	 *
-	 * @see     Affiliate_WP_Contact_Form_7::get_supported_gateways
-	 * @since   2.0
-	 * @var     array
-	 */
-	public $supported_gateways;
-
-	/**
 	 * The PayPal transaction success page url
 	 * Specific to the paypal1 integration.
 	 *
@@ -65,13 +56,10 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		$this->context = 'contactform7';
 
-		$this->supported_gateways = $this->get_supported_gateways();
-
 		// Set the success and cancel url
-		$paypal1_options = get_option( 'cf7pp_options' );
-		$this->return_url = $paypal1_options['return'];
-		$this->cancel_url = $paypal1_options['cancel'];
-
+		$paypal_options   = get_option( 'cf7pp_options' );
+		$this->return_url = $paypal_options['return'];
+		$this->cancel_url = $paypal_options['cancel'];
 
 		// Misc AffWP CF7 functions
 		$this->include_cf7_functions();
@@ -80,39 +68,17 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		add_filter( 'affwp_settings_tabs', array( $this, 'register_settings_tab' ) );
 		add_filter( 'affwp_settings',      array( $this, 'register_settings'     ) );
 
-		/**
-		 * Per-form referral rate hooks
-		 */
-
-		// CF7 settings
-		// add_filter( 'wpcf7_editor_panels', array( $this, 'register_cf7_settings' ) );
-
-		// // CF7 settings content
-		// add_action('wpcf7_admin_after_additional_settings', array( $this, 'settings_tab_content' ) );
-
-		// // Save CF7 AffWP settings
-		// add_action('wpcf7_save_contact_form', array( $this, 'save_settings' ) );
-
-
-		/**
-		 * paypal1
-		 */
-
 		// Add PayPal meta to the contact form submision object.
 		add_action( 'wpcf7_submit', array( $this, 'add_paypal_meta' ), 1, 2 );
 
 		// Add a pending referral.
 		add_filter( 'wpcf7_submit', array( $this, 'add_pending_referral' ), 10, 2 );
 
-		// Adjust return and cancel url values with form-specific variables.
-		// add_filter( 'wpcf7_submit', array( $this, 'adjust_return_urls' ), 19, 2 );
-
 		// Process paypal1 redirect after generating the initial referral.
 		remove_action( 'wpcf7_mail_sent', 'cf7pp_after_send_mail' );
 
 		add_action( 'wpcf7_submit', array( $this, 'add_pending_referral' ), 9999, 2 );
 		add_action( 'affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 10, 3 );
-
 
 		// Mark referral complete.
 		add_action( 'wp_footer', array( $this, 'mark_referral_complete' ), 9999 );
@@ -131,45 +97,6 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 */
 	public function include_cf7_functions() {
 		require_once ( AFFILIATEWP_PLUGIN_DIR . 'includes/integrations/extras/contactform7-functions.php' );
-	}
-
-	/**
-	 * Defines supported core payment gateways for the Contact Form 7 integration.
-	 *
-	 * This method cannot be directly overidden.
-	 * To add support for others, use the filter in the `get_supported_gateways` method.
-	 *
-	 * @since  2.0
-	 * @access private
-	 * @return array $gateways Contact Form 7 payment gateways supported by AffiliateWP core.
-	 */
-	private function _supported_gateways() {
-		$gateways = array(
-			'contact-form-7-paypal-add-on'
-		);
-
-		return $gateways;
-	}
-
-	/**
-	 * Defines supported CF7 payment gateways, with an option to add additional ones
-	 *
-	 * @since  2.0
-	 *
-	 * @return array $gateways Contact Form 7 payment gateways.
-	 */
-	public function get_supported_gateways() {
-
-		$gateways = $this->_supported_gateways();
-
-		/**
-		 * Defines the supported payment gateways for the Contact Form 7 integration.
-		 *
-		 * @param array $gateways List of payment gateways supported.
-		 *
-		 * @since 2.0
-		 */
-		return apply_filters( 'affwp_cf7_payment_gateways', $gateways );
 	}
 
 	/**
@@ -224,37 +151,6 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		);
 
 		return $settings;
-	}
-
-	/**
-	 * Define default Contact Form 7 AffiliateWP settings.
-	 *
-	 * These options store data for the folowing:
-	 *
-	 * - `enable_all`: Whether all CF7 forms have referral tracking enabled.
-	 * - `enabled_forms`: An array which defines the CF7 forms that have AffiliateWP referral tracking enabled, specified by form ID.
-	 * - `has_paypal_1`: Whether the first PayPal add-on, `contact-form7-paypal-add-on`, is installed and active.
-	 * - `has_paypal_2`: Whether the second PayPal add-on, `contact-form7-paypal-extension`, is installed and active.
-	 *
-	 * @since  2.0
-	 *
-	 * @return void
-	 */
-	public function options() {
-		// Set defaults if option doesn't exist.
-		if( ! get_option( 'affwp_cf7_options' ) ) {
-
-			$enabled = $this->get_enabled_forms();
-
-			$options = array(
-				'enable_all'    => false,
-				'enabled_forms' => $enabled,
-				'has_paypal_1'  => false,
-				'has_paypal_2'  => false
-			);
-
-			add_option( 'affwp_cf7_options', $options );
-		}
 	}
 
 	/**
@@ -337,220 +233,6 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	}
 
 	/**
-	 * Payment gateway notice, shown if a valid CF7 payment gateway add-on is not installed and active.
-	 *
-	 * @since  2.0
-	 *
-	 * @return string $notice The notice.
-	 */
-	public function gateway_required_notice() {
-		$notice  = '<div class="affwp-notices">';
-		$notice .= sprintf( __( 'AffiliateWP: The AffiliateWP Contact Form 7 integration requires at least one payment gateway for Contact Form 7. Please install and configure one to continue. <a href="%s">Read the set-up guide and documentation for this integration</a>.', 'affiliate-wp' ),
-			// TODO: define actual CF7 doc url
-			esc_url( 'https://docs.affiliatewp.com/contact-form-7' )
-		);
-		$notice .= '</div>';
-
-		return $notice;
-	}
-
-	/**
-	 * Checks for a custom form referral rate, and returns that if defined.
-	 *
-	 * @since  2.0
-	 *
-	 * @param  int    $form_id  The CF7 form ID.
-	 * @return mixed  $rate     A custom referral rate, if one is provided. Otherwise, a boolean false is returned.
-	 */
-	public function get_custom_rate( $form_id ) {
-		if ( ! $form_id ) {
-			return false;
-		}
-
-		// TODO
-		// Get custom rate meta
-	}
-
-	/**
-	 * Checks if any valid payment gateway is enabled for the given CF7 form ID
-	 *
-	 * @since  2.0
-	 *
-	 * @return mixed If a valid gateway is found, the plugin ID string is returned
-	 *               (eg, `contact-form-7-paypal-add-on`), otherwise a boolean false is returned.
-	 */
-	public function get_form_active_gateway( $form_id ) {
-
-		if ( ! $form_id ) {
-			return false;
-		}
-
-		if( ! $this->form_enabled( $form_id ) && ! affiliate_wp()->settings->get( 'affwp_cf7_enable_all_forms', false ) ) {
-			return false;
-		}
-
-		// First paypal add-on
-		$paypal_1 = get_post_meta( $form_id, '_cf7_pp_enable', true );
-
-		$supported = $this->get_supported_gateways();
-
-
-
-		if ( $paypal_1 ) {
-
-			return 'paypal_1';
-
-		} else {
-
-			// Bail, since neither the PayPal payment
-			// gateway is not configured for this form ID.
-
-			// TODO: Define generic payment gateway support functionality
-			return false;
-		}
-
-		return false;
-	}
-
-	/**
-	 * Adds a settings tab to Contact Form 7 form admin settings
-	 *
-	 * @since  2.0
-	 * @param  array $panels CF7 form settings
-	 * @return array
-	 */
-	public function register_cf7_settings( $panels ) {
-
-		$affwp_panel = array(
-			'AffiliateWP' => array(
-				'title' => __( 'AffiliateWP', 'affiliate-wp' ),
-				'callback' => array ( $this, 'settings_tab_content' )
-			)
-		);
-
-		$panels = array_merge( $panels, $affwp_panel );
-
-		return $panels;
-	}
-
-	/**
-	 * Load settings tab content
-	 *
-	 * @since  2.0
-	 *
-	 * @param  array  $cf7 Contact Form 7 form instance
-	 *
-	 * @return void
-	 */
-	public function settings_tab_content( $cf7 ) {
-
-		$post_id = sanitize_text_field( $_GET['post'] );
-
-		$referral_rate = get_post_meta( $post_id, 'referral_rate', true );
-
-		// Check for active CF7 payment gateway for this form
-		// (either `contact-form-7-paypal-add-on` or `contact-form-7-paypal-extension`).
-		$gateway = $this->get_form_active_gateway( $post_id );
-
-
-		// Form label messages
-		$label_message__rate        = __( 'Specify a custom referral rate for this form (optional)', 'affiliate-wp' );
-		$label_message__rate_type   = __( 'Specify a referral rate type. If checked, a flat amount will be used, otherwise a percentage will be used', 'affiliate-wp' );
-
-		$output = "";
-		$output .= "<form>";
-		$output = "<div id='additional_settings-sortables' class='meta-box-sortables ui-sortable'>";
-
-		$output .= "<div id='additionalsettingsdiv' class='postbox'>";
-
-		$output .= "<div class='handlediv' title='" . __( 'Click to toggle', 'affiliate-wp', 'Title for an element which toggles the Contact Form 7 integration settings page tab.' ) . "'>";
-
-		$output .= "</div>";
-
-		$output .= "<h3 class='hndle ui-sortable-handle'>";
-		$output .= "<span>";
-		$output .= __( 'AffiliateWP Settings', 'affiliate-wp', 'Contact Form 7 settings tab label.' );
-		$output .= "</span>";
-		$output .= "</h3>";
-
-		$output .= "<div class='inside'>";
-
-		$output .= "<div class='affwp-referral-rate'>";
-
-		$output .= "<label for='referral_rate'>" . $label_message__rate . "</label>";
-		$output .= "<input name='referral_rate' value='" . get_post_meta( $post_id, 'referral_rate', true ) . "' type='text' />";
-
-		$output .= "<label for='referral_rate_type'>" . $label_message__rate_type . "</label>";
-		$output .= "<input name='referral_rate_type' value='1' type='checkbox' $checked>";
-
-		// $output .= "<br>";
-
-		$output .= "</div>";
-
-
-		$output .= "</td></tr></table>";
-		$output .= "</form>";
-		$output .= "</div>";
-		$output .= "</div>";
-		$output .= "</div><!--/affwp settings-->";
-
-		echo $output;
-	}
-
-	/**
-	 * Save contact form settings
-	 *
-	 * @since  2.0
-	 *
-	 * @param  array  $contact_form  CF7 form data.
-	 *
-	 * @return void
-	 */
-	public function save_settings( $contact_form ) {
-
-		$post_id = sanitize_text_field( $_POST['post'] );
-
-		if ( $_POST['referral_rate'] ) {
-			$referral_rate = sanitize_text_field( $_POST['referral_rate'] );
-			$referral_rate = affwp_format_amount( absint( $referral_rate ) );
-			update_post_meta( $post_id, "referral_rate", $referral_rate );
-		} else {
-			update_post_meta( $post_id, "referral_rate", 0 );
-		}
-
-		if ( $_POST['referral_rate_type'] ) {
-			$referral_rate_type = sanitize_text_field( $_POST['referral_rate_type'] );
-			$referral_rate_type = affwp_format_amount( absint( $referral_rate_type ) );
-			update_post_meta( $post_id, "referral_rate_type", $referral_rate_type );
-		} else {
-			update_post_meta( $post_id, "referral_rate_type", 0 );
-		}
-
-	}
-
-	/**
-	 * Get PayPal meta for the given CF7 form ID.
-	 *
-	 * @since  2.0
-	 *
-	 * @param  int    $form_id Form ID.
-	 *
-	 * @return array  $data    Array of post meta for the given form ID.
-	 */
-	public function get_paypal_meta( $form_id ) {
-
-		$data = array(
-			'enabled'     => get_post_meta( $form_id, '_cf7pp_enable', true ),
-			'email'       => get_post_meta( $form_id, '_cf7pp_email',  true ),
-			'amount'      => get_post_meta( $form_id, '_cf7pp_price',  true ),
-			'description' => get_post_meta( $form_id, '_cf7pp_name',   true ),
-			'sku'         => get_post_meta( $form_id, '_cf7pp_id',     true )
-		);
-
-		return $data;
-	}
-
-	/**
 	 * Adds PayPal add-on meta to the form object.
 	 *
 	 * @param stdClass  $contactform The contact form data.
@@ -596,7 +278,6 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		if ( isset( $_REQUEST ) ) {
 			$form_id = $_REQUEST['form_id'];
-
 		}
 
 		$enabled     = get_post_meta( $form_id, '_cf7pp_enable', true );
@@ -616,51 +297,6 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		echo json_encode( $response );
 
 		die();
-	}
-
-	/**
-	 * TODO: remove in favor of direct manipulation of paypal redirect output.
-	 *
-	 * @since  [since]
-	 *
-	 * @param  [type]  $contactform [description]
-	 * @param  [type]  $result      [description]
-	 *
-	 * @return [type]               [description]
-	 */
-	public function adjust_return_urls( $contactform, $result ) {
-
-		$form_id = absint( $contactform->id() );
-
-		if ( ! $form_id ) {
-			return false;
-		}
-
-		if( ! $this->form_enabled( $form_id ) && ! affiliate_wp()->settings->get( 'affwp_cf7_enable_all_forms', false ) ) {
-			return false;
-		}
-
-		$form    = get_post( $form_id );
-		$paypal1 = get_post_meta( $form_id, '_cf7pp_enable', true );
-
-		if ( false === $paypal1 ) {
-			return false;
-		}
-
-		$paypal1_options = get_option( 'cf7pp_options' );
-
-		$amount      = get_post_meta( $form_id, '_cf7pp_price',  true );
-		$description = get_post_meta( $form_id, '_cf7pp_name',   true );
-		$sku         = get_post_meta( $form_id, '_cf7pp_id',     true );
-
-		// Add meta to the return and cancel urls.
-		$args = '?form_id=' . $form_id . '&amount=' . $amount . '&description=' . $description . '&sku=' . $sku;
-
-		$return_url = esc_url( $this->return_url . $args );
-		$cancel_url = esc_url( $this->cancel_url . $args );
-
-		update_option( $paypal1_options['return'], $return_url );
-		update_option( $paypal1_options['cancel'], $cancel_url );
 	}
 
 	/**
@@ -685,10 +321,10 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 			return false;
 		}
 
-		$form    = get_post( $form_id );
-		$paypal1 = get_post_meta( $form_id, '_cf7pp_enable', true );
+		$form   = get_post( $form_id );
+		$paypal = get_post_meta( $form_id, '_cf7pp_enable', true );
 
-		if ( false === $paypal1 ) {
+		if ( false === $paypal ) {
 			return false;
 		}
 
@@ -751,49 +387,25 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		}
 
 		$form    = get_post( $form_id );
-		$paypal1 = get_post_meta( $form_id, '_cf7pp_enable', true );
-		$paypal2 = false;
+		$paypal  = get_post_meta( $form_id, '_cf7pp_enable', true );
 
-		// Bail if no PayPal add-on is enabled.
-		if ( false === $paypal1 && false === $paypal2 ) {
+		// Bail if PayPal add-on is not enabled.
+		if ( false === $paypal ) {
 			return false;
 		}
 
 		if ( $this->was_referred() ) {
 
-			if ( 1 === $paypal1 || 1 == $paypal1 || '1' == $paypal1 ) {
-
-				$email        = get_post_meta( $form_id, '_cf7pp_email',  true );
-				$sku          = get_post_meta( $form_id, '_cf7pp_id',     true );
-				$reference    = $form_id . '-' . date_i18n( 'U' );
-				$description  = get_post_meta( $form_id, '_cf7pp_name',   true );
-				$base_amount  = floatval( get_post_meta( $form_id, '_cf7pp_price',  true ) );
-				$affiliate_id = $this->get_affiliate_id( $reference );
-
-				$referral_total  = $this->calculate_referral_amount( $base_amount, $reference, $sku, $affiliate_id );
-
-			} elseif ( 1 === $paypal2 ) {
-
-				$email        = get_post_meta( $form_id, '_cf7pp_email',  true );
-				$sku          = get_post_meta( $form_id, '_cf7pp_id',     true );
-				$reference    = $form_id . '-' . date_i18n( 'U' );
-				$description  = get_post_meta( $form_id, '_cf7pp_name',   true );
-				$base_amount  = floatval( get_post_meta( $form_id, '_cf7pp_price',  true ) );
-				$affiliate_id = $this->get_affiliate_id( $reference );
-
-				$referral_total  = $this->calculate_referral_amount( $base_amount, $reference, $sku, $affiliate_id );
-			} else {
-				return false;
-			}
-
-			$this->insert_pending_referral( $referral_total, $reference, $description, $sku );
-
-			// $referral    = affwp_get_referral( $reference );
-			$referral    = affiliate_wp()->referrals->get_by( 'reference', $reference );
-			$referral_id = $referral->referral_id;
+			$sku             = get_post_meta( $form_id, '_cf7pp_id',     true );
+			$reference       = $form_id . '-' . date_i18n( 'U' );
+			$description     = get_post_meta( $form_id, '_cf7pp_name',   true );
+			$base_amount     = floatval( get_post_meta( $form_id, '_cf7pp_price',  true ) );
+			$affiliate_id    = $this->get_affiliate_id( $reference );
+			$referral_total  = $this->calculate_referral_amount( $base_amount, $reference, $sku, $affiliate_id );
+			$referral_id     = $this->insert_pending_referral( $referral_total, $reference, $description, $sku );
 
 			if ( empty( $referral_total ) ) {
-				$this->mark_referral_complete( affwp_get_referral( $current_page_id, $reference ) );
+				$this->mark_referral_complete( affwp_get_referral( $reference ) );
 			}
 
 			/**
@@ -879,7 +491,6 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$form_id         = ! empty( $_GET['form_id'] )     ? absint( $_GET['form_id'] )     : false;
 		$referral_id     = ! empty( $_GET['referral_id'] ) ? absint( $_GET['referral_id'] ) : false;
 
-
 		if ( ! $form_id || ! $referral_id ) {
 			if( $this->debug ) {
 				$this->log( 'CF7 integration: The form ID or referral ID could not be determined.' );
@@ -939,7 +550,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		if( false !== strpos( $reference, '-' ) ) {
 
-			$reference = strstr( $reference, '-', true );
+			$form_id = strstr( $reference, '-', true );
 
 		} else {
 
@@ -947,7 +558,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 
 		}
 
-		$url = admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $reference );
+		$url = admin_url( 'admin.php?page=wpcf7&action=edit&post=' . $form_id );
 
 		return '<a href="' . esc_url( $url ) . '">' . $reference . '</a>';
 
