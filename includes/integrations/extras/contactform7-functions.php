@@ -31,7 +31,7 @@ function affwp_cf7_get_url_args( $cf7 ) {
     return $affwp_cf7->get_url_args( $cf7 );
 }
 
-add_action('affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 10 ,3 );
+add_action( 'affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 10, 3 );
 
 /**
  * Overrides the default CF7 add-on function.
@@ -80,6 +80,7 @@ function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
     $options     = get_option('cf7pp_options');
 
     $referral_id_string = 'referral_id=' . $referral_id;
+    $custom_string      = 'custom=' . $referral_id;
 
     foreach ($options as $k => $v ) { $value[$k] = $v; }
 
@@ -200,8 +201,8 @@ function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
         $language = "th_TH";
     } //Thai
 
-    $affwp_cf7_return = $options['return'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string;
-    $affwp_cf7_cancel = $options['cancel'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string;
+    $affwp_cf7_return = $options['return'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string . $custom_string;
+    $affwp_cf7_cancel = $options['cancel'] . affwp_cf7_get_url_args( $cf7 ) . $referral_id_string . $custom_string;
 
     ?>
     <html>
@@ -218,6 +219,7 @@ function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
     <input type='hidden' name='return' value='<?php echo $affwp_cf7_return; ?>' />
     <input type='hidden' name='bn' value='WPPlugin_SP'>
     <input type='hidden' name='cancel_return' value='<?php echo $affwp_cf7_cancel; ?>' />
+    <input type='hidden' name='custom' value='<?php echo $referral_id; ?>'>
     <img alt='' border='0' style='border:none;display:none;' src='https://www.paypal.com/$language/i/scr/pixel.gif' width='1' height='1'>
     </form>
     <script type="text/javascript">
