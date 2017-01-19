@@ -797,22 +797,12 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public function mark_referral_complete( $current_page_id = 0, $reference = '' ) {
 
 		$current_page_id = $this->get_current_page_id();
-		$sub_time        = (isset( $_GET['sub_time'] ) ) ? $_GET['sub_time'] : false;
 		$form_id         = (isset( $_GET['form_id']  ) ) ? $_GET['form_id']  : false;
+		$referral_id     = (isset( $_GET['referral_id']  ) ) ? $_GET['referral_id']  : false;
 
-		if ( ! $form_id || ! $sub_time ) {
+		if ( ! $form_id || ! $referral_id ) {
 			if( $this->debug ) {
-				$this->log( 'CF7 integration: The form ID or submission time could not be determined.' );
-			}
-			return false;
-		}
-
-		// Reconstruct the reference by appending a hyphen and the Unix time to the form ID.
-		$reference = $form_id . '-' . $sub_time;
-
-		if ( ! $reference ) {
-			if( $this->debug ) {
-				$this->log( 'CF7 integration: No reference could be determined when attempting to mark a referral complete.' );
+				$this->log( 'CF7 integration: The form ID or referral ID could not be determined.' );
 			}
 			return false;
 		}
@@ -828,9 +818,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 			return false;
 		}
 
-		$this->complete_referral( $reference );
+		$this->complete_referral( $referral_id );
 
-		$referral    = affiliate_wp()->referrals->get_by( 'reference', $reference );
+		$referral    = affiliate_wp()->referrals->get_by( 'referral_id', $referral_id );
 
 		$amount      = affwp_currency_filter( affwp_format_amount( $referral->amount ) );
 		$name        = affiliate_wp()->affiliates->get_affiliate_name( $referral->affiliate_id );
@@ -851,21 +841,12 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		$current_page_id = $this->get_current_page_id();
 
 		$form_id     = (isset( $_GET['form_id'] ) )  ? $_GET['form_id']  : false;
-		$sub_time    = (isset( $_GET['sub_time'] ) ) ? $_GET['sub_time'] : false;
+		$referral_id = (isset( $_GET['referral_id']  ) ) ? $_GET['referral_id']  : false;
 
-		if ( ! $form_id || ! $sub_time ) {
-			return false;
-		}
-
-		// Reconstruct the reference by appending a hyphen and the Unix time to the form ID.
-		$reference = $form_id . '-' . $sub_time;
-
-		if ( ! $reference ) {
-
+		if ( ! $form_id || ! $referral_id ) {
 			if( $this->debug ) {
-				$this->log( 'No referral reference could be determined while attempting to revoke a CF7 integration referral.' );
+				$this->log( 'CF7 integration: The form ID or referral ID could not be determined.' );
 			}
-
 			return false;
 		}
 
@@ -881,7 +862,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		}
 
 
-		$referral = affiliate_wp()->referrals->get_by( 'reference', $reference );
+		$referral = affiliate_wp()->referrals->get_by( 'referral_id', $referral_id );
 
 		if ( ! $referral ) {
 
@@ -892,7 +873,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 			return false;
 		}
 
-		$this->reject_referral( $reference );
+		$this->reject_referral( $referral_id );
 
 		$amount          = affwp_currency_filter( affwp_format_amount( $referral->amount ) );
 		$name            = affiliate_wp()->affiliates->get_affiliate_name( $referral->affiliate_id );
@@ -909,6 +890,14 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 *
 	 */
 	public function reference_link( $reference, $referral ) {
+
+		if ( ! $referral ) {
+			if( $this->debug ) {
+				$this->log( 'CF7 integration: No referral data found when attempting to add a referral reference.' );
+			}
+
+			return false;
+		}
 
 		// To provide a working link to the CF7 form,
 		// the Unix date (stored as `sub_time` in submission args) is stripped from the reference string.
