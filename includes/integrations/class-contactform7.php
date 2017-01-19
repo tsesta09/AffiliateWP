@@ -305,14 +305,9 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 			return false;
 		}
 
-		$form   = get_post( $form_id );
-		$paypal = get_post_meta( $form_id, '_cf7pp_enable', true );
-
-		if ( false === $paypal ) {
+		if ( ! get_post_meta( $form_id, '_cf7pp_enable', true ) ) {
 			return false;
 		}
-
-		$paypal1_options = get_option( 'cf7pp_options' );
 
 		$amount      = get_post_meta( $form_id, '_cf7pp_price',  true );
 		$description = get_post_meta( $form_id, '_cf7pp_name',   true );
