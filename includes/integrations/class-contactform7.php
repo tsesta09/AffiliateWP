@@ -367,6 +367,13 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		}
 
 		if( ! $this->form_enabled( $form_id ) && ! affiliate_wp()->settings->get( 'affwp_cf7_enable_all_forms', false ) ) {
+
+			// Let the PayPal plugin take over
+			if( function_exists( 'cf7pp_after_send_mail' ) ) {
+
+				cf7pp_after_send_mail( $contactform );
+
+			}
 			return false;
 		}
 
