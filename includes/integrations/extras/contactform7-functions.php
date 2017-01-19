@@ -88,7 +88,7 @@ function affwp_cf7_paypal_redirect_output( $cf7, $result, $referral_id ) {
     $email       = get_post_meta($post_id, "_cf7pp_email",  true);
     $options     = get_option('cf7pp_options');
 
-    $referral_id_string = 'referral_id=' . $referral_id;
+    $referral_id_string = '&referral_id=' . $referral_id;
 
     foreach ($options as $k => $v ) { $value[$k] = $v; }
 
