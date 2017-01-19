@@ -379,23 +379,36 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 			return false;
 		}
 
-		// Bail if PayPal add-on is not enabled.
-		if ( ! get_post_meta( $form_id, '_cf7pp_enable', true ) ) {
-			return false;
-		}
-
 		if ( $this->was_referred() ) {
 
-			$sku             = get_post_meta( $form_id, '_cf7pp_id',     true );
+			$paypal = get_post_meta( $form_id, '_cf7pp_enable', true );
+
+			if( $paypal ) {
+
+				$product_id  = get_post_meta( $form_id, '_cf7pp_id',     true );
+				$description = get_post_meta( $form_id, '_cf7pp_name',   true );
+				$base_amount = floatval( get_post_meta( $form_id, '_cf7pp_price',  true ) );
+
+			} else {
+
+				$product_id  = 0;
+				$description = get_the_title( $form_id );
+				$base_amount = 0;
+
+			}
+
 			$reference       = $form_id . '-' . date_i18n( 'U' );
-			$description     = get_post_meta( $form_id, '_cf7pp_name',   true );
-			$base_amount     = floatval( get_post_meta( $form_id, '_cf7pp_price',  true ) );
 			$affiliate_id    = $this->get_affiliate_id( $reference );
-			$referral_total  = $this->calculate_referral_amount( $base_amount, $reference, $sku, $affiliate_id );
-			$referral_id     = $this->insert_pending_referral( $referral_total, $reference, $description, $sku );
+			$referral_total  = $this->calculate_referral_amount( $base_amount, $reference, $product_id, $affiliate_id );
+			$referral_id     = $this->insert_pending_referral( $referral_total, $reference, $description, $product_id );
 
 			if ( empty( $referral_total ) ) {
-				$this->mark_referral_complete( affwp_get_referral( $reference ) );
+				$this->complete_referral( $reference );
+			}
+
+			// Bail if PayPal add-on is not enabled.
+			if ( ! $paypal ) {
+				return false;
 			}
 
 			/**
