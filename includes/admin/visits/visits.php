@@ -49,12 +49,11 @@ function affwp_visits_admin() {
 
 		?>
 
-		<form id="affwp-visits-filter" method="get" action="<?php echo admin_url( 'admin.php?page=affiliate-wp' ); ?>">
+		<form id="affwp-visits-filter" method="get" action="<?php echo esc_url( affwp_admin_url() ); ?>">
 			<?php $visits_table->search_box( __( 'Search', 'affiliate-wp' ), 'affwp-affiliates' ); ?>
 			<span class="affwp-ajax-search-wrap">
 				<input type="text" name="user_name" id="user_name" class="affwp-user-search" value="<?php echo esc_attr( $affiliate_name ); ?>" data-affwp-status="any" autocomplete="off" placeholder="<?php _e( 'Affiliate name', 'affiliate-wp' ); ?>" />
 			</span>
-			<input type="hidden" name="user_id" id="user_id" value=""/>
 			<input type="hidden" name="page" value="affiliate-wp-visits" />
 			<input type="text" class="affwp-datepicker" autocomplete="off" name="filter_from" placeholder="<?php esc_attr_e( 'From - mm/dd/yyyy', 'affiliate-wp' ); ?>" value="<?php echo esc_attr( $from ); ?>"/>
 			<input type="text" class="affwp-datepicker" autocomplete="off" name="filter_to" placeholder="<?php esc_attr_e( 'To - mm/dd/yyyy', 'affiliate-wp' ); ?>" value="<?php echo esc_attr( $to ); ?>"/>

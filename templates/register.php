@@ -51,7 +51,7 @@ if ( is_user_logged_in() ) {
 	?>
 
 	<fieldset>
-		<legend><?php _e( 'Register a New Affiliate Account', 'affiliate-wp' ); ?></legend>
+		<legend><?php _e( 'Register a new affiliate account', 'affiliate-wp' ); ?></legend>
 
 		<?php
 		/**

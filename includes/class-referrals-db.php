@@ -174,49 +174,64 @@ class Affiliate_WP_Referrals_DB extends Affiliate_WP_DB  {
 	*/
 	public function update_referral( $referral = 0, $data = array() ) {
 
+		$args = array();
+
 		if ( ! $referral = affwp_get_referral( $referral ) ) {
 			return false;
 		}
 
-		// Bail early if there's nothing to update.
-		if ( empty( $data ) ) {
-			return true;
-		}
-
-		if( isset( $data['amount'] ) ) {
-			$data['amount'] = affwp_sanitize_amount( $data['amount'] );
-		}
-
 		if( ! empty( $data['products'] ) ) {
-			$data['products'] = maybe_serialize( $data['products'] );
+			$args['products'] = maybe_serialize( $data['products'] );
 		}
 
 		if ( ! empty( $data['date'] ) ) {
-			$data['date'] = date_i18n( 'Y-m-d H:i:s', strtotime( $data['date'] ) );
+			$args['date'] = date_i18n( 'Y-m-d H:i:s', strtotime( $data['date'] ) );
 		}
 
-		$update = $this->update( $referral->ID, $data, '', 'referral' );
+		$args['affiliate_id']  = ! empty( $data['affiliate_id' ] ) ? absint( $data['affiliate_id'] )             : 0;
+		$args['visit_id']      = ! empty( $data['visit_id' ] )     ? absint( $data['visit_id'] )                 : 0;
+		$args['description']   = ! empty( $data['description' ] )  ? sanitize_text_field( $data['description'] ) : '';
+		$args['status']        = ! empty( $data['status'] )        ? sanitize_key( $data['status'] )             : '';
+		$args['amount']        = ! empty( $data['amount'] )        ? affwp_sanitize_amount( $data['amount'] )    : '';
+		$args['currency']      = ! empty( $data['currency'] )      ? sanitize_text_field( $data['currency'] )    : '';
+		$args['custom']        = ! empty( $data['custom'] )        ? sanitize_text_field( $data['custom'] )      : '';
+		$args['context']       = ! empty( $data['context'] )       ? sanitize_text_field( $data['context'] )     : '';
+		$args['campaign']      = ! empty( $data['campaign'] )      ? sanitize_text_field( $data['campaign'] )    : '';
+		$args['reference']     = ! empty( $data['reference'] )     ? sanitize_text_field( $data['reference'] )   : '';
+
+		$update = $this->update( $referral->ID, $args, '', 'referral' );
 
 		if( $update ) {
 
-			if( ! empty( $data['status'] ) && $referral->status !== $data['status'] ) {
+			if( ! empty( $args['status'] ) && $referral->status !== $args['status'] ) {
 
-				affwp_set_referral_status( $referral->ID, $data['status'] );
+				affwp_set_referral_status( $referral->ID, $args['status'] );
 
 			} elseif( 'paid' === $referral->status ) {
 
-				if( $referral->amount > $data['amount'] ) {
+				if( $referral->amount > $args['amount'] ) {
 
-					$change = $referral->amount - $data['amount'];
+					$change = $referral->amount - $args['amount'];
 					affwp_decrease_affiliate_earnings( $referral->affiliate_id, $change );
 
-				} elseif( $referral->amount < $data['amount'] ) {
+				} elseif( $referral->amount < $args['amount'] ) {
 
-					$change = $data['amount'] - $referral->amount;
+					$change = $args['amount'] - $referral->amount;
 					affwp_increase_affiliate_earnings( $referral->affiliate_id, $change );
 
 				}
 
+			} elseif( 'unpaid' === $referral->status ) {
+
+				if ( $referral->amount > $args['amount'] ) {
+
+					affwp_decrease_affiliate_unpaid_earnings( $referral->amount - $args['amount'] );
+
+				} elseif ( $referral->amount < $args['amount'] ) {
+
+					affwp_increase_affiliate_unpaid_earnings( $args['amount'] - $referral->amount );
+
+				}
 			}
 
 			return $update;
@@ -289,6 +304,7 @@ class Affiliate_WP_Referrals_DB extends Affiliate_WP_DB  {
 	 *     @type string       $fields         Fields to query for. Accepts 'ids' or '*' (all). Default '*'.
 	 * }
 	 * @param   bool  $count  Optional. Whether to return only the total number of results found. Default false.
+	 * @return \AffWP\Referral[]|int|false
 	*/
 	public function get_referrals( $args = array(), $count = false ) {
 

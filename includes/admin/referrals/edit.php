@@ -4,11 +4,10 @@ $referral = affwp_get_referral( absint( $_GET['referral_id'] ) );
 $payout = affwp_get_payout( $referral->payout_id );
 
 $disabled    = disabled( (bool) $payout, true, false );
-$payout_link = add_query_arg( array(
-	'page'      => 'affiliate-wp-payouts',
+$payout_link = affwp_admin_url( 'payouts', array(
 	'action'    => 'view_payout',
 	'payout_id' => $payout ? $payout->ID : 0
-), admin_url( 'admin.php' ) );
+) );
 
 ?>
 <div class="wrap">
@@ -37,7 +36,7 @@ $payout_link = add_query_arg( array(
 
 				<td>
 					<input class="small-text" type="text" name="affiliate_id" id="affiliate_id" value="<?php echo esc_attr( $referral->affiliate_id ); ?>" disabled="disabled"/>
-					<p class="description"><?php _e( 'The affiliate&#8217;s ID this referral belongs to. This value cannot be changed.', 'affiliate-wp' ); ?></p>
+					<p class="description"><?php _e( 'The ID of the affiliate who generated this referral. This value cannot be changed.', 'affiliate-wp' ); ?></p>
 				</td>
 
 			</tr>
@@ -129,7 +128,7 @@ $payout_link = add_query_arg( array(
 
 				<td>
 					<input type="text" name="context" id="context" value="<?php echo esc_attr( $referral->context ); ?>" <?php echo $readonly; ?> />
-					<p class="description"><?php _e( 'Context for this referral (optional). Usually this is used to help identify the payment system that was used for the transaction.', 'affiliate-wp' ); ?></p>
+					<p class="description"><?php _e( 'Context for this referral (optional). Usually this is used to identify the payment system or integration that was used for the transaction.', 'affiliate-wp' ); ?></p>
 				</td>
 
 			</tr>

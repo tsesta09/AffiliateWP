@@ -5,7 +5,7 @@
  * Description: Affiliate Plugin for WordPress
  * Author: AffiliateWP, LLC
  * Author URI: https://affiliatewp.com
- * Version: 2.0
+ * Version: 2.0-beta1
  * Text Domain: affiliate-wp
  * Domain Path: languages
  *
@@ -24,7 +24,7 @@
  * @package AffiliateWP
  * @category Core
  * @author Pippin Williamson
- * @version 2.0
+ * @version 2.0-beta1
  */
 
 // Exit if accessed directly
@@ -56,7 +56,7 @@ final class Affiliate_WP {
 	 * @since  1.0
 	 * @var    string
 	 */
-	private $version = '2.0';
+	private $version = '2.0-beta1';
 
 	/**
 	 * The affiliates DB instance variable.
@@ -212,6 +212,15 @@ final class Affiliate_WP {
 	public $capabilities;
 
 	/**
+	 * The utilities class instance variable.
+	 *
+	 * @access public
+	 * @since  2.0
+	 * @var    Affiliate_WP_Utilities
+	 */
+	public $utils;
+
+	/**
 	 * Main Affiliate_WP Instance
 	 *
 	 * Insures that only one instance of Affiliate_WP exists in memory at any one
@@ -342,6 +351,7 @@ final class Affiliate_WP {
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/class-affiliates-db.php';
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/class-payouts-db.php';
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/class-capabilities.php';
+		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/class-utilities.php';
 
 		if ( is_admin() || ( defined( 'WP_CLI' ) && WP_CLI ) ) {
 
@@ -367,7 +377,6 @@ final class Affiliate_WP {
 			require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/settings/display-settings.php';
 			require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/visits/visits.php';
 			require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/tools/tools.php';
-			require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/class-upgrades.php';
 			require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/plugins.php';
 			require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/tools/class-migrate.php';
 			require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/add-ons.php';
@@ -466,6 +475,7 @@ final class Affiliate_WP {
 		self::$instance->rewrites       = new Affiliate_WP_Rewrites;
 		self::$instance->REST           = new Affiliate_WP_REST;
 		self::$instance->capabilities   = new Affiliate_WP_Capabilities;
+		self::$instance->utils          = new Affiliate_WP_Utilities;
 
 		self::$instance->updater();
 	}
@@ -487,11 +497,12 @@ final class Affiliate_WP {
 
 		// setup the updater
 		$affwp_updater = new AFFWP_Plugin_Updater( 'https://affiliatewp.com', __FILE__, array(
-				'version' 	=> AFFILIATEWP_VERSION,
-				'license' 	=> $license_key,
+				'version'   => AFFILIATEWP_VERSION,
+				'license'   => $license_key,
 				'item_name' => 'AffiliateWP',
 				'item_id'   => 17,
-				'author' 	=> 'Pippin Williamson'
+				'author'    => 'Pippin Williamson',
+				'beta'      => $this->settings->get( 'betas', false )
 			)
 		);
 
