@@ -261,7 +261,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	public function ajax_get_paypal_meta(){
 
 		if ( isset( $_REQUEST ) ) {
-			$form_id = $_REQUEST['form_id'];
+			$form_id = absint( $_REQUEST['form_id'] );
 		}
 
 		$enabled     = get_post_meta( $form_id, '_cf7pp_enable', true );
