@@ -225,11 +225,11 @@ class Affiliate_WP_Referrals_DB extends Affiliate_WP_DB  {
 
 				if ( $referral->amount > $args['amount'] ) {
 
-					affwp_decrease_affiliate_unpaid_earnings( $referral->amount - $args['amount'] );
+					affwp_decrease_affiliate_unpaid_earnings( $referral->affiliate_id, $referral->amount - $args['amount'] );
 
 				} elseif ( $referral->amount < $args['amount'] ) {
 
-					affwp_increase_affiliate_unpaid_earnings( $args['amount'] - $referral->amount );
+					affwp_increase_affiliate_unpaid_earnings( $referral->affiliate_id, $args['amount'] - $referral->amount );
 
 				}
 			}
