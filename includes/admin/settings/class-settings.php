@@ -1002,15 +1002,28 @@ class Affiliate_WP_Settings {
 	 * @return void
 	 */
 	function license_callback( $args ) {
+		$status = $this->get( 'license_status' );
+		$status = is_object( $status ) ? $status->license : $status;
+
+		if ( isset( $this->options[ $args['id'] ] ) ) {
+			$value = $this->options[ $args['id'] ];
+		} else {
+			$value = '';
+		}
+
+		$license_key = self::get_license_key( $value );
+
+		// If the license is active and valid, set the field to disabled (readonly).
+		if ( 'valid' === $status && ! empty( $license_key ) ) {
+			$args['disabled'] = true;
+			$args['desc']     = __( 'Deactivate your license key to make changes to this setting.', 'affiliate-wp' );
+		}
+
 		// Must use a 'readonly' attribute over disabled to ensure the value is passed in $_POST.
 		$readonly = $this->is_setting_disabled( $args ) ? __checked_selected_helper( $args['disabled'], true, false, 'readonly' ) : '';
 
-		$license_key = self::get_license_key();
-
-		$size   = ( isset( $args['size'] ) && ! is_null( $args['size'] ) ) ? $args['size'] : 'regular';
-		$html   = '<input type="text" class="' . $size . '-text" id="affwp_settings[' . $args['id'] . ']" name="affwp_settings[' . $args['id'] . ']" value="' . esc_attr( stripslashes( $license_key ) ) . '" ' . $readonly . '/>';
-		$status = $this->get( 'license_status' );
-		$status = is_object( $status ) ? $status->license : $status;
+		$size = ( isset( $args['size'] ) && ! is_null( $args['size'] ) ) ? $args['size'] : 'regular';
+		$html = '<input type="text" class="' . $size . '-text" id="affwp_settings[' . $args['id'] . ']" name="affwp_settings[' . $args['id'] . ']" value="' . esc_attr( stripslashes( $license_key ) ) . '" ' . $readonly . '/>';
 
 		if( 'valid' === $status && ! empty( $license_key ) ) {
 			$html .= get_submit_button( __( 'Deactivate License', 'affiliate-wp' ), 'secondary', 'affwp_deactivate_license', false );
