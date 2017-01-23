@@ -32,7 +32,7 @@ class Affiliate_WP_Integrations {
 			's2member'       => 's2Member',
 			'shopp'	         => 'Shopp',
 			'sproutinvoices' => 'Sprout Invoices',
-			'stripe'         => 'Stripe (through WP Simple Pay)',
+			'stripe'         => 'Stripe Checkout (through WP Simple Pay)',
 			'woocommerce'    => 'WooCommerce',
 			'wpeasycart'     => 'WP EasyCart',
 			'wpec'           => 'WP eCommerce',
