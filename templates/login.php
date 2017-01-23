@@ -12,7 +12,7 @@ affiliate_wp()->login->print_errors();
 	?>
 
 	<fieldset>
-		<legend><?php _e( 'Log into Your Account', 'affiliate-wp' ); ?></legend>
+		<legend><?php _e( 'Log into your account', 'affiliate-wp' ); ?></legend>
 
 		<?php
 		/**
@@ -41,11 +41,11 @@ affiliate_wp()->login->print_errors();
 			<input type="hidden" name="affwp_redirect" value="<?php echo esc_url( $affwp_login_redirect ); ?>"/>
 			<input type="hidden" name="affwp_login_nonce" value="<?php echo wp_create_nonce( 'affwp-login-nonce' ); ?>" />
 			<input type="hidden" name="affwp_action" value="user_login" />
-			<input type="submit" class="button" value="<?php esc_attr_e( 'Login', 'affiliate-wp' ); ?>" />
+			<input type="submit" class="button" value="<?php esc_attr_e( 'Log In', 'affiliate-wp' ); ?>" />
 		</p>
 
 		<p class="affwp-lost-password">
-			<a href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php _e( 'Lost Password?', 'affiliate-wp' ); ?></a>
+			<a href="<?php echo esc_url( wp_lostpassword_url() ); ?>"><?php _e( 'Lost your password?', 'affiliate-wp' ); ?></a>
 		</p>
 
 		<?php

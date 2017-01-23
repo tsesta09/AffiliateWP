@@ -232,7 +232,7 @@ function affwp_migration_tab() {
 				<h3><span>Affiliates Pro</span></h3>
 				<div class="inside">
 					<p><?php _e( 'Use this tool to migrate existing affiliate / referral data from Affiliates Pro to AffiliateWP.', 'affiliate-wp' ); ?></p>
-					<p><?php _e( '<strong>NOTE:</strong> this tool should only ever be used on a fresh install. If you have already collected affiliate or referral data, do not use this tool.', 'affiliate-wp' ); ?></p>
+					<p><?php _e( '<strong>NOTE:</strong> This tool should only ever be used on a fresh install. If you have already collected affiliate or referral data, do not use this tool.', 'affiliate-wp' ); ?></p>
 					<form method="get">
 						<input type="hidden" name="type" value="affiliates-pro"/>
 						<input type="hidden" name="part" value="affiliates"/>
@@ -301,7 +301,6 @@ function affwp_export_import_tab() {
 						<p>
 							<span class="affwp-ajax-search-wrap">
 								<input type="text" name="user_name" id="user_name" class="affwp-user-search" autocomplete="off" placeholder="<?php _e( 'Affiliate name', 'affiliate-wp' ); ?>" />
-								<input type="hidden" name="user_id" id="user_id" value=""/>
 							</span>
 							<input type="text" class="affwp-datepicker" autocomplete="off" name="start_date" placeholder="<?php _e( 'From - mm/dd/yyyy', 'affiliate-wp' ); ?>"/>
 							<input type="text" class="affwp-datepicker" autocomplete="off" name="end_date" placeholder="<?php _e( 'To - mm/dd/yyyy', 'affiliate-wp' ); ?>"/>
@@ -329,7 +328,6 @@ function affwp_export_import_tab() {
 						<p>
 							<span class="affwp-ajax-search-wrap">
 								<input type="text" name="user_name" id="user_name" class="affwp-user-search" autocomplete="off" placeholder="<?php _e( 'Affiliate name', 'affiliate-wp' ); ?>" />
-								<input type="hidden" name="user_id" id="user_id" value=""/>
 							</span>
 							<input type="text" class="affwp-datepicker" autocomplete="off" name="start_date" placeholder="<?php _e( 'From - mm/dd/yyyy', 'affiliate-wp' ); ?>"/>
 							<input type="text" class="affwp-datepicker" autocomplete="off" name="end_date" placeholder="<?php _e( 'To - mm/dd/yyyy', 'affiliate-wp' ); ?>"/>

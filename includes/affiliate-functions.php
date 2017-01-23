@@ -646,22 +646,7 @@ function affwp_get_affiliate_unpaid_earnings( $affiliate, $formatted = false ) {
 		return false;
 	}
 
-	$referrals = affiliate_wp()->referrals->get_referrals( array(
-		'affiliate_id' => $affiliate->ID,
-		'status'       => 'unpaid',
-		'number'       => -1
-	) );
-
-	$earnings = 0;
-
-	if ( ! empty( $referrals ) ) {
-
-		foreach( $referrals as $referral ) {
-
-			$earnings += $referral->amount;
-
-		}
-	}
+	$earnings = $affiliate->unpaid_earnings;
 
 	if ( $formatted ) {
 
@@ -747,6 +732,84 @@ function affwp_decrease_affiliate_earnings( $affiliate, $amount = '' ) {
 		update_option( 'affwp_alltime_earnings', $alltime );
 
 		return $earnings;
+
+	} else {
+
+		return false;
+
+	}
+
+}
+
+/**
+ * Increases an affiliate's unpaid earnings.
+ *
+ * @since 2.0
+ *
+ * @param \AffWP\Affiliate|int $affiliate Affiliate object or ID.
+ * @param float                $amount    Amount to increase unpaid earnings by.
+ * @param bool                 $replace   Optional. Whether to replace the current unpaid earnings count.
+ *                                        Default false.
+ * @return float|false New unpaid earnings value upon successful update, otherwise false.
+ */
+function affwp_increase_affiliate_unpaid_earnings( $affiliate, $amount, $replace = false ) {
+	if ( ! $affiliate = affwp_get_affiliate( $affiliate ) ) {
+		return false;
+	}
+
+	if ( empty( $amount ) || floatval( $amount ) <= 0 ) {
+		return false;
+	}
+
+	if ( false === $replace ) {
+		$unpaid_earnings = affwp_get_affiliate_unpaid_earnings( $affiliate );
+	} else {
+		$unpaid_earnings = 0;
+	}
+
+	$unpaid_earnings += $amount;
+	$unpaid_earnings = round( $unpaid_earnings, affwp_get_decimal_count() );
+
+	if ( affiliate_wp()->affiliates->update( $affiliate->ID, array( 'unpaid_earnings' => $unpaid_earnings ), '', 'affiliate' ) ) {
+
+		return $unpaid_earnings;
+
+	} else {
+
+		return false;
+
+	}
+}
+
+/**
+ * Decreases an affiliate's unpaid earnings.
+ *
+ * @since 2.0
+ *
+ * @param \AffWP\Affiliate|int $affiliate Affiliate object or ID.
+ * @param float                $amount    Amount to decrease unpaid earnings by.
+ * @return float|false New unpaid earnings value upon successful update, otherwise false.
+ */
+function affwp_decrease_affiliate_unpaid_earnings( $affiliate, $amount ) {
+	if ( ! $affiliate = affwp_get_affiliate( $affiliate ) ) {
+		return false;
+	}
+
+	if ( empty( $amount ) || floatval( $amount ) <= 0 ) {
+		return false;
+	}
+
+	$unpaid_earnings = affwp_get_affiliate_unpaid_earnings( $affiliate );
+	$unpaid_earnings -= $amount;
+	$unpaid_earnings = round( $unpaid_earnings, affwp_get_decimal_count() );
+
+	if ( $unpaid_earnings < 0 ) {
+		$unpaid_earnings = 0;
+	}
+
+	if ( affiliate_wp()->affiliates->update( $affiliate->ID, array( 'unpaid_earnings' => $unpaid_earnings ), '', 'affiliate' ) ) {
+
+		return $unpaid_earnings;
 
 	} else {
 
@@ -1009,6 +1072,8 @@ function affwp_get_affiliate_campaigns( $affiliate = 0 ) {
  *     @type int    $referrals       Number of affiliate referrals.
  *     @type int    $visits          Number of visits.
  *     @type int    $user_id         User ID used to correspond to the affiliate.
+ *     @type string $user_name       User login. Used to retrieve the affiliate ID if `affiliate_id` and
+ *                                   `user_id` not given.
  *     @type string $notes           Notes about the affiliate for use by administrators.
  * }
  * @return int|false The ID for the newly-added affiliate, otherwise false.
@@ -1022,6 +1087,8 @@ function affwp_add_affiliate( $data = array() ) {
 	} else {
 		$status = 'active';
 	}
+
+	$data = affiliate_wp()->utils->process_post_data( $data, 'user_name' );
 
 	if ( empty( $data['user_id'] ) ) {
 		return false;

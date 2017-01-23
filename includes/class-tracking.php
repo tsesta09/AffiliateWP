@@ -77,6 +77,8 @@ class Affiliate_WP_Tracking {
 		var AFFWP = AFFWP || {};
 		AFFWP.referral_var = '<?php echo $this->get_referral_var(); ?>';
 		AFFWP.expiration = <?php echo $this->get_expiration_time(); ?>;
+		AFFWP.debug = <?php echo absint( $this->debug ); ?>;
+
 <?php if( 1 !== (int) get_option( 'affwp_js_works' ) )  : ?>
 		jQuery(document).ready(function($) {
 			// Check if JS is working properly. If it is, we update an update in the DB
@@ -197,8 +199,30 @@ class Affiliate_WP_Tracking {
 		wp_enqueue_script( 'jquery-cookie', AFFILIATEWP_PLUGIN_URL . 'assets/js/jquery.cookie' . $suffix . '.js', array( 'jquery' ), '1.4.0' );
 		wp_enqueue_script( 'affwp-tracking', AFFILIATEWP_PLUGIN_URL . 'assets/js/tracking' . $suffix . '.js', array( 'jquery-cookie' ), AFFILIATEWP_VERSION );
 		wp_localize_script( 'jquery-cookie', 'affwp_scripts', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+		wp_localize_script( 'affwp-tracking', 'affwp_debug_vars', $this->js_debug_data() );
 	}
 
+	public function js_debug_data() {
+
+		$integrations  = affiliate_wp()->integrations->get_enabled_integrations();
+		$affwp_version =  defined( 'AFFILIATEWP_VERSION' ) ? AFFILIATEWP_VERSION : 'undefined';
+		$currency      = affwp_get_currency();
+
+
+		$data = array (
+			'integrations' => $integrations,
+			'version'      => $affwp_version,
+			'currency'     => $currency
+		);
+
+		/**
+		 * JavaScript debug data to make available in AffiliateWP.
+		 *
+		 * @since 2.0
+		 * @param $data An array of data to pass to the AffiliateWP tracking.js file.
+		 */
+		return apply_filters( 'affwp_js_debug_data', (array) $data );
+	}
 
 	/**
 	 * Record referral visit via ajax
@@ -783,10 +807,10 @@ class Affiliate_WP_Tracking {
 			$link = remove_query_arg( $referral_var, $link );
 
 			// Remove a pretty referral ID or username.
-			preg_match( "/$referral_var\/(\w+)\//", $link, $pretty_matches );
+			preg_match( "/\/$referral_var\/(\w+)\//", $link, $pretty_matches );
 
 			if ( ! empty( $pretty_matches[0] ) ) {
-				$link = str_replace( $pretty_matches[0], '', $link );
+				$link = str_replace( $pretty_matches[0], '/', $link );
 			}
 		}
 

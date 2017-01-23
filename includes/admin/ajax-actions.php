@@ -169,15 +169,12 @@ function affwp_process_batch_request() {
 			if ( method_exists( $process, 'can_export' ) ) {
 
 				if ( ! $process->is_empty ) {
-					$args = array(
+					$response_data['url'] = affwp_admin_url( 'tools', array(
 						'step'         => $step,
-						'page'         => 'affiliate-wp-tools',
 						'nonce'        => wp_create_nonce( 'affwp-batch-export' ),
 						'batch_id'     => $batch_id,
 						'affwp_action' => 'download_batch_export',
-					);
-
-					$response_data['url'] = add_query_arg( $args, admin_url( 'admin.php' ) );
+					) );
 				}
 			}
 

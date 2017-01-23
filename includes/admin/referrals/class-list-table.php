@@ -556,7 +556,18 @@ class AffWP_Referrals_Table extends List_Table {
 
 		// Makes the filters only get output at the top of the page
 		if( ! did_action( 'affwp_referral_filters' ) ) {
+			$affiliate = isset( $_GET['affiliate_id'] ) ? $_GET['affiliate_id'] : false;
 
+			if ( $affiliate && $affiliate = affwp_get_affiliate( $affiliate ) ) {
+				$affiliate_name = affwp_get_affiliate_username( $affiliate );
+			} else {
+				$affiliate_name = '';
+			}
+			?>
+			<span class="affwp-ajax-search-wrap">
+				<input type="text" name="affiliate_id" id="user_name" class="affwp-user-search" value="<?php echo esc_attr( $affiliate_name ); ?>" data-affwp-status="any" autocomplete="off" placeholder="<?php _e( 'Affiliate name', 'affiliate-wp' ); ?>" />
+			</span>
+			<?php
 			$from = ! empty( $_REQUEST['filter_from'] ) ? $_REQUEST['filter_from'] : '';
 			$to   = ! empty( $_REQUEST['filter_to'] )   ? $_REQUEST['filter_to']   : '';
 
@@ -736,6 +747,13 @@ class AffWP_Referrals_Table extends List_Table {
 		$orderby   = isset( $_GET['orderby'] )      ? $_GET['orderby']         : 'referral_id';
 		$referral  = '';
 		$is_search = false;
+
+		if ( $affiliate && $affiliate = affwp_get_affiliate( $affiliate ) ) {
+			$affiliate = $affiliate->ID;
+		} else {
+			// Switch back to empty for the benefit of get_referrals().
+			$affiliate = '';
+		}
 
 		$date = array();
 		if( ! empty( $from ) ) {

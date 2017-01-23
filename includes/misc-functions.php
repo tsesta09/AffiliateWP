@@ -978,3 +978,52 @@ function affwp_admin_link( $type, $label, $query_args = array(), $attributes = a
 	 */
 	return apply_filters( 'affwp_admin_link', $link, $type, $label, $attributes, $query_args );
 }
+
+/**
+ * Adds an upgrade action to the completed upgrades array.
+ *
+ * @since 2.0
+ *
+ * @param string $upgrade_action The action to add to the completed upgrades array.
+ * @return bool Whether the action was successfully added.
+ */
+function affwp_set_upgrade_complete( $upgrade_action ) {
+
+	$completed_upgrades = affwp_get_completed_upgrades();
+
+	$completed_upgrades[] = $upgrade_action;
+
+	// Remove any blanks, and only show uniques.
+	$completed_upgrades = array_unique( array_values( $completed_upgrades ) );
+
+	return update_option( 'affwp_completed_upgrades', $completed_upgrades );
+}
+
+/**
+ * Checks whether an upgrade routine has been run for a specific action.
+ *
+ * @since  2.0
+ *
+ * @param  string $upgrade_action The upgrade action to check completion for.
+ * @return bool Whether the upgrade action has been completed.
+ */
+function affwp_has_upgrade_completed( $upgrade_action ) {
+
+	$completed_upgrades = affwp_get_completed_upgrades();
+
+	return in_array( $upgrade_action, $completed_upgrades, true );
+}
+
+/**
+ * Retrieves the list of completed upgrade actions.
+ *
+ * @since 2.0
+ *
+ * @return array The array of completed upgrades.
+ */
+function affwp_get_completed_upgrades() {
+
+	$completed_upgrades = get_option( 'affwp_completed_upgrades', array() );
+
+	return $completed_upgrades;
+}
