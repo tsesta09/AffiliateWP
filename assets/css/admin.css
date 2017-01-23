@@ -59,7 +59,7 @@ table.affwp_table td a {
     padding-bottom: 8px;
 }
 
-#affwp-dashboard-widgets-wrap p:last-child {
+#affwp-dashboard-widgets-wrap p:last-child:not( .affwp-batch-success ) {
 	margin-bottom: 0px;
 }
 
@@ -369,13 +369,11 @@ table.affiliates #unpaid {
 	width: 0;
 }
 .notice-wrap {
-	background-color: #f4f4f4;
 	border-style: solid;
 	border-width: 1px 0;
 	border-color: #eae9e9;
-	padding: 12px;
+	padding: 12px 12px 12px 0;
 	overflow: auto;
-	margin: 20px -12px -23px;
 }
 .notice-wrap #affwp-batch-success {
 	margin: 5px 0;
