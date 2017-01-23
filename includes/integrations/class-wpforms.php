@@ -101,7 +101,7 @@ class Affiliate_WP_WPForms extends Affiliate_WP_Base {
 
 		// set the referral to "unpaid" if there's no total
 		if ( empty( $referral_total ) ) {
-			$this->mark_referral_complete( $entry_id );
+			$this->complete_referral( $entry_id );
 		}
 
 	}
