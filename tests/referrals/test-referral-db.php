@@ -145,6 +145,14 @@ class Referrals_DB_Tests extends UnitTestCase {
 	}
 
 	/**
+	 * @covers \Affiliate_WP_Referrals_DB::count_by_status()
+	 */
+	public function test_count_by_status_should_return_count_of_referrals_created_today_if_date_is_today() {
+		// 4 referrals are created on test class set up, i.e. 'today'.
+		$this->assertSame( 4, affiliate_wp()->referrals->count_by_status( 'pending', self::$affiliate_id, 'today' ) );
+	}
+
+	/**
 	 * @covers Affiliate_WP_Referrals_DB::count_by_status()
 	 */
 	public function test_count_by_status_should_return_count_of_referrals_for_all_time_if_date_is_invalid() {

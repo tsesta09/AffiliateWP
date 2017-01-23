@@ -744,7 +744,7 @@ class Affiliate_WP_Referrals_DB extends Affiliate_WP_DB  {
 		if ( ! empty( $date ) ) {
 
 			// Whitelist for back-compat string values.
-			if ( is_string( $date ) && ! in_array( $date, array( 'month', 'last-month' ) ) ) {
+			if ( is_string( $date ) && ! in_array( $date, array( 'month', 'last-month', 'today' ) ) ) {
 				$date = '';
 			}
 
