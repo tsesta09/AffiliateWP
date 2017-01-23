@@ -262,7 +262,7 @@ class Affiliate_WP_Settings {
 
 			// Don't overwrite the global license key.
 			if ( 'license_key' === $key ) {
-				$value = self::get_license_key( $value );
+				$value = self::get_license_key( $value, true );
 			}
 
 			// Get the setting type (checkbox, select, etc)
