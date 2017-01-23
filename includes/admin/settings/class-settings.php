@@ -1293,10 +1293,12 @@ class Affiliate_WP_Settings {
 			return; // license already activated and valid
 		}
 
+		$license_key = sanitize_text_field( $_POST['affwp_settings']['license_key'] );
+
 		// data to send in our API request
 		$api_params = array(
 			'edd_action'=> 'activate_license',
-			'license' 	=> sanitize_text_field( $_POST['affwp_settings']['license_key'] ),
+			'license' 	=> $license_key,
 			'item_name' => 'AffiliateWP',
 			'url'       => home_url()
 		);
@@ -1315,7 +1317,10 @@ class Affiliate_WP_Settings {
 		// decode the license data
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 
-		$this->save( array( 'license_status' => $license_data ) );
+		$this->save( array(
+			'license_status' => $license_data,
+			'license_key'    => $license_key
+		) );
 
 		if( 'valid' !== $license_data->license || empty( $license_data->success ) ) {
 
