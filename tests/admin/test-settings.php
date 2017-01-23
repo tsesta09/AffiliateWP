@@ -154,7 +154,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \Affiliate_WP_Settings::global_license_set()
 	 *
-	 * Note: This test must fall after the constant in the previous test has been set.
+	 * @depends test_get_license_key_with_global_key_defined_should_return_that_key
 	 */
 	public function test_global_license_set_where_constant_is_defined_and_not_empty_should_return_true() {
 		$this->assertTrue( \Affiliate_WP_Settings::global_license_set() );
