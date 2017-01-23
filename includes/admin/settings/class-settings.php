@@ -1016,7 +1016,12 @@ class Affiliate_WP_Settings {
 		// If the license is active and valid, set the field to disabled (readonly).
 		if ( 'valid' === $status && ! empty( $license_key ) ) {
 			$args['disabled'] = true;
-			$args['desc']     = __( 'Deactivate your license key to make changes to this setting.', 'affiliate-wp' );
+
+			if ( self::global_license_set() ) {
+				$args['desc'] = __( 'Your license key is globally defined via <code>AFFILIATEWP_LICENSE_KEY</code> set in <code>wp-config.php</code>.<br />It cannot be modified from this screen.', 'affiliate-wp' );
+			} else {
+				$args['desc'] = __( 'Deactivate your license key to make changes to this setting.', 'affiliate-wp' );
+			}
 		}
 
 		// Must use a 'readonly' attribute over disabled to ensure the value is passed in $_POST.
