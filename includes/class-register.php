@@ -234,13 +234,14 @@ class Affiliate_WP_Register {
 
 
 	/**
-	 * Make fields required/not required, based on the "Required Registration Fields" admin setting
+	 * Makes fields required/not required, based on the "Required Registration Fields"
+	 * admin setting
 	 *
 	 * @access public
 	 * @since  2.0
-	 * @param  array $required_fields The required fields
-	 * @return array $required_fields The required fields
 	 *
+	 * @param array $required_fields The required fields
+	 * @return array $required_fields The required fields
 	 */
 	public function maybe_required_fields( $required_fields ) {
 
