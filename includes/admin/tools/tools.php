@@ -55,11 +55,14 @@ function affwp_tools_admin() {
 		</h2>
 		<div id="tab_container">
 			<?php
-
 			/**
-			 * Fires in the Tools screen tab
+			 * Fires in the Tools screen tab.
+			 *
+			 * The dynamic portion of the hook name, `$active_tab`, refers to the slug of
+			 * the currently active tools tab.
 			 */
-			do_action( 'affwp_tools_tab_' . $active_tab ); ?>
+			do_action( 'affwp_tools_tab_' . $active_tab );
+			?>
 		</div><!-- #tab_container-->
 	</div><!-- .wrap -->
 	<?php
