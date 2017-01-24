@@ -48,7 +48,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::get()
 	 */
-	public function test_batch_get_should_return_an_array_of_batch_properties_for_a_registered_process() {
+	public function test_get_should_return_an_array_of_batch_properties_for_a_registered_process() {
 		self::$utils->batch->register_process( self::$batch_id, array(
 			'class' => 'Affiliate_WP',
 			'file'  => AFFILIATEWP_PLUGIN_DIR . 'affiliate-wp.php',
@@ -64,14 +64,14 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::get()
 	 */
-	public function test_batch_get_should_return_false_for_invalid_batch_id() {
+	public function test_get_should_return_false_for_invalid_batch_id() {
 		$this->assertFalse( self::$utils->batch->get( 'foobar' ) );
 	}
 
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::register_process()
 	 */
-	public function test_batch_register_process_with_class_and_file_process_args_should_register_the_process() {
+	public function test_register_process_with_class_and_file_process_args_should_register_the_process() {
 		self::$utils->batch->register_process( self::$batch_id, array(
 			'class' => 'Affiliate_WP',
 			'file'  => AFFILIATEWP_PLUGIN_DIR . 'affiliate-wp.php',
@@ -83,7 +83,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::register_process()
 	 */
-	public function test_batch_register_process_with_class_and_file_process_args_should_return_true() {
+	public function test_register_process_with_class_and_file_process_args_should_return_true() {
 		$result = self::$utils->batch->register_process( self::$batch_id, array(
 			'class' => 'Affiliate_WP',
 			'file'  => AFFILIATEWP_PLUGIN_DIR . 'affiliate-wp.php',
@@ -95,7 +95,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::register_process()
 	 */
-	public function test_batch_register_process_with_empty_class_process_arg_should_return_wp_error() {
+	public function test_register_process_with_empty_class_process_arg_should_return_wp_error() {
 		$result = self::$utils->batch->register_process( self::$batch_id, array(
 			'file' => AFFILIATEWP_PLUGIN_DIR . 'affiliate-wp.php',
 		) );
@@ -106,7 +106,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::register_process()
 	 */
-	public function test_batch_register_process_with_empty_class_process_arg_should_return_WP_Error_with_invalid_batch_class_error_code() {
+	public function test_register_process_with_empty_class_process_arg_should_return_WP_Error_with_invalid_batch_class_error_code() {
 		$result = self::$utils->batch->register_process( self::$batch_id, array(
 			'file' => AFFILIATEWP_PLUGIN_DIR . 'affiliate-wp.php',
 		) );
@@ -119,7 +119,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::register_process()
 	 */
-	public function test_batch_register_process_with_empty_file_process_arg_should_return_WP_Error() {
+	public function test_register_process_with_empty_file_process_arg_should_return_WP_Error() {
 		$result = self::$utils->batch->register_process( self::$batch_id, array(
 			'class' => 'Affiliate_WP',
 		) );
@@ -130,7 +130,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::register_process()
 	 */
-	public function test_batch_register_process_with_empty_file_process_arg_should_return_WP_Error_with_invalid_batch_class_file_error_code() {
+	public function test_register_process_with_empty_file_process_arg_should_return_WP_Error_with_invalid_batch_class_file_error_code() {
 		$result = self::$utils->batch->register_process( self::$batch_id, array(
 			'class' => 'Affiliate_WP',
 		) );
@@ -143,7 +143,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::register_process()
 	 */
-	public function test_batch_register_process_with_invalid_file_process_arg_should_return_WP_Error() {
+	public function test_register_process_with_invalid_file_process_arg_should_return_WP_Error() {
 		$result = self::$utils->batch->register_process( self::$batch_id, array(
 			'file' => AFFILIATEWP_PLUGIN_DIR . '../affiliate-wp.php',
 		) );
@@ -154,7 +154,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::register_process()
 	 */
-	public function test_batch_register_process_with_invalid_file_process_arg_should_return_WP_Error_with_invalid_batch_class_file_error_code() {
+	public function test_register_process_with_invalid_file_process_arg_should_return_WP_Error_with_invalid_batch_class_file_error_code() {
 		$result = self::$utils->batch->register_process( self::$batch_id, array(
 			'class' => 'Affiliate_WP',
 		) );
@@ -167,7 +167,7 @@ class Tests extends UnitTestCase {
 	/**
 	 * @covers \AffWP\Utils\Batch_Process\Registry::remove_process()
 	 */
-	public function test_batch_remove_process_should_remove_the_process() {
+	public function test_remove_process_should_remove_the_process() {
 		self::$utils->batch->register_process( self::$batch_id, array(
 			'class' => 'Affiliate_WP',
 			'file'  => AFFILIATEWP_PLUGIN_DIR . 'affiliate-wp.php',
