@@ -1465,9 +1465,9 @@ class Affiliate_WP_Settings {
 	 * @access public
 	 * @static
 	 *
-	 * @param array $request_data POST or other data.
-	 * @param bool  $saving       Whether a saving operation is being performed. If true,
-	 *                            the already-saved key value will be ignored.
+	 * @param string $key    Optional. License key to check. Default empty.
+	 * @param bool   $saving Optional. Whether a saving operation is being performed. If true,
+	 *                       the already-saved key value will be ignored. Default false.
 	 * @return string License key.
 	 */
 	public static function get_license_key( $key = '', $saving = false ) {
