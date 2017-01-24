@@ -1536,6 +1536,9 @@ class Tests extends UnitTestCase {
 
 		$this->assertTrue( $updated );
 		$this->assertSame( 'These are test notes', affwp_get_affiliate_meta( $affiliate_id, 'notes', true ) );
+
+		// Clean up.
+		affwp_delete_affiliate( $affiliate_id );
 	}
 
 	/**
