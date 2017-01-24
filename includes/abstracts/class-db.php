@@ -222,7 +222,8 @@ abstract class Affiliate_WP_DB {
 		/**
 		 * Fires immediately before an item has been created in the database.
 		 *
-		 * @param int   $type Object type.
+		 * The dynamic portion of the hook name, `$type`, refers to the object type.
+		 *
 		 * @param array $data Array of object data.
 		 */
 		do_action( 'affwp_pre_insert_' . $type, $data );
