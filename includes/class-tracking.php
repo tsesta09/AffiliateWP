@@ -202,6 +202,14 @@ class Affiliate_WP_Tracking {
 		wp_localize_script( 'affwp-tracking', 'affwp_debug_vars', $this->js_debug_data() );
 	}
 
+	/**
+	 * Retrieves debug data strings for use in tracking.js.
+	 *
+	 * @access public
+	 * @since  2.0
+	 *
+	 * @return array Array of debug data strings.
+	 */
 	public function js_debug_data() {
 
 		$integrations  = affiliate_wp()->integrations->get_enabled_integrations();
