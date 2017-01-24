@@ -291,7 +291,7 @@ class Affiliate_WP_PMP extends Affiliate_WP_Base {
 		// Store a copy of the username (if present) for use after processing.
 		$user_name = empty( $_POST['user_name'] ) ? '' : sanitize_text_field( $_POST['user_name'] );
 
-		$data = affiliate_wp()->utils->process_post_data( $_POST, 'user_name' );
+		$data = affiliate_wp()->utils->process_request_data( $_POST, 'user_name' );
 
 		$coupon       = $wpdb->get_row( "SELECT * FROM $wpdb->pmpro_discount_codes WHERE code = '" . esc_sql( $_REQUEST['code'] ) . "' LIMIT 1" );
 		$affiliate_id = affwp_get_affiliate_id( $data['user_id'] );

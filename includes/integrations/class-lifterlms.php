@@ -481,7 +481,7 @@ class Affiliate_WP_LifterLMS extends Affiliate_WP_Base {
 			return;
 		}
 
-		$data = affiliate_wp()->utils->process_post_data( $_POST, '_affwp_affiliate_user_name' );
+		$data = affiliate_wp()->utils->process_request_data( $_POST, '_affwp_affiliate_user_name' );
 
 		/*
 		 * Locate an affiliate, looks like this returns null if the

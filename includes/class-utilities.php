@@ -74,16 +74,16 @@ class Affiliate_WP_Utilities {
 	}
 
 	/**
-	 * Performs processes on post data depending on the given context.
+	 * Performs processes on request data depending on the given context.
 	 *
 	 * @access public
 	 * @since  2.0
 	 *
-	 * @param array  $data    Post data.
+	 * @param array  $data    Request data.
 	 * @param string $old_key Optional. Old key under which to process data. Default empty.
-	 * @return array (Maybe) processed post data.
+	 * @return array (Maybe) processed request data.
 	 */
-	public function process_post_data( $data, $old_key = '' ) {
+	public function process_request_data( $data, $old_key = '' ) {
 		switch ( $old_key ) {
 			case 'user_name':
 			case '_affwp_affiliate_user_name':

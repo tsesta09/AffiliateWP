@@ -1088,7 +1088,7 @@ function affwp_add_affiliate( $data = array() ) {
 		$status = 'active';
 	}
 
-	$data = affiliate_wp()->utils->process_post_data( $data, 'user_name' );
+	$data = affiliate_wp()->utils->process_request_data( $data, 'user_name' );
 
 	if ( empty( $data['user_id'] ) ) {
 		return false;
