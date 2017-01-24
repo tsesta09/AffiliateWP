@@ -272,14 +272,15 @@ class Affiliate_WP_WooCommerce extends Affiliate_WP_Base {
 	 * Marks a referral as complete when payment is completed.
 	 *
 	 * @since 1.0
-	 * @since 1.8 Orders that are COD and 'wc-processing' status are now skipped from "completion".
+	 * @since 2.0 Orders that are COD and transitioning from `wc-processing` to `wc-complete` stati are now able to be completed.
 	 * @access public
 	 */
 	public function mark_referral_complete( $order_id = 0 ) {
+
+		$this->order = apply_filters( 'affwp_get_woocommerce_order', new WC_Order( $order_id ) );
+
 		// If the WC status is 'wc-processing' and a COD order, leave as 'pending'.
-		if ( current_action( 'woocommerce_order_status_processing' )
-		     && 'cod' === get_post_meta( $order_id, '_payment_method', true )
-		) {
+		if ( 'wc-processing' == $this->order->post_status && 'cod' === get_post_meta( $order_id, '_payment_method', true ) ) {
 			return;
 		}
 
@@ -355,7 +356,6 @@ class Affiliate_WP_WooCommerce extends Affiliate_WP_Base {
 			<label for="user_name"><?php _e( 'Affiliate Discount?', 'affiliate-wp' ); ?></label>
 			<span class="affwp-ajax-search-wrap">
 				<span class="affwp-woo-coupon-input-wrap">
-					<input type="hidden" name="user_id" id="user_id" value="<?php echo esc_attr( $user_id ); ?>" />
 					<input type="text" name="user_name" id="user_name" value="<?php echo esc_attr( $user_name ); ?>" class="affwp-user-search" data-affwp-status="active" autocomplete="off" />
 				</span>
 				<img class="help_tip" data-tip='<?php _e( 'If you would like to connect this discount to an affiliate, enter the name of the affiliate it belongs to.', 'affiliate-wp' ); ?>' src="<?php echo WC()->plugin_url(); ?>/assets/images/help.png" height="16" width="16" />
@@ -383,16 +383,9 @@ class Affiliate_WP_WooCommerce extends Affiliate_WP_Base {
 			return;
 		}
 
-		if( empty( $_POST['user_id'] ) ) {
-			$user = get_user_by( 'login', $_POST['user_name'] );
-			if( $user ) {
-				$user_id = $user->ID;
-			}
-		} else {
-			$user_id = absint( $_POST['user_id'] );
-		}
+		$data = affiliate_wp()->utils->process_request_data( $_POST, 'user_name' );
 
-		$affiliate_id = affwp_get_affiliate_id( $user_id );
+		$affiliate_id = affwp_get_affiliate_id( $data['user_id'] );
 
 		update_post_meta( $coupon_id, 'affwp_discount_affiliate', $affiliate_id );
 	}

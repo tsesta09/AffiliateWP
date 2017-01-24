@@ -202,6 +202,13 @@ abstract class Affiliate_WP_Base {
 
 		if ( affwp_set_referral_status( $referral->referral_id, 'unpaid' ) ) {
 
+			/**
+			 * Fires when completing a referral.
+			 *
+			 * @param int             $referral_id The referral ID.
+			 * @param \AffWP\Referral $referral    The referral object.
+			 * @param string          $reference   The referral reference.
+			 */
 			do_action( 'affwp_complete_referral', $referral->referral_id, $referral, $referral->reference );
 
 			if( $this->debug ) {
@@ -224,18 +231,43 @@ abstract class Affiliate_WP_Base {
 	 *
 	 * @access  public
 	 * @since   1.0
-	 * @param   $reference The reference column for the referral to reject per the current context
-	 * @return  bool
+	 *
+	 * @param string|\AffWP\Referral $reference_or_referral The reference column for the referral to complete
+	 *                                                      per the current context or a complete referral object.
+	 * @return bool Whether the referral was successfully rejected.
 	 */
-	public function reject_referral( $reference = 0 ) {
-		if ( empty( $reference ) ) {
+	public function reject_referral( $reference_or_referral = 0 ) {
+
+		if ( empty( $reference_or_referral ) ) {
+
+			if( $this->debug ) {
+				$this->log( 'Empty $reference_or_referral parameter given during complete_referral()' );
+			}
+
 			return false;
 		}
 
-		$referral = affiliate_wp()->referrals->get_by( 'reference', $reference, $this->context );
+		if( is_object( $reference_or_referral ) ) {
+
+			$referral = affwp_get_referral( $reference_or_referral );
+
+		} else {
+
+			$referral = affiliate_wp()->referrals->get_by( 'reference', $reference_or_referral, $this->context );
+
+		}
 
 		if ( empty( $referral ) ) {
+
+			if( $this->debug ) {
+				$this->log( 'Referral could not be retrieved during reject_referral(). Value given: ' . print_r( $reference_or_referral, true ) );
+			}
+
 			return false;
+		}
+
+		if( $this->debug ) {
+			$this->log( 'Referral retrieved successfully during reject_referral()' );
 		}
 
 		if ( is_object( $referral ) && 'paid' == $referral->status ) {

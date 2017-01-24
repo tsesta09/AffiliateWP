@@ -219,6 +219,13 @@ abstract class Affiliate_WP_DB {
 		// Set default values
 		$data = wp_parse_args( $data, $this->get_column_defaults() );
 
+		/**
+		 * Fires immediately before an item has been created in the database.
+		 *
+		 * The dynamic portion of the hook name, `$type`, refers to the object type.
+		 *
+		 * @param array $data Array of object data.
+		 */
 		do_action( 'affwp_pre_insert_' . $type, $data );
 
 		// Initialise column format array
