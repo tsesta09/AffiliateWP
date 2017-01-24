@@ -514,9 +514,6 @@ class Affiliate_WP_Upgrades {
 		wp_cache_set( 'last_changed', microtime(), 'affiliates' );
 		$this->log( 'Upgrade: The Affiliates cache has been invalidated following the 2.0 upgrade.' );
 
-		// Set the DB Upgrade flag.
-		@affiliate_wp()->settings->set( array( 'affwp_upgrade_needed' => true ), $save = true );
-
 		$this->upgraded = true;
 	}
 
