@@ -231,8 +231,10 @@ abstract class Affiliate_WP_Base {
 	 *
 	 * @access  public
 	 * @since   1.0
-	 * @param   $reference|$referral The reference column for the referral to complete per the current context or a complete referral object
-	 * @return  bool
+	 *
+	 * @param string|\AffWP\Referral $reference_or_referral The reference column for the referral to complete
+	 *                                                      per the current context or a complete referral object.
+	 * @return bool Whether the referral was successfully rejected.
 	 */
 	public function reject_referral( $reference_or_referral = 0 ) {
 
