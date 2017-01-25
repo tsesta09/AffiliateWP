@@ -203,7 +203,9 @@ jQuery(document).ready(function($) {
 	 * @return {void}
 	 */
 	if ( typeof postboxes !== 'undefined' ) {
-		postboxes.add_postbox_toggles( pagenow );
+		if ( /affiliate-wp/.test( pagenow ) ) {
+			postboxes.add_postbox_toggles( pagenow );
+		}
 	}
 
 	/**
