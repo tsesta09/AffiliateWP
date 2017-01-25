@@ -16,15 +16,22 @@ class Referrals_DB_Tests extends UnitTestCase {
 
 	protected static $affiliate_id = 0;
 
+	protected static $visits = array();
+
 	/**
 	 * Set up fixtures once.
 	 */
 	public static function wpSetUpBeforeClass() {
 		self::$affiliate_id = parent::affwp()->affiliate->create();
 
-		self::$referrals = parent::affwp()->referral->create_many( 4, array(
-			'affiliate_id' => self::$affiliate_id
-		) );
+		for ( $i = 0; $i <= 3; $i++ ) {
+			self::$referrals[ $i ] = parent::affwp()->referral->create( array(
+				'affiliate_id' => self::$affiliate_id,
+				'visit_id'     => self::$visits[ $i ] = parent::affwp()->visit->create( array(
+					'affiliate_id' => self::$affiliate_id
+				) )
+			) );
+		}
 	}
 
 	/**
@@ -166,4 +173,70 @@ class Referrals_DB_Tests extends UnitTestCase {
 		$this->assertSame( 8, affiliate_wp()->referrals->count_by_status( 'pending', self::$affiliate_id, 'foo' ) );
 	}
 
+	/**
+	 * @covers \Affiliate_WP_Referrals_DB::update_referral()
+	 */
+	public function test_update_referral_no_supplied_affiliate_id_should_use_the_existing_affiliate_id() {
+		// Update the referral with no data.
+		affiliate_wp()->referrals->update_referral( self::$referrals[0] );
+
+		$result = affwp_get_referral( self::$referrals[0] );
+
+		$this->assertSame( self::$affiliate_id, $result->affiliate_id );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Referrals_DB::update_referral()
+	 */
+	public function test_update_referral_supplied_affiliate_id_should_update_the_affiliate_id() {
+		// Update the referral with a new affiliate ID.
+		affiliate_wp()->referrals->update_referral( self::$referrals[0], array(
+			'affiliate_id' => $affiliate_id = $this->factory->affiliate->create()
+		) );
+
+		$result = affwp_get_referral( self::$referrals[0] );
+
+		$this->assertSame( $affiliate_id, $result->affiliate_id );
+
+		// Clean up.
+		affiliate_wp()->referrals->update_referral( self::$referrals[0], array(
+			'affiliate_id' => self::$affiliate_id
+		) );
+
+		affwp_delete_affiliate( $affiliate_id );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Referrals_DB::update_referral()
+	 */
+	public function test_update_referral_no_supplied_visit_id_should_use_the_existing_visit_id() {
+		// Update the referral with no new data.
+		affiliate_wp()->referrals->update_referral( self::$referrals[0] );
+
+		$result = affwp_get_referral( self::$referrals[0] );
+
+		$this->assertSame( self::$visits[0], $result->visit_id );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Referrals_DB::update_referral()
+	 */
+	public function test_update_referral_with_supplied_visit_id_should_update_the_visit_id() {
+		// Update the referral with a new visit ID.
+		affiliate_wp()->referrals->update_referral( self::$referrals[0], array(
+			'visit_id' => $visit_id = $this->factory->visit->create( array(
+				'affiliate_id' => self::$affiliate_id
+			) )
+		) );
+
+		$result = affwp_get_referral( self::$referrals[0] );
+
+		$this->assertSame( $visit_id, $result->visit_id );
+
+		// Clean up.
+		affiliate_wp()->referrals->update_referral( self::$referrals[0], array(
+			'visit_id' => self::$visits[0]
+		) );
+		affwp_delete_visit( $visit_id );
+	}
 }
