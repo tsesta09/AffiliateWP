@@ -262,7 +262,7 @@ class Affiliate_WP_Visits_DB extends Affiliate_WP_DB {
 
 		// Visits context.
 		if( ! empty( $args['context'] )
-		    || ( empty( $args['context'] ) && '=' !== $context_compare )
+			|| ( empty( $args['context'] ) && '=' !== $context_compare )
 			|| ( empty( $args['context'] ) && '=' === $context_compare && 'EMPTY' === $args['context_compare'] )
 		) {
 
