@@ -532,7 +532,7 @@ class Affiliate_WP_Upgrades {
 		$this->log( 'Upgrade: The context column has been added to the Visits table.' );
 
 		wp_cache_set( 'last_changed', microtime(), 'visits' );
-		$this->log( 'Upgrade: The Visits chace has been invalidated following the 2.0.2 upgrade.' );
+		$this->log( 'Upgrade: The Visits cache has been invalidated following the 2.0.2 upgrade.' );
 
 		$this->upgraded = true;
 	}
