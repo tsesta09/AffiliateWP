@@ -132,4 +132,95 @@ class Tests extends UnitTestCase {
 
 		$this->assertEqualSets( $visits, $results );
 	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::get_visits()
+	 */
+	public function test_get_visits_with_single_context_should_return_visits_with_that_context() {
+		$results = affiliate_wp()->visits->get_visits( array(
+			'context' => 'foo-0',
+			'fields'  => 'ids',
+		) );
+
+		$this->assertEqualSets( array( self::$visits[0] ), $results );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::get_visits()
+	 */
+	public function test_get_visits_with_array_of_contexts_should_return_visits_with_those_contexts() {
+		$visits = array( self::$visits[1], self::$visits[3] );
+
+		$results = affiliate_wp()->visits->get_visits( array(
+			'context' => array( 'foo-1', 'foo-3' ),
+			'fields'  => 'ids',
+		) );
+
+		$this->assertEqualSets( $visits, $results );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::get_visits()
+	 */
+	public function test_get_visits_with_empty_context_and_not_equals_compare_should_return_visits_with_non_empty_context() {
+		$results = affiliate_wp()->visits->get_visits( array(
+			'fields'          => 'ids',
+			'context_compare' => '!='
+		) );
+
+		$this->assertFalse( in_array( self::$visits[4], $results, true ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::get_visits()
+	 */
+	public function test_get_visits_with_array_contexts_and_not_equals_compare_should_return_visits_not_containing_those_contexts() {
+		$visits = array( self::$visits[2], self::$visits[3], self::$visits[4] );
+
+		$results = affiliate_wp()->visits->get_visits( array(
+			'context'         => array( 'foo-0', 'foo-1' ),
+			'context_compare' => '!=',
+			'fields'          => 'ids',
+		) );
+
+		$this->assertEqualSets( $visits, $results );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::get_visits()
+	 */
+	public function test_get_visits_with_EMPTY_context_compare_should_return_visits_with_empty_context_only() {
+		$results = affiliate_wp()->visits->get_visits( array(
+			'context_compare' => 'EMPTY',
+			'fields'          => 'ids',
+		) );
+
+		$this->assertEqualSets( array( self::$visits[4] ), $results );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::get_visits()
+	 */
+	public function test_get_visits_with_NOT_EMPTY_context_compare_should_return_visits_with_not_empty_contexts() {
+		$visits = array( self::$visits[0], self::$visits[1], self::$visits[2], self::$visits[3] );
+
+		$results = affiliate_wp()->visits->get_visits( array(
+			'context_compare' => 'NOT EMPTY',
+			'fields'          => 'ids',
+		) );
+
+		$this->assertEqualSets( $visits, $results );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::get_visits()
+	 */
+	public function test_get_visits_with_no_context_and_no_context_compare_should_return_all_visits() {
+		$results = affiliate_wp()->visits->get_visits( array(
+			'fields' => 'ids',
+		) );
+
+		$this->assertEqualSets( self::$visits, $results );
+	}
+
 }
