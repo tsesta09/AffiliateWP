@@ -116,6 +116,10 @@ class Affiliate_WP_Upgrades {
 			$this->v20_upgrade();
 		}
 
+		if ( version_compare( $this->version, '2.0.2', '<' ) ) {
+			$this->v202_upgrade();
+		}
+
 		// Inconsistency between current and saved version.
 		if ( version_compare( $this->version, AFFILIATEWP_VERSION, '<>' ) ) {
 			$this->upgraded = true;
@@ -516,4 +520,20 @@ class Affiliate_WP_Upgrades {
 		$this->upgraded = true;
 	}
 
+	/**
+	 * Performs database upgrades for version 2.0.2.
+	 *
+	 * @since 2.0.2
+	 * @access private
+	 */
+	private function v202_upgrade() {
+		// New 'context' column for visits.
+		@affiliate_wp()->visits->create_table();
+		$this->log( 'Upgrade: The context column has been added to the Visits table.' );
+
+		wp_cache_set( 'last_changed', microtime(), 'visits' );
+		$this->log( 'Upgrade: The Visits chace has been invalidated following the 2.0.2 upgrade.' );
+
+		$this->upgraded = true;
+	}
 }
