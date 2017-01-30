@@ -33,7 +33,34 @@ class Tests extends UnitTestCase {
 	 */
 	public static function wpSetUpBeforeClass() {
 		self::$affiliates = parent::affwp()->affiliate->create_many( 4 );
-		self::$visits = parent::affwp()->visit->create_many( 4 );
+
+		for ( $i = 0; $i <= 3; $i++ ) {
+			self::$visits[ $i ] = parent::affwp()->visit->create( array(
+				'context' => "foo-{$i}"
+			) );
+		}
+
+		// Create a visit with an empty context.
+		self::$visits[4] = parent::affwp()->visit->create();
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::get_columns()
+	 */
+	public function test_get_columns_should_return_all_columns() {
+		$columns = array(
+			'visit_id'     => '%d',
+			'affiliate_id' => '%d',
+			'referral_id'  => '%d',
+			'url'          => '%s',
+			'referrer'     => '%s',
+			'campaign'     => '%s',
+			'context'      => '%s',
+			'ip'           => '%s',
+			'date'         => '%s',
+		);
+
+		$this->assertEqualSets( $columns, affiliate_wp()->visits->get_columns() );
 	}
 
 	/**
