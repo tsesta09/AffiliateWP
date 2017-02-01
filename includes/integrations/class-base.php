@@ -41,13 +41,6 @@ abstract class Affiliate_WP_Base {
 	 * @since   1.0
 	 */
 	public function __construct() {
-
-		$this->debug = (bool) affiliate_wp()->settings->get( 'debug_mode', false );
-
-		if( $this->debug ) {
-			$this->logs = new Affiliate_WP_Logging;
-		}
-
 		$this->affiliate_id = affiliate_wp()->tracking->get_affiliate_id();
 
 		$this->init();

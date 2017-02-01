@@ -27,12 +27,6 @@ class Affiliate_WP_Tracking {
 	 */
 	public function __construct() {
 
-		$this->debug = (bool) affiliate_wp()->settings->get( 'debug_mode', false );
-
-		if( $this->debug ) {
-			$this->logs = new Affiliate_WP_Logging;
-		}
-
 		$this->set_expiration_time();
 		$this->set_referral_var();
 
@@ -781,21 +775,6 @@ class Affiliate_WP_Tracking {
 	}
 
 	/**
-	 * Write log message
-	 *
-	 * @since 1.8
-	 */
-	private function log( $message = '' ) {
-
-		if( $this->debug ) {
-
-			$this->logs->log( $message );
-
-		}
-
-	}
-
-	/**
 	 * Strips pretty referral bits from pagination links.
 	 *
 	 * @since 1.9
@@ -824,4 +803,20 @@ class Affiliate_WP_Tracking {
 
 		return $link;
 	}
+
+	/**
+	 * Writes a debug log message.
+	 *
+	 * @access private
+	 * @since  1.8
+	 * @deprecated 2.0.2 Use affiliate_wp()->utils->log() instead
+	 *
+	 * @see affiliate_wp()->utils->log()
+	 */
+	private function log( $message = '' ) {
+		_deprecated_function( __METHOD__, '2.0.2', 'affiliate_wp()->utils->log()' );
+
+		affiliate_wp()->utils->log( $message );
+	}
+
 }

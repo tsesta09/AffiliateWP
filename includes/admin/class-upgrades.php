@@ -57,12 +57,6 @@ class Affiliate_WP_Upgrades {
 		$settings = new Affiliate_WP_Settings;
 		$this->debug = (bool) $settings->get( 'debug_mode', false );
 
-		if ( $this->debug ) {
-			require_once AFFILIATEWP_PLUGIN_DIR . 'includes/class-logging.php';
-
-			$this->logs = new Affiliate_WP_Logging;
-		}
-
 		add_action( 'affwp_batch_process_init', array( $this, 'register_batch_upgrades' ) );
 	}
 
