@@ -257,9 +257,7 @@ class Affiliate_WP_Tracking {
 					'referrer'     => $referrer,
 				) );
 
-				if( $this->debug ) {
-					$this->log( sprintf( 'Visit #%d recorded for affiliate #%d in track_visit()', $visit_id, $affiliate_id ) );
-				}
+				affiliate_wp()->utils->log( sprintf( 'Visit #%d recorded for affiliate #%d in track_visit()', $visit_id, $affiliate_id ) );
 
 				echo $visit_id;
 
@@ -267,26 +265,20 @@ class Affiliate_WP_Tracking {
 
 			} else {
 
-				if ( $this->debug ) {
-					$this->log( sprintf( '"%s" is a banned URL. A visit was not recorded.', $referrer ) );
-				}
+				affiliate_wp()->utils->log( sprintf( '"%s" is a banned URL. A visit was not recorded.', $referrer ) );
 
 				die( '-2' );
 			}
 
 		} elseif ( ! $is_valid ) {
 
-			if ( $this->debug ) {
-				$this->log( 'Invalid affiliate ID during track_visit()' );
-			}
+			affiliate_wp()->utils->log( 'Invalid affiliate ID during track_visit()' );
 
 			die( '-2' );
 
 		} else {
 
-			if( $this->debug ) {
-				$this->log( 'Affiliate ID missing during track_visit()' );
-			}
+			affiliate_wp()->utils->log( 'Affiliate ID missing during track_visit()' );
 
 			die( '-2' );
 
@@ -308,17 +300,13 @@ class Affiliate_WP_Tracking {
 
 		if( $is_valid ) {
 
-			if( $this->debug ) {
-				$this->log( sprintf( 'Valid affiliate ID, %d, in track_conversion()', $affiliate_id ) );
-			}
+			affiliate_wp()->utils->log( sprintf( 'Valid affiliate ID, %d, in track_conversion()', $affiliate_id ) );
 
 			$md5 = md5( $_POST['amount'] . $_POST['description'] . $_POST['reference'] . $_POST['context'] . $_POST['status'] . $_POST['campaign'] );
 
 			if( $md5 !== $_POST['md5'] ) {
 
-				if( $this->debug ) {
-					$this->log( sprintf( 'Invalid MD5 in track_conversion(). Needed: %s. Posted: %s', $md5, $_POST['md5'] ) );
-				}
+				affiliate_wp()->utils->log( sprintf( 'Invalid MD5 in track_conversion(). Needed: %s. Posted: %s', $md5, $_POST['md5'] ) );
 
 				die( '-3' ); // The args were modified
 			}
@@ -327,9 +315,7 @@ class Affiliate_WP_Tracking {
 
 			if( $referral ) {
 
-				if( $this->debug ) {
-					$this->log( sprintf( 'Referral already generated for visit #%d.', $this->get_visit_id() ) );
-				}
+				affiliate_wp()->utils->log( sprintf( 'Referral already generated for visit #%d.', $this->get_visit_id() ) );
 
 				die( '-4' ); // This visit has already generated a referral
 			}
@@ -339,9 +325,7 @@ class Affiliate_WP_Tracking {
 
 			if( 0 == $amount && affiliate_wp()->settings->get( 'ignore_zero_referrals' ) ) {
 
-				if( $this->debug ) {
-					$this->log( 'Referral not created due to 0.00 amount.' );
-				}
+				affiliate_wp()->utils->log( 'Referral not created due to 0.00 amount.' );
 
 				die( '-5' ); // Ignore a zero amount referral
 			}
@@ -360,29 +344,23 @@ class Affiliate_WP_Tracking {
 				'visit_id'     => $this->get_visit_id()
 			) );
 
-			if( $this->debug ) {
-				$this->log( sprintf( 'Referral created for visit #%d.', $this->get_visit_id() ) );
-			}
+			affiliate_wp()->utils->log( sprintf( 'Referral created for visit #%d.', $this->get_visit_id() ) );
 
+			// Update the referral status.
 			affwp_set_referral_status( $referral_id, $status );
 
-			if( $this->debug ) {
-				$this->log( sprintf( 'Referral #%d set to %s for visit #%d.', $referral_id, $status, $this->get_visit_id() ) );
-			}
+			affiliate_wp()->utils->log( sprintf( 'Referral #%d set to %s for visit #%d.', $referral_id, $status, $this->get_visit_id() ) );
 
+			// Update the visit.
 			affiliate_wp()->visits->update( $this->get_visit_id(), array( 'referral_id' => $referral_id ), '', 'visit' );
 
-			if( $this->debug ) {
-				$this->log( sprintf( 'Visit #%d marked as converted.', $this->get_visit_id() ) );
-			}
+			affiliate_wp()->utils->log( sprintf( 'Visit #%d marked as converted.', $this->get_visit_id() ) );
 
 			echo $referral_id; exit;
 
 		} else {
 
-			if( $this->debug ) {
-				$this->log( 'Affiliate ID missing or invalid during track_conversion()' );
-			}
+			affiliate_wp()->utils->log( 'Affiliate ID missing or invalid during track_conversion()' );
 
 			die( '-2' );
 
@@ -438,27 +416,19 @@ class Affiliate_WP_Tracking {
 
 		} elseif( ! $is_valid ) {
 
-			if( $this->debug ) {
-				$this->log( 'Invalid affiliate ID during fallback_track_visit()' );
-			}
+			affiliate_wp()->utils->log( 'Invalid affiliate ID during fallback_track_visit()' );
 
 		} elseif( ! $visit_id ) {
 
-			if( $this->debug ) {
-				$this->log( 'Missing visit ID during fallback_track_visit()' );
-			}
+			affiliate_wp()->utils->log( 'Missing visit ID during fallback_track_visit()' );
 
 		} elseif( $visit_id ) {
 
-			if( $this->debug ) {
-				$this->log( 'Visit already logged during fallback_track_visit()' );
-			}
+			affiliate_wp()->utils->log( 'Visit already logged during fallback_track_visit()' );
 
 		} else {
 
-			if( $this->debug ) {
-				$this->log( 'Invalid affiliate ID during fallback_track_visit()' );
-			}
+			affiliate_wp()->utils->log( 'Invalid affiliate ID during fallback_track_visit()' );
 
 		}
 
@@ -499,9 +469,7 @@ class Affiliate_WP_Tracking {
 
 						} else {
 
-							if( $this->debug ) {
-								$this->log( 'No user account found for given affiliate ID or login during get_fallback_affiliate_id()' );
-							}
+							affiliate_wp()->utils->log( 'No user account found for given affiliate ID or login during get_fallback_affiliate_id()' );
 
 							$affiliate_id = false;
 
