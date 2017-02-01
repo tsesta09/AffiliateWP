@@ -31,6 +31,7 @@ abstract class Affiliate_WP_Base {
 	 *
 	 * @access  public
 	 * @since   1.8
+	 * @deprecated 2.0.2
 	 */
 	public $logs;
 

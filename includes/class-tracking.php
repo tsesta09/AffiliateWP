@@ -18,6 +18,14 @@ class Affiliate_WP_Tracking {
 
 	private $debug;
 
+	/**
+	 * Logger instance.
+	 *
+	 * @access protected
+	 * @deprecated 2.0.2
+	 *
+	 * @var Affiliate_WP_Logging
+	 */
 	protected $logs;
 
 	/**
