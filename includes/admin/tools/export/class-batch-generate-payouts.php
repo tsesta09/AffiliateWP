@@ -273,7 +273,7 @@ class Generate_Payouts extends Batch\Export\CSV implements Batch\With_PreFetch {
 		 * @param array $payouts      Compiled payouts and referrals data where the keys are affiliate
 		 *                            IDs and values arrays of referral data.
 		 */
-		return apply_filters( 'affwp_batch_generate_payouts_get_data', $data, $affiliate_id, $payouts;
+		return apply_filters( 'affwp_batch_generate_payouts_get_data', $data, $affiliate_id, $payouts );
 	}
 
 	/**
