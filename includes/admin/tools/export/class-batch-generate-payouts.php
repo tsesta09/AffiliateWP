@@ -215,7 +215,7 @@ class Generate_Payouts extends Batch\Export\CSV implements Batch\With_PreFetch {
 			'email'    => __( 'Email', 'affiliate-wp' ),
 			'amount'   => __( 'Amount', 'affiliate-wp' ),
 			'currency' => __( 'Currency', 'affiliate-wp' ),
-		);
+		) );
 	}
 
 	/**
