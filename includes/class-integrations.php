@@ -81,7 +81,15 @@ class Affiliate_WP_Integrations {
 			return true;
 		}
 
-		return false;
+		/**
+		 * Defines whether the specified integration is a valid AffiliateWP integration.
+		 *
+		 * Provide a boolean value to adjust the return of this filter.
+		 *
+		 * @param boolean Whether or not the integration is valid.
+		 * @since 2.1
+		 */
+		return (bool) apply_filters( 'affwp_integration_is_valid', array_key_exists( $integration, $all_integrations ) );
 	}
 
 	/**
@@ -100,11 +108,15 @@ class Affiliate_WP_Integrations {
 
 		$enabled_integrations = $this->get_enabled_integrations();
 
-		if ( array_key_exists( $integration, $enabled_integrations ) ) {
-			return true;
-		}
-
-		return false;
+		/**
+		 * Defines whether the specified integration is enabled..
+		 *
+		 * Provide a boolean value to adjust the return of this filter.
+		 *
+		 * @param boolean Whether or not the integration is enabled.
+		 * @since 2.1
+		 */
+		return (bool) apply_filters( 'affwp_integration_is_enabled', array_key_exists( $integration, $enabled_integrations ) );
 	}
 
 	public function load() {
