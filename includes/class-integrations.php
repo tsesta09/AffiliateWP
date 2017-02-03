@@ -100,7 +100,7 @@ class Affiliate_WP_Integrations {
 
 		$enabled_integrations = $this->get_enabled_integrations();
 
-		if ( array_key_exists( $integration, $enabled_integrations ) ) {
+		if ( in_array( $integration, $enabled_integrations, true ) ) {
 			return true;
 		}
 
