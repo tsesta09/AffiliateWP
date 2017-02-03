@@ -73,4 +73,56 @@ class Tests extends UnitTestCase {
 		$this->assertEqualSets( $integrations, self::$integrations->get_integrations() );
 	}
 
+	/**
+	 * @covers \Affiliate_WP_Integrations::get_enabled_integrations()
+	 */
+	public function test_get_enabled_integrations_should_return_enabled_integrations() {
+		affiliate_wp()->settings->set( array(
+			'integrations' => array( 'edd', 'woocommerce' )
+		) );
+
+		$this->assertEqualSets( array( 'edd', 'woocommerce' ), self::$integrations->get_enabled_integrations() );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Integrations::integration_is_valid()
+	 */
+	public function test_integration_is_valid_should_return_true_if_valid_integration() {
+		$this->assertTrue( self::$integrations->integration_is_valid( 'edd' ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Integrations::integration_is_valid()
+	 */
+	public function test_integration_is_valid_should_return_false_if_integration_is_invalid() {
+		$this->assertFalse( self::$integrations->integration_is_valid( 'foo' ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Integrations::integration_is_enabled()
+	 */
+	public function test_integration_is_enabled_should_return_false_if_integration_is_invalid() {
+		$this->assertFalse( self::$integrations->integration_is_enabled( 'foo' ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Integrations::integration_is_enabled()
+	 */
+	public function test_integration_is_enabled_should_return_true_if_integration_is_valid_and_enabled() {
+		affiliate_wp()->settings->set( array(
+			'integrations' => array( 'wpec' )
+		) );
+
+		$this->assertTrue( self::$integrations->integration_is_enabled( 'wpec' ) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Integrations::integration_is_enabled()
+	 */
+	public function test_integration_is_enabled_should_return_false_if_integration_is_valid_but_not_enabled() {
+		$this->assertTrue( self::$integrations->integration_is_valid( 'shopp' ) );
+
+		$this->assertFalse( self::$integrations->integration_is_enabled( 'shopp' ) );
+	}
+
 }
