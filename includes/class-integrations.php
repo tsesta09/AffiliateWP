@@ -121,7 +121,7 @@ class Affiliate_WP_Integrations {
 		 * @param boolean Whether or not the integration is enabled.
 		 * @since 2.1
 		 */
-		return (bool) apply_filters( 'affwp_integration_is_enabled', in_array( $integration, $enabled_integrations, true ) );
+		return (bool) apply_filters( 'affwp_integration_is_enabled', array_key_exists( $integration, $enabled_integrations ) );
 	}
 
 	public function load() {

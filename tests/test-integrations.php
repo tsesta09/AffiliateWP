@@ -77,11 +77,16 @@ class Tests extends UnitTestCase {
 	 * @covers \Affiliate_WP_Integrations::get_enabled_integrations()
 	 */
 	public function test_get_enabled_integrations_should_return_enabled_integrations() {
+		$integrations =  array(
+			'edd'         => 'Easy Digital Downloads',
+			'woocommerce' => 'WooCommerce'
+		);
+
 		affiliate_wp()->settings->set( array(
-			'integrations' => array( 'edd', 'woocommerce' )
+			'integrations' => $integrations
 		) );
 
-		$this->assertEqualSets( array( 'edd', 'woocommerce' ), self::$integrations->get_enabled_integrations() );
+		$this->assertEqualSets( $integrations, self::$integrations->get_enabled_integrations() );
 	}
 
 	/**
@@ -110,7 +115,7 @@ class Tests extends UnitTestCase {
 	 */
 	public function test_integration_is_enabled_should_return_true_if_integration_is_valid_and_enabled() {
 		affiliate_wp()->settings->set( array(
-			'integrations' => array( 'wpec' )
+			'integrations' => array( 'wpec' => 'WP eCommerce' )
 		) );
 
 		$this->assertTrue( self::$integrations->integration_is_enabled( 'wpec' ) );
