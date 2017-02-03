@@ -60,19 +60,23 @@ class Affiliate_WP_Integrations {
 	/**
 	 * Gets the currently-enabled AffiliateWP integrations.
 	 *
-	 * @return array The currently-enabled AffiliateWP integrations.
+	 * @access public
 	 * @since  1.0
+	 *
+	 * @return array The currently-enabled AffiliateWP integrations.
 	 */
 	public function get_enabled_integrations() {
 		return affiliate_wp()->settings->get( 'integrations', array() );
 	}
 
 	/**
-	 * Check if the specified integration is a valid AffiliateWP integration.
+	 * Checks if the specified integration is a valid AffiliateWP integration.
 	 *
-	 * @param  string  $integration  The integration to check.
-	 * @return boolean               True if a valid integration, otherwise false.
+	 * @access public
 	 * @since  2.1
+	 *
+	 * @param string $integration The integration to check.
+	 * @return bool True if a valid integration, otherwise false.
 	 */
 	public function integration_is_valid( $integration ) {
 		$all_integrations = $this->get_integrations();
@@ -87,10 +91,11 @@ class Affiliate_WP_Integrations {
 	/**
 	 * Checks if the specified AffiliateWP integration is enabled.
 	 *
-	 *
-	 * @param  string  $integration  The integration to check.
-	 * @return boolean               True if enabled, otherwise false.
+	 * @access public
 	 * @since  2.1
+	 *
+	 * @param string $integration The integration to check.
+	 * @return bool True if enabled, otherwise false.
 	 */
 	public function integration_is_enabled( $integration ) {
 
