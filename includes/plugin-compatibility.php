@@ -96,7 +96,7 @@ add_action( 'pre_get_posts', 'affwp_simple_page_test_compat', -9999 );
 /**
  * Removes content filtering originating from Encyclopedia Pro in the affiliate area Creatives tab.
  *
- * @since 2.0.1
+ * @since 2.0.2
  *
  * @param int|false $affiliate_id ID for the current affiliate.
  * @param string    $active_tab   Slug for the currently-active tab.
