@@ -292,6 +292,11 @@ table.affiliates #unpaid {
 	box-sizing: content-box;
 }
 
+.affwp-inline-button {
+	position: relative;
+	left: 8px;
+}
+
 /* WooCommerce Admin Tweaks */
 .affwp-woo-coupon-field .affwp-ajax-search-wrap {
 	position: relative;
