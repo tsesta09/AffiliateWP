@@ -253,4 +253,48 @@ class Tests extends UnitTestCase {
 
 		$this->assertEqualSets( self::$creatives, $results );
 	}
+
+	/**
+	 * @covers \Affiliate_WP_Creatives_DB::count()
+	 */
+	public function test_count_should_count_creatives() {
+		$this->assertSame( 4, affiliate_wp()->creatives->count() );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Creatives_DB::count()
+	 */
+	public function test_count_with_args_should_count_those_creatives() {
+		$original_creative = affwp_get_creative( self::$creatives[0] );
+
+		affwp_update_creative( array(
+			'creative_id' => self::$creatives[0],
+			'status'      => 'foo'
+		) );
+
+		$this->assertSame( 1, affiliate_wp()->creatives->count( array( 'status' => 'foo' ) ) );
+
+		// Clean up.
+		affwp_update_creative( array(
+			'creative_id' => self::$creatives[0],
+			'status'      => $original_creative->status
+		) );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Creatives_DB::add()
+	 */
+	public function test_add_should_always_return_the_creative_id() {
+		$result = affiliate_wp()->creatives->add( array(
+			'these' => 'args',
+			'are'   => 'absurd',
+		) );
+
+		$this->assertNotFalse( $result );
+		$this->assertTrue( is_numeric( $result ) );
+
+		// Clean up.
+		affwp_delete_creative( $result );
+	}
+
 }

@@ -17,18 +17,21 @@ jQuery(document).ready( function($) {
 		 * @type {prototype Object} AFFWP.debug_utility  An AFFWP.debug_utility object.
 		 *
 		 * @since 2.0
-		 * @var   item The cookie item name.
+		 * @since 2.0.1  Return false instead of null.
+		 * @var   item   The cookie item name.
 		 */
 		function affwp_get_cookie_item( item ) {
 			var re    = new RegExp(item + "=([^;]+)");
 			var value = re.exec(document.cookie);
-			return (value != null) ? unescape(value[1]) : null;
+			return (value != null) ? unescape(value[1]) : false;
 		}
 
 		// Short-circuiting, and saving a parse operation
 
 		/**
 		 * Checks whether a given value is an integer, with support for floating-point.
+		 * For simple positive integer checks,
+		 * use jQuery isNumeric instead (such as within tracking the ref below).
 		 *
 		 * @since  2.0
 		 *
@@ -126,13 +129,13 @@ jQuery(document).ready( function($) {
 		 */
 		function affwp_debug_inline_vars() {
 			var vars = {
-				ajax_url        : JSON.stringify( affwp_scripts.ajaxurl ),
+				ajax_url        : affwp_scripts.ajaxurl.length ? JSON.stringify( affwp_scripts.ajaxurl ) : 'unavailable',
 				ref             : JSON.stringify( AFFWP.referral_var ? AFFWP.referral_var : affwp_get_cookie_item( 'affwp_ref' ) ),
-				visit_cookie    : JSON.stringify( affwp_get_cookie_item( 'affwp_ref_visit_id' ) ),
-				credit_last     : JSON.stringify( AFFWP.referral_credit_last ),
+				visit_cookie    : affwp_get_cookie_item( 'affwp_ref_visit_id' ) ? JSON.stringify( affwp_get_cookie_item( 'affwp_ref_visit_id' ) ) : 'unavailable',
+				credit_last     : AFFWP.referral_credit_last ? JSON.stringify( AFFWP.referral_credit_last ) : 'unavailable',
 				campaign        : JSON.stringify( affwp_get_query_vars()['campaign'] ? affwp_get_query_vars()['campaign'] : affwp_get_cookie_item( 'affwp_campaign' ) ),
-				currency        : JSON.stringify( affwp_debug_vars.currency ),
-				version         : JSON.stringify( affwp_debug_vars.version )
+				currency        : affwp_debug_vars.currency.length ? JSON.stringify( affwp_debug_vars.currency ) : 'unavailable',
+				version         : affwp_debug_vars.version.length ? JSON.stringify( affwp_debug_vars.version ) : 'unavailable'
 			}
 
 			return vars;
@@ -146,7 +149,13 @@ jQuery(document).ready( function($) {
 		 * @return {array} All active AffiliateWP integrations on the site.
 		 */
 		function affwp_debug_get_integrations() {
-			return affwp_debug_vars.integrations;
+
+			if ( typeof affwp_debug_vars !== 'undefined' ) {
+				return affwp_debug_vars.integrations;
+			} else {
+				return false;
+			}
+
 		}
 
 		/**
@@ -193,6 +202,8 @@ jQuery(document).ready( function($) {
 		 */
 		function affwp_debug_output() {
 
+			console.affwp( 'The following data is provided from AffiliateWP debug mode. To disable this information, please deactivate debug mode in AffiliateWP.' );
+
 			console.affwp( 'Available debug data: ' + '\n' + JSON.stringify(
 				Object(
 						affwp_debug_inline_vars()
@@ -201,7 +212,7 @@ jQuery(document).ready( function($) {
 			);
 
 			console.affwp( 'Integrations' + '\n' + JSON.stringify(
-				Object.values(
+				Object(
 						affwp_debug_get_integrations()
 					)
 				)
@@ -242,7 +253,9 @@ jQuery(document).ready( function($) {
 			console.log.apply( console, arguments );
 		};
 
-		// Print debug info to the console.
+		/**
+		 * Print debug info to the console.
+		 */
 		affwp_debug_output();
 	}
 
