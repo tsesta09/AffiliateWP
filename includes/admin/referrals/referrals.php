@@ -19,13 +19,24 @@ require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/referrals/class-list-table
 
 function affwp_referrals_admin() {
 
-	if( isset( $_GET['action'] ) && 'add_referral' == $_GET['action'] ) {
+	if ( isset( $_GET['action'] )
+		&& in_array( $_GET['action'], array( 'view_referral', 'add_referral', 'edit_referral' ), true )
+	) {
+		$action = sanitize_text_field( $_GET['action'] );
 
-		include AFFILIATEWP_PLUGIN_DIR . 'includes/admin/referrals/new.php';
+		if ( 'view_referral' === $action ) {
 
-	} else if( isset( $_GET['action'] ) && 'edit_referral' == $_GET['action'] ) {
+			include AFFILIATEWP_PLUGIN_DIR . 'includes/admin/referrals/view.php';
 
-		include AFFILIATEWP_PLUGIN_DIR . 'includes/admin/referrals/edit.php';
+		} elseif ( 'add_referral' === $action ) {
+
+			include AFFILIATEWP_PLUGIN_DIR . 'includes/admin/referrals/new.php';
+
+		} elseif ( 'edit_referral' === $action ) {
+
+			include AFFILIATEWP_PLUGIN_DIR . 'includes/admin/referrals/edit.php';
+
+		}
 
 	} else {
 
