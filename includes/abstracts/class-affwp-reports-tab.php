@@ -112,18 +112,23 @@ abstract class Tab {
 		$this->set_up_tiles();
 
 		if ( has_action( "affwp_reports_{$this->tab_id}_nav" ) ) : ?>
-			<h3><?php _e( 'Date Filters', 'affiliate-wp' ); ?></h3>
+			<h3><?php _e( 'Filters', 'affiliate-wp' ); ?></h3>
 			<div id="reports-nav">
-				<?php
-				/**
-				 * Fires inside the inner Reports nav in the given tab.
-				 *
-				 * The dynamic portion of the hook name, `$this->tab_id`, refers to the ID of the current tab.
-				 *
-				 * @since 1.9
-				 */
-				do_action( "affwp_reports_{$this->tab_id}_nav" );
-				?>
+				<form id="affwp-graphs-filter" method="get">
+					<div class="tablenav top">
+						<?php
+						/**
+						 * Fires inside the inner Reports nav in the given tab.
+						 *
+						 * The dynamic portion of the hook name, `$this->tab_id`, refers to the ID of the current tab.
+						 *
+						 * @since 1.9
+						 */
+						do_action( "affwp_reports_{$this->tab_id}_nav" );
+						?>
+						<?php submit_button( __( 'Filter', 'affiliate-wp' ), 'secondary', 'submit', false ); ?>
+					</div>
+				</form>
 			</div>
 		<?php endif; ?>
 

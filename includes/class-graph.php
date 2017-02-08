@@ -381,52 +381,44 @@ class Affiliate_WP_Graph {
 
 		$current_time = current_time( 'timestamp' );
 
+		if( is_admin() ) : ?>
+			<?php $tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'referral'; ?>
+			<?php $page = isset( $_GET['page'] ) ? $_GET['page'] : 'affiliate-wp'; ?>
+			<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>"/>
+		<?php else: ?>
+			<?php $tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'graphs'; ?>
+			<input type="hidden" name="page_id" value="<?php echo esc_attr( get_the_ID() ); ?>"/>
+		<?php endif; ?>
+
+		<input type="hidden" name="tab" value="<?php echo esc_attr( $tab ); ?>"/>
+
+		<?php if( isset( $_GET['affiliate_id'] ) ) : ?>
+		<input type="hidden" name="affiliate_id" value="<?php echo absint( $_GET['affiliate_id'] ); ?>"/>
+		<input type="hidden" name="action" value="view_affiliate"/>
+		<?php endif; ?>
+
+		<select id="affwp-graphs-date-options" name="range">
+		<?php
+			foreach ( $date_options as $key => $option ) {
+				echo '<option value="' . esc_attr( $key ) . '" ' . selected( $key, $dates['range'] ) . '>' . esc_html( $option ) . '</option>';
+			}
 		?>
-		<form id="affwp-graphs-filter" method="get">
-			<div class="tablenav top">
+		</select>
 
-				<?php if( is_admin() ) : ?>
-					<?php $tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'referral'; ?>
-					<?php $page = isset( $_GET['page'] ) ? $_GET['page'] : 'affiliate-wp'; ?>
-					<input type="hidden" name="page" value="<?php echo esc_attr( $page ); ?>"/>
-				<?php else: ?>
-					<?php $tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'graphs'; ?>
-					<input type="hidden" name="page_id" value="<?php echo esc_attr( get_the_ID() ); ?>"/>
-				<?php endif; ?>
+		<div id="affwp-date-range-options" <?php echo $display; ?>>
 
-				<input type="hidden" name="tab" value="<?php echo esc_attr( $tab ); ?>"/>
+			<?php
+			$from = empty( $_REQUEST['filter_from'] ) ? '' : $_REQUEST['filter_from'];
+			$to   = empty( $_REQUEST['filter_to'] )   ? '' : $_REQUEST['filter_to'];
+			?>
+			<span class="affwp-search-date">
+				<span><?php _ex( 'From', 'date filter', 'affiliate-wp' ); ?></span>
+				<input type="text" class="affwp-datepicker" autocomplete="off" name="filter_from" placeholder="<?php esc_attr_e( 'From - mm/dd/yyyy', 'affiliate-wp' ); ?>" aria-label="<?php esc_attr_e( 'From - mm/dd/yyyy', 'affiliate-wp' ); ?>" value="<?php echo esc_attr( $from ); ?>" />
+				<span><?php _ex( 'To', 'date filter', 'affiliate-wp' ); ?></span>
+				<input type="text" class="affwp-datepicker" autocomplete="off" name="filter_to" placeholder="<?php esc_attr_e( 'To - mm/dd/yyyy', 'affiliate-wp' ); ?>" aria-label="<?php esc_attr_e( 'To - mm/dd/yyyy', 'affiliate-wp' ); ?>" value="<?php echo esc_attr( $to ); ?>" />
+			</span>
 
-				<?php if( isset( $_GET['affiliate_id'] ) ) : ?>
-				<input type="hidden" name="affiliate_id" value="<?php echo absint( $_GET['affiliate_id'] ); ?>"/>
-				<input type="hidden" name="action" value="view_affiliate"/>
-				<?php endif; ?>
-
-				<select id="affwp-graphs-date-options" name="range">
-				<?php
-					foreach ( $date_options as $key => $option ) {
-						echo '<option value="' . esc_attr( $key ) . '" ' . selected( $key, $dates['range'] ) . '>' . esc_html( $option ) . '</option>';
-					}
-				?>
-				</select>
-
-				<div id="affwp-date-range-options" <?php echo $display; ?>>
-
-					<?php
-					$from = empty( $_REQUEST['filter_from'] ) ? '' : $_REQUEST['filter_from'];
-					$to   = empty( $_REQUEST['filter_to'] )   ? '' : $_REQUEST['filter_to'];
-					?>
-					<span class="affwp-search-date">
-						<span><?php _ex( 'From', 'date filter', 'affiliate-wp' ); ?></span>
-						<input type="text" class="affwp-datepicker" autocomplete="off" name="filter_from" placeholder="<?php esc_attr_e( 'From - mm/dd/yyyy', 'affiliate-wp' ); ?>" aria-label="<?php esc_attr_e( 'From - mm/dd/yyyy', 'affiliate-wp' ); ?>" value="<?php echo esc_attr( $from ); ?>" />
-						<span><?php _ex( 'To', 'date filter', 'affiliate-wp' ); ?></span>
-						<input type="text" class="affwp-datepicker" autocomplete="off" name="filter_to" placeholder="<?php esc_attr_e( 'To - mm/dd/yyyy', 'affiliate-wp' ); ?>" aria-label="<?php esc_attr_e( 'To - mm/dd/yyyy', 'affiliate-wp' ); ?>" value="<?php echo esc_attr( $to ); ?>" />
-					</span>
-
-				</div>
-
-				<input type="submit" class="button" value="<?php _e( 'Filter', 'affiliate-wp' ); ?>"/>
-			</div>
-		</form>
+		</div>
 		<?php
 	}
 
