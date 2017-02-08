@@ -69,6 +69,11 @@ class Tab extends Reports\Tab {
 	 */
 	public function affiliate_filter() {
 		$affiliate_login = ! empty( $_GET['affiliate_login'] ) ? sanitize_text_field( $_GET['affiliate_login'] ) : '';
+
+		// Only keep the currently-filtered affiliate if it's valid.
+		if ( false === affwp_get_affiliate( $affiliate_login ) ) {
+			$affiliate_login = '';
+		}
 		?>
 		<span class="affwp-ajax-search-wrap">
 			<input type="text" name="affiliate_login" id="user_name" class="affwp-user-search" value="<?php echo esc_attr( $affiliate_login ); ?>" data-affwp-status="any" autocomplete="off" placeholder="<?php _e( 'Affiliate name', 'affiliate-wp' ); ?>" />
