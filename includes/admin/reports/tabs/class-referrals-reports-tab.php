@@ -88,6 +88,7 @@ class Tab extends Reports\Tab {
 	 * @since  1.9
 	 */
 	public function register_tiles() {
+
 		if ( $this->affiliate_id ) {
 
 			$affiliate_link = affwp_admin_url( 'referrals', array(
@@ -97,11 +98,11 @@ class Tab extends Reports\Tab {
 			) );
 
 			$this->register_tile( 'affiliate_total_earnings', array(
-				'label'           => __( 'Total Earnings', 'affiliate-wp' ),
+				'label'           => __( 'Total Earnings (All Time)', 'affiliate-wp' ),
 				'type'            => 'amount',
 				'context'         => 'primary',
 				'data'            => affwp_get_affiliate_earnings( $this->affiliate_id ),
-				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a> | All Time', 'affiliate-wp' ),
+				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a>', 'affiliate-wp' ),
 					esc_url( $affiliate_link ),
 					affwp_get_affiliate_name( $this->affiliate_id )
 				),
@@ -113,7 +114,7 @@ class Tab extends Reports\Tab {
 				'label'           => __( 'Total Unpaid Earnings', 'affiliate-wp' ),
 				'type'            => $total_unpaid_earnings ? 'amount' : '',
 				'context'         => 'secondary',
-				'data'            => $total_unpaid_earnings ? $total_unpaid_earnings : __( 'All Current', 'affiliate-wp' ),
+				'data'            => $total_unpaid_earnings ? $total_unpaid_earnings : __( 'None', 'affiliate-wp' ),
 				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a>', 'affiliate-wp' ),
 					esc_url( $affiliate_link ),
 					affwp_get_affiliate_name( $this->affiliate_id )
@@ -121,17 +122,17 @@ class Tab extends Reports\Tab {
 			) );
 
 			$this->register_tile( 'affiliate_total_payouts', array(
-				'label'           => __( 'Payouts', 'affiliate-wp' ),
+				'label'           => __( 'Payouts (All Time)', 'affiliate-wp' ),
 				'type'            => 'number',
 				'context'         => 'tertiary',
 				'data'            => affiliate_wp()->affiliates->payouts->count( array(
-					'date'         => $this->date_query,
 					'affiliate_id' => $this->affiliate_id,
 				) ),
-				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a> | %3$s', 'affiliate-wp' ),
+				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a> | <a href="%3$s">%4$s</a>', 'affiliate-wp' ),
 					esc_url( $affiliate_link ),
 					affwp_get_affiliate_name( $this->affiliate_id ),
-					$this->get_date_comparison_label()
+					esc_url( affwp_admin_url( 'payouts', array( 'affiliate_id' => $this->affiliate_id ) ) ),
+					__( 'View All', 'affiliate-wp' )
 				),
 			) );
 
@@ -146,14 +147,13 @@ class Tab extends Reports\Tab {
 			}
 
 			$this->register_tile( 'affiliate_average_referral', array(
-				'label'           => __( 'Average Referral Amount', 'affiliate-wp' ),
+				'label'           => __( 'Average Referral Amount (All Time)', 'affiliate-wp' ),
 				'type'            => 'amount',
 				'context'         => 'primary',
 				'data'            => array_sum( $affiliate_referrals ) / count( $affiliate_referrals ),
-				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a> | %3$s', 'affiliate-wp' ),
+				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a>', 'affiliate-wp' ),
 					esc_url( $affiliate_link ),
-					affwp_get_affiliate_name( $this->affiliate_id ),
-					$this->get_date_comparison_label()
+					affwp_get_affiliate_name( $this->affiliate_id )
 				),
 			) );
 
