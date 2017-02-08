@@ -101,6 +101,7 @@ class Affiliate_WP_Graph {
 			'points'          => true,
 			'currency'        => true,
 			'show_controls'   => true,
+			'form_wrapper'    => true,
 		);
 
 	}
@@ -355,10 +356,9 @@ class Affiliate_WP_Graph {
 	}
 
 	/**
-	 * Show report graph date filters
+	 * Displays the report graph date filters.
 	 *
 	 * @since 1.0
-	 * @return void
 	*/
 	function graph_controls() {
 		$date_options = apply_filters( 'affwp_report_date_options', array(
@@ -380,6 +380,13 @@ class Affiliate_WP_Graph {
 		$display = $dates['range'] == 'other' ? 'style="display:inline-block;"' : 'style="display:none;"';
 
 		$current_time = current_time( 'timestamp' );
+
+		if ( $this->get( 'form_wrapper' ) ) {
+			?>
+			<form id="affwp-graphs-filter" method="get">
+			<div class="tablenav top">
+			<?php
+		}
 
 		if( is_admin() ) : ?>
 			<?php $tab = isset( $_GET['tab'] ) ? $_GET['tab'] : 'referral'; ?>
@@ -420,6 +427,13 @@ class Affiliate_WP_Graph {
 
 		</div>
 		<?php
+		if ( $this->get( 'form_wrapper' ) ) {
+			submit_button( __( 'Filter', 'affiliate-wp' ), 'secondary', 'submit', false );
+			?>
+			</div><!-- .tablenav .top -->
+			</form><!-- .affwp-graphs-filter -->
+			<?php
+		}
 	}
 
 }
