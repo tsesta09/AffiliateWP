@@ -90,6 +90,105 @@ class Tab extends Reports\Tab {
 	public function register_tiles() {
 		if ( $this->affiliate_id ) {
 
+			$affiliate_link = affwp_admin_url( 'referrals', array(
+				'affiliate_id' => $this->affiliate_id,
+				'orderby'      => 'status',
+				'order'        => 'ASC',
+			) );
+
+			$this->register_tile( 'affiliate_total_earnings', array(
+				'label'           => __( 'Total Earnings', 'affiliate-wp' ),
+				'type'            => 'amount',
+				'context'         => 'primary',
+				'data'            => affwp_get_affiliate_earnings( $this->affiliate_id ),
+				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a> | All Time', 'affiliate-wp' ),
+					esc_url( $affiliate_link ),
+					affwp_get_affiliate_name( $this->affiliate_id )
+				),
+			) );
+
+			$total_unpaid_earnings = affwp_get_affiliate_unpaid_earnings( $this->affiliate_id );
+
+			$this->register_tile( 'affiliate_unpaid_earnings', array(
+				'label'           => __( 'Total Unpaid Earnings', 'affiliate-wp' ),
+				'type'            => $total_unpaid_earnings ? 'amount' : '',
+				'context'         => 'secondary',
+				'data'            => $total_unpaid_earnings ? $total_unpaid_earnings : __( 'All Current', 'affiliate-wp' ),
+				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a>', 'affiliate-wp' ),
+					esc_url( $affiliate_link ),
+					affwp_get_affiliate_name( $this->affiliate_id )
+				),
+			) );
+
+			$this->register_tile( 'affiliate_total_payouts', array(
+				'label'           => __( 'Payouts', 'affiliate-wp' ),
+				'type'            => 'number',
+				'context'         => 'tertiary',
+				'data'            => affiliate_wp()->affiliates->payouts->count( array(
+					'date'         => $this->date_query,
+					'affiliate_id' => $this->affiliate_id,
+				) ),
+				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a> | %3$s', 'affiliate-wp' ),
+					esc_url( $affiliate_link ),
+					affwp_get_affiliate_name( $this->affiliate_id ),
+					$this->get_date_comparison_label()
+				),
+			) );
+
+			$affiliate_referrals = affiliate_wp()->referrals->get_referrals( array(
+				'number'       => -1,
+				'fields'       => 'amount',
+				'affiliate_id' => $this->affiliate_id
+			) );
+
+			if ( ! $affiliate_referrals ) {
+				$affiliate_referrals = array( 0 );
+			}
+
+			$this->register_tile( 'affiliate_average_referral', array(
+				'label'           => __( 'Average Referral Amount', 'affiliate-wp' ),
+				'type'            => 'amount',
+				'context'         => 'primary',
+				'data'            => array_sum( $affiliate_referrals ) / count( $affiliate_referrals ),
+				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a> | %3$s', 'affiliate-wp' ),
+					esc_url( $affiliate_link ),
+					affwp_get_affiliate_name( $this->affiliate_id ),
+					$this->get_date_comparison_label()
+				),
+			) );
+
+
+			$this->register_tile( 'affiliate_paid_unpaid_referrals', array(
+				'label'           => __( 'Paid / Unpaid Referrals', 'affiliate-wp' ),
+				'type'            => 'split-number',
+				'context'         => 'secondary',
+				'data'            => array(
+					'first_value'  => affiliate_wp()->referrals->count_by_status( 'paid', $this->affiliate_id, $this->date_query ),
+					'second_value' => affiliate_wp()->referrals->count_by_status( 'unpaid', $this->affiliate_id, $this->date_query ),
+				),
+				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a> | %3$s', 'affiliate-wp' ),
+					esc_url( $affiliate_link ),
+					affwp_get_affiliate_name( $this->affiliate_id ),
+					$this->get_date_comparison_label()
+				),
+			) );
+
+			$this->register_tile( 'affiliate_pending_rejected_referrals', array(
+				'label'           => __( 'Pending / Rejected Referrals', 'affiliate-wp' ),
+				'type'            => 'split-number',
+				'context'         => 'tertiary',
+				'data'            => array(
+					'first_value'  => affiliate_wp()->referrals->count_by_status( 'pending', $this->affiliate_id, $this->date_query ),
+					'second_value' => affiliate_wp()->referrals->count_by_status( 'rejected', $this->affiliate_id, $this->date_query ),
+				),
+				'comparison_data' => sprintf( __( 'Affiliate: <a href="%1$s">%2$s</a> | %3$s', 'affiliate-wp' ),
+					esc_url( $affiliate_link ),
+					affwp_get_affiliate_name( $this->affiliate_id ),
+					$this->get_date_comparison_label()
+				),
+			) );
+
+
 		} else {
 
 			$this->register_tile( 'all_time_paid_earnings', array(

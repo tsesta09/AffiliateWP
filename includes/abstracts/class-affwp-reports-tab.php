@@ -334,6 +334,13 @@ abstract class Tab {
 						echo '<span class="tile-number tile-value">' . affwp_format_amount( $tile['data'], false ) . '</span>';
 						break;
 
+					case 'split-number':
+						printf( '<span class="tile-amount tile-value">%1$d / %2$d</span>',
+							affwp_format_amount( $tile['data']['first_value'] ),
+							affwp_format_amount( $tile['data']['second_value'] )
+						);
+						break;
+
 					case 'amount':
 						echo '<span class="tile-amount tile-value">' . affwp_currency_filter( affwp_format_amount( $tile['data'] ) ) . '</span>';
 						break;
