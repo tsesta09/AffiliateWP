@@ -83,56 +83,62 @@ class Tab extends Reports\Tab {
 	 * @since  1.9
 	 */
 	public function register_tiles() {
-		$this->register_tile( 'all_time_paid_earnings', array(
-			'label'           => __( 'Paid Earnings', 'affiliate-wp' ),
-			'type'            => 'amount',
-			'data'            => array_sum( affiliate_wp()->referrals->get_referrals( array(
+		if ( $this->affiliate_id ) {
+
+		} else {
+
+			$this->register_tile( 'all_time_paid_earnings', array(
+				'label'           => __( 'Paid Earnings', 'affiliate-wp' ),
+				'type'            => 'amount',
+				'data'            => array_sum( affiliate_wp()->referrals->get_referrals( array(
+					'number' => -1,
+					'fields' => 'amount',
+					'status' => 'paid'
+				) ) ),
+				'comparison_data' => __( 'All Time', 'affiliate-wp' )
+			) );
+
+			$this->register_tile( 'paid_earnings', array(
+				'label'           => __( 'Paid Earnings', 'affiliate-wp' ),
+				'context'         => 'secondary',
+				'type'            => 'amount',
+				'data'            => affiliate_wp()->referrals->paid_earnings( $this->date_query, 0, false ),
+				'comparison_data' => $this->get_date_comparison_label(),
+			) );
+
+			$this->register_tile( 'unpaid_earnings', array(
+				'label'           => __( 'Unpaid Earnings', 'affiliate-wp' ),
+				'context'         => 'tertiary',
+				'type'            => 'amount',
+				'data'            => affiliate_wp()->referrals->unpaid_earnings( $this->date_query, 0, false ),
+				'comparison_data' => $this->get_date_comparison_label(),
+			) );
+
+			$this->register_tile( 'unpaid_referrals', array(
+				'label'   => __( 'Unpaid Referrals', 'affiliate-wp' ),
+				'type'    => 'number',
+				'data'    => affiliate_wp()->referrals->unpaid_count( $this->date_query ),
+				'comparison_data' => $this->get_date_comparison_label(),
+			) );
+
+			$all_referrals = affiliate_wp()->referrals->get_referrals( array(
 				'number' => -1,
 				'fields' => 'amount',
-				'status' => 'paid'
-			) ) ),
-			'comparison_data' => __( 'All Time', 'affiliate-wp' )
-		) );
+			) );
 
-		$this->register_tile( 'paid_earnings', array(
-			'label'           => __( 'Paid Earnings', 'affiliate-wp' ),
-			'context'         => 'secondary',
-			'type'            => 'amount',
-			'data'            => affiliate_wp()->referrals->paid_earnings( $this->date_query, 0, false ),
-			'comparison_data' => $this->get_date_comparison_label(),
-		) );
+			if ( ! $all_referrals ) {
+				$all_referrals = array( 0 );
+			}
 
-		$this->register_tile( 'unpaid_earnings', array(
-			'label'           => __( 'Unpaid Earnings', 'affiliate-wp' ),
-			'context'         => 'tertiary',
-			'type'            => 'amount',
-			'data'            => affiliate_wp()->referrals->unpaid_earnings( $this->date_query, 0, false ),
-			'comparison_data' => $this->get_date_comparison_label(),
-		) );
-
-		$this->register_tile( 'unpaid_referrals', array(
-			'label'   => __( 'Unpaid Referrals', 'affiliate-wp' ),
-			'type'    => 'number',
-			'data'    => affiliate_wp()->referrals->unpaid_count( $this->date_query ),
-			'comparison_data' => $this->get_date_comparison_label(),
-		) );
-
-		$all_referrals = affiliate_wp()->referrals->get_referrals( array(
-			'number' => -1,
-			'fields' => 'amount',
-		) );
-
-		if ( ! $all_referrals ) {
-			$all_referrals = array( 0 );
+			$this->register_tile( 'average_referral', array(
+				'label'           => __( 'Average Referral Amount', 'affiliate-wp' ),
+				'type'            => 'amount',
+				'context'         => 'secondary',
+				'data'            => array_sum( $all_referrals ) / count( $all_referrals ),
+				'comparison_data' => $this->get_date_comparison_label(),
+			) );
 		}
 
-		$this->register_tile( 'average_referral', array(
-			'label'           => __( 'Average Referral Amount', 'affiliate-wp' ),
-			'type'            => 'amount',
-			'context'         => 'secondary',
-			'data'            => array_sum( $all_referrals ) / count( $all_referrals ),
-			'comparison_data' => $this->get_date_comparison_label(),
-		) );
 	}
 
 	/**
