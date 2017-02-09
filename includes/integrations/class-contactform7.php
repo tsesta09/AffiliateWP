@@ -205,6 +205,12 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 			$enabled = array();
 		}
 
+		/**
+		 * Filters which forms are enabled for referral generation in the Contact Form 7 integration.
+		 *
+		 * @param array  $enabled  An array of AffiliateWP-enabled Contact Form 7 forms.
+		 * @since 2.0
+		 */
 		return apply_filters( 'affwp_cf7_enabled_forms', $enabled );
 	}
 
