@@ -1042,7 +1042,10 @@ function affwp_get_affiliate_campaigns( $affiliate = 0 ) {
 		return false;
 	}
 
-	$campaigns = affiliate_wp()->campaigns->get_campaigns( $affiliate->ID );
+	$campaigns = affiliate_wp()->campaigns->get_campaigns( array(
+		'affiliate_id' => $affiliate->ID,
+		'number'       => 100,
+	) );
 
 	/**
 	 * Filters the list of campaigns associated with an affiliate.
