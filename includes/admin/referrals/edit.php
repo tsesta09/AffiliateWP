@@ -181,8 +181,9 @@ $disabled = disabled( (bool) $payout, true, false );
 						<p>
 							<?php
 							/* translators: 1: Visit date */
-							printf( _x( 'Date: %1$s', 'visit', 'affiliate-wp' ),
-								'<em>' . esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $visit->date ) ) ) . '</em>'
+							printf( _x( 'Date: %1$s (%2$s)', 'visit', 'affiliate-wp' ),
+								date_i18n( get_option( 'date_format' ), strtotime( $visit->date ) ),
+								date_i18n( get_option( 'time_format' ), strtotime( $visit->date ) )
 							);
 							?>
 						</p>
