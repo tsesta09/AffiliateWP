@@ -16,7 +16,7 @@ class Tab extends Reports\Tab {
 	 * Sets up the Payouts tab for Reports.
 	 *
 	 * @access public
-	 * @since  1.9
+	 * @since  2.1
 	 */
 	public function __construct() {
 		$this->tab_id   = 'payouts';
@@ -32,6 +32,8 @@ class Tab extends Reports\Tab {
 	 *
 	 * @access public
 	 * @since  2.1
+	 *
+	 * @see register_tile()
 	 */
 	public function total_payouts_tile() {
 		$this->register_tile( 'total_payouts', array(
@@ -46,7 +48,9 @@ class Tab extends Reports\Tab {
 	 * Registers the 'Average Payout' date-based tile.
 	 *
 	 * @access public
-	 * @since  1.9
+	 * @since  2.1
+	 *
+	 * @see register_tile()
 	 */
 	public function average_payout_tile() {
 		$payouts = affiliate_wp()->affiliates->payouts->get_payouts( array(
@@ -69,10 +73,10 @@ class Tab extends Reports\Tab {
 	}
 
 	/**
-	 * Registers the Affiliates tab tiles.
+	 * Registers the Payouts tab tiles.
 	 *
 	 * @access public
-	 * @since  1.9
+	 * @since  2.1
 	 */
 	public function register_tiles() {
 		$this->total_payouts_tile();
@@ -83,7 +87,7 @@ class Tab extends Reports\Tab {
 	 * Handles displaying the 'Trends' graph.
 	 *
 	 * @access public
-	 * @since  1.9
+	 * @since  2.1
 	 */
 	public function display_trends() {
 		$this->graph->set( 'show_controls', false );
