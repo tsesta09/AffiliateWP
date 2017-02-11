@@ -202,7 +202,8 @@ class Endpoints extends Controller {
 			},
 		);
 
-		$params['context'] = array(
+		// 'visit_context' so as not to conflict with the global 'content' parameter.
+		$params['visit_context'] = array(
 			'description'       => __( 'The context under which the visit was created.', 'affiliate-wp' ),
 			'sanitize_callback' => function( $param, $request, $key ) {
 				return sanitize_key( substr( $param, 0, 50 ) );
