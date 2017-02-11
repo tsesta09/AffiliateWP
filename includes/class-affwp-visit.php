@@ -77,7 +77,7 @@ final class Visit extends Base_Object {
 	public $campaign;
 
 	/**
-	 * Referral context.
+	 * Visit context.
 	 *
 	 * @since  2.0.2
 	 * @access public
