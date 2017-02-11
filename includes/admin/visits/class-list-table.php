@@ -183,6 +183,36 @@ class AffWP_Visits_Table extends List_Table {
 	}
 
 	/**
+	 * Renders the 'Referral ID' column in the visits list table.
+	 *
+	 * @access public
+	 * @since  2.0.2
+	 *
+	 * @param \AffWP\Visit $visit The current visit object.
+	 * @return string The 'Referral ID' column markup.
+	 */
+	function column_referral_id( $visit ) {
+		if ( $visit->referral_id ) {
+			$value = affwp_admin_link( 'referrals', $visit->referral_id, array(
+				'action'      => 'edit_referral',
+				'referral_id' => $visit->referral_id
+			) );
+		} else {
+			$value = $visit->referral_id;
+		}
+
+		/**
+		 * Filters the 'Referral ID' column of the visits list table.
+		 *
+		 * @since 2.0.2
+		 *
+		 * @param string       $value The value of the 'Referral ID' column in the visits list table.
+		 * @param \AffWP\Visit $visit The current visit object.
+		 */
+		return apply_filters( 'affwp_visit_table_referral_id', $value, $visit );
+	}
+
+	/**
 	 * Renders the referrer column in the visits list table.
 	 *
 	 * @access public
