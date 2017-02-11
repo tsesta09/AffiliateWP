@@ -90,6 +90,7 @@ class Endpoints extends Controller {
 		$args['referral_id']     = isset( $request['referral_id'] )     ? $request['referral_id'] : 0;
 		$args['referral_status'] = isset( $request['referral_status'] ) ? $request['referral_status'] : '';
 		$args['campaign']        = isset( $request['campaign'] )        ? $request['campaign'] : '';
+		$args['context']         = isset( $request['context'] )         ? $request['context'] : '';
 		$args['date']            = isset( $request['date'] )            ? $request['date'] : '';
 		$args['order']           = isset( $request['order'] )           ? $request['order'] : 'ASC';
 		$args['orderby']         = isset( $request['orderby'] )         ? $request['orderby'] : '';
@@ -201,6 +202,16 @@ class Endpoints extends Controller {
 			},
 		);
 
+		$params['context'] = array(
+			'description'       => __( 'The context under which the visit was created.', 'affiliate-wp' ),
+			'sanitize_callback' => function( $param, $request, $key ) {
+				return sanitize_key( substr( $param, 0, 50 ) );
+			},
+			'validatE_callback' => function( $param, $request, $key ) {
+				return is_string( $param );
+			}
+		);
+
 		$params['campaign'] = array(
 			'description'       => __( 'The associated campaign.', 'affiliate-wp' ),
 			'sanitize_callback' => 'sanitize_text_field',
@@ -265,6 +276,10 @@ class Endpoints extends Controller {
 				),
 				'campaign'     => array(
 					'description' => __( 'Campaign associated with the visit.', 'affiliate-wp' ),
+					'type'        => 'string',
+				),
+				'context'      => array(
+					'description' => __( 'Context under which the visit was generated.', 'affiliate-wp' ),
 					'type'        => 'string',
 				),
 				'ip'           => array(
