@@ -223,4 +223,86 @@ class Tests extends UnitTestCase {
 		$this->assertEqualSets( self::$visits, $results );
 	}
 
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::add()
+	 */
+	public function test_add_with_context_under_50_chars_should_add_with_complete_sanitized_context() {
+		/** @var \AffWP\Visit $visit */
+		$visit = $this->factory->visit->create_and_get( array(
+			'affiliate_id' => self::$affiliates[0],
+			'context'      => 'affwp-test'
+		) );
+
+		$this->assertSame( 'affwp-test', $visit->context );
+
+		// Clean up.
+		affiliate_wp()->visits->delete( $visit->ID );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::add()
+	 */
+	public function test_add_with_context_over_50_chars_should_add_with_first_50_chars_of_sanitized_context() {
+		$context = rand_str( 55 );
+
+		$visit = $this->factory->visit->create_and_get( array(
+			'affiliate_id' => self::$affiliates[0],
+			'context'      => $context,
+		) );
+
+		$this->assertSame( substr( $context, 0, 50 ), $visit->context );
+
+		// Clean up.
+		affiliate_wp()->visits->delete( $visit->ID );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::add()
+	 */
+	public function test_add_with_completely_invalid_context_should_add_without_a_context() {
+		$visit = $this->factory->visit->create_and_get( array(
+			'affiliate_id' => self::$affiliates[0],
+			'context'      => '(*&^%$#$%^',
+		) );
+
+		$this->assertEmpty( $visit->context );
+
+		// Clean up.
+		affiliate_wp()->visits->delete( $visit->ID );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::update()
+	 */
+	public function test_update_with_context_under_50_chars_should_add_with_complete_sanitized_context() {
+		affiliate_wp()->visits->update( self::$visits[0], array(
+			'context' => 'affwp-test'
+		), '', 'visit' );
+
+		$result = affwp_get_visit( self::$visits[0] );
+
+		$this->assertSame( 'affwp-test', $result->context );
+
+		// Clean up.
+		affiliate_wp()->visits->update( self::$visits[0], array( 'context' => 'foo-0' ), '', 'visit' );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Visits_DB::update()
+	 */
+	public function test_update_with_context_over_50_chars_should_add_with_first_50_chars_of_sanitized_context() {
+		$context = rand_str( 55 );
+
+		affiliate_wp()->visits->update( self::$visits[0], array(
+			'context' => $context
+		), '', 'visit' );
+
+		$result = affwp_get_visit( self::$visits[0] );
+
+		$this->assertSame( substr( $context, 0, 50 ), $result->context );
+
+		// Clean up.
+		affiliate_wp()->visits->update( self::$visits[0], array( 'context' => 'foo-0' ), '', 'visit' );
+	}
+
 }
