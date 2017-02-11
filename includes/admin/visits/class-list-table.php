@@ -320,7 +320,8 @@ class AffWP_Visits_Table extends List_Table {
 		$user_id      = isset( $_GET['user_id'] )   ? absint( $_GET['user_id'] )               : false;
 		$referral_id  = isset( $_GET['referral'] )  ? absint( $_GET['referral'] )              : false;
 		$affiliate_id = isset( $_GET['affiliate'] ) ? absint( $_GET['affiliate'] )             : false;
-		$campaign     = isset( $_GET['campaign'] )  ? sanitize_text_field( $_GET['campaign'] ) : false;
+		$campaign     = isset( $_GET['campaign'] )  ? sanitize_key( $_GET['campaign'] )        : false;
+		$context      = isset( $_GET['context'] )   ? sanitize_key( $_GET['context'] )         : false;
 		$order        = isset( $_GET['order'] )     ? $_GET['order']                           : 'DESC';
 		$orderby      = isset( $_GET['orderby'] )   ? $_GET['orderby']                         : 'date';
 		$search       = isset( $_GET['s'] )         ? sanitize_text_field( $_GET['s'] )        : '';
@@ -352,6 +353,9 @@ class AffWP_Visits_Table extends List_Table {
 		} elseif ( strpos( $search, 'campaign:' ) !== false ) {
 			$campaign = trim( str_replace( 'campaign:', '', $search ) );
 			$search   = '';
+		} elseif ( strpos( $search, 'context:' ) !== false ) {
+			$context = trim( str_replace( 'context:', '', $search ) );
+			$search   = '';
 		}
 
 		$per_page = $this->get_items_per_page( 'affwp_edit_visits_per_page', $this->per_page );
@@ -363,6 +367,7 @@ class AffWP_Visits_Table extends List_Table {
 			'referral_id'     => $referral_id,
 			'date'            => $date,
 			'campaign'        => $campaign,
+			'context'         => $context,
 			'orderby'         => $orderby,
 			'order'           => $order,
 			'search'          => $search,
