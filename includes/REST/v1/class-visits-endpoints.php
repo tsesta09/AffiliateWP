@@ -208,7 +208,7 @@ class Endpoints extends Controller {
 			'sanitize_callback' => function( $param, $request, $key ) {
 				return sanitize_key( substr( $param, 0, 50 ) );
 			},
-			'validatE_callback' => function( $param, $request, $key ) {
+			'validate_callback' => function( $param, $request, $key ) {
 				return is_string( $param );
 			}
 		);
