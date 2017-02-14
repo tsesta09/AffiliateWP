@@ -640,6 +640,8 @@ class AffWP_Affiliates_Table extends List_Table {
 			 * The dynamic portion of the hook name, `$this->current_action()` refers
 			 * to the current bulk action being performed.
 			 *
+			 * @since 2.0.2
+			 *
 			 * @param int $id The ID of the object.
 			 */
 			do_action( 'affwp_affiliates_do_bulk_action_' . $this->current_action(), $id );
