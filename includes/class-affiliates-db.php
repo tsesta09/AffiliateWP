@@ -144,6 +144,13 @@ class Affiliate_WP_DB_Affiliates extends Affiliate_WP_DB {
 	 *                                   'unpaid', 'rejected', or 'pending' referral statuses, 'name'
 	 *                                   (user display_name), or 'username' (user user_login). Default 'affiliate_id'.
 	 *     @type string    $fields       Specific fields to retrieve. Accepts 'ids' or '*' (all). Default '*'.
+	 *     @type string    $meta_key     Affiliate meta key. Default empty.
+	 *     @type string    $meta_value   Affiliate meta value. Default empty.
+	 *     @type string    $meta_compare Comparison operator to test the `$meta_value`. Accepts '=', '!=',
+	 *                                   '>', '>=', '<', '<=', 'LIKE', 'NOT LIKE', 'IN', 'NOT IN',
+	 *                                   'BETWEEN', 'NOT BETWEEN', 'EXISTS', 'NOT EXISTS', 'REGEXP',
+	 *                                   'NOT REGEXP', or 'RLIKE'. Default '='.
+	 *     @type array     $meta_query   An associative array of WP_Meta_Query arguments. See \WP_Meta_Query.
 	 * }
 	 * @param bool  $count Optional. Whether to return only the total number of results found. Default false.
 	 * @return array|int Array of affiliate objects (if found), int if `$count` is true.
