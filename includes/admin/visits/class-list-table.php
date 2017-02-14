@@ -320,7 +320,7 @@ class AffWP_Visits_Table extends List_Table {
 		$user_id      = isset( $_GET['user_id'] )   ? absint( $_GET['user_id'] )               : false;
 		$referral_id  = isset( $_GET['referral'] )  ? absint( $_GET['referral'] )              : false;
 		$affiliate_id = isset( $_GET['affiliate'] ) ? absint( $_GET['affiliate'] )             : false;
-		$campaign     = isset( $_GET['campaign'] )  ? sanitize_key( $_GET['campaign'] )        : false;
+		$campaign     = isset( $_GET['campaign'] )  ? sanitize_text_field( $_GET['campaign'] ) : false;
 		$context      = isset( $_GET['context'] )   ? sanitize_key( $_GET['context'] )         : false;
 		$order        = isset( $_GET['order'] )     ? $_GET['order']                           : 'DESC';
 		$orderby      = isset( $_GET['orderby'] )   ? $_GET['orderby']                         : 'date';
