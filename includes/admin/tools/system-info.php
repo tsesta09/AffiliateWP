@@ -73,6 +73,13 @@ function affwp_tools_system_info_report() {
 	$return .= 'Referral Rate Type:               ' . ( $settings->get( 'referral_rate_type' ) ? $settings->get( 'referral_rate_type' ) . "\n" : "Default\n" );
 	$return .= 'Referral Rate:                    ' . ( $settings->get( 'referral_rate' ) ? $settings->get( 'referral_rate' ) . "\n" : "Default\n" );
 
+	// Registration Fields
+	$return .= "\n" . '-- AffiliateWP Registration Settings' . "\n\n";
+	$return .= 'Allow Affiliate Registrations:    ' . ( $settings->get( 'allow_affiliate_registration' ) ? "True\n" : "False\n" );
+	$return .= 'Require Approval:                 ' . ( $settings->get( 'require_approval' )  ? "True\n" : "False\n" );
+	$return .= 'Auto Register New Users:          ' . ( $settings->get( 'auto_register' ) ? "True\n" : "False\n" );
+	$return .= 'Required Registration Fields:     ' . ( $settings->get( 'required_registration_fields' ) ? implode( ', ', array_values( $settings->get( 'required_registration_fields', array() ) ) ) . "\n" : "None\n" );
+
 	// Object counts.
 	$return .= "\n" . '-- AffiliateWP Object Counts' . "\n\n";
 	$return .= 'Affiliates:                       ' . affwp_format_amount( affiliate_wp()->affiliates->count(), false ) . "\n";
@@ -91,9 +98,6 @@ function affwp_tools_system_info_report() {
 
 	// Misc Settings
 	$return .= "\n" . '-- AffiliateWP Misc Settings' . "\n\n";
-	$return .= 'Allow Affiliate Registrations:    ' . ( $settings->get( 'allow_affiliate_registration' ) ? "True\n" : "False\n" );
-	$return .= 'Require Approval:                 ' . ( $settings->get( 'require_approval' )  ? "True\n" : "False\n" );
-	$return .= 'Auto Register New Users:          ' . ( $settings->get( 'auto_register' ) ? "True\n" : "False\n" );
 	$return .= 'Enable reCaptcha:                 ' . ( $settings->get( 'recaptcha_enabled' ) ? "True\n" : "False\n" );
 	$return .= 'reCaptcha Site Key:               ' . ( $settings->get( 'recaptcha_site_key' ) ? "Set\n" : "Unset\n" );
 	$return .= 'reCaptcha Secret Key:             ' . ( $settings->get( 'recaptcha_secret_key' ) ? "Set\n" : "Unset\n" );
