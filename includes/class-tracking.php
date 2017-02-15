@@ -471,33 +471,29 @@ class Affiliate_WP_Tracking {
 
 		$affiliate_id = ! empty( $_GET[ $this->get_referral_var() ] ) ? $_GET[ $this->get_referral_var() ] : false;
 
-		if( empty( $affiliate_id ) ) {
+		if ( empty( $affiliate_id ) ) {
 
 			$path = ! empty( $_SERVER['REQUEST_URI' ] ) ? $_SERVER['REQUEST_URI' ] : '';
 
-			if( false !== strpos( $path, $this->get_referral_var() . '/' ) ) {
+			if ( false !== strpos( $path, $this->get_referral_var() . '/' ) ) {
 
 				$pieces = explode( '/', str_replace( '?', '/', $path ) );
 				$pieces = array_map( 'sanitize_key', $pieces );
 				$key    = array_search( $this->get_referral_var(), $pieces );
 
-				if( $key ) {
+				if ( $key ) {
 
 					$key += 1;
 					$affiliate_id = isset( $pieces[ $key ] ) ? $pieces[ $key ] : false;
 
 					// Look for affiliate ID by username
-					if( intval( $affiliate_id ) < 1 || ! is_numeric( $affiliate_id ) ) {
+					if ( intval( $affiliate_id ) < 1 || ! is_numeric( $affiliate_id ) ) {
 
-						$user = get_user_by( 'login', sanitize_text_field( urldecode( $affiliate_id ) ) );
+						$affiliate_id = $this->get_affiliate_id_from_login( $affiliate_id );
 
-						if( $user ) {
+						if ( empty( $affiliate_id ) ) {
 
-							$affiliate_id = affwp_get_affiliate_id( $user->ID );
-
-						} else {
-
-							if( $this->debug ) {
+							if ( $this->debug ) {
 								$this->log( 'No user account found for given affiliate ID or login during get_fallback_affiliate_id()' );
 							}
 
