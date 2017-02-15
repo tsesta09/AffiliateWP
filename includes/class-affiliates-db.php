@@ -307,10 +307,10 @@ class Affiliate_WP_DB_Affiliates extends Affiliate_WP_DB {
 		$this->meta_query = new \WP_Meta_Query;
 		$this->meta_query->parse_query_vars( $args );
 
-		$meta_query_sql_clauses = $this->meta_query->get_sql( 'affiliate', $this->table_name, $this->primary_key );
+		$meta_query_sql = $this->meta_query->get_sql( 'affiliate', $this->table_name, $this->primary_key );
 
-		if ( ! empty( $meta_query_sql_clauses['where'] ) ) {
-			$where .= $meta_query_sql_clauses['where'];
+		if ( ! empty( $meta_query_sql['where'] ) ) {
+			$where .= $meta_query_sql['where'];
 		}
 
 		if ( 'DESC' === strtoupper( $args['order'] ) ) {
@@ -382,15 +382,26 @@ class Affiliate_WP_DB_Affiliates extends Affiliate_WP_DB {
 
 		if ( ! empty( $args['fields'] ) ) {
 			if ( 'ids' === $args['fields'] ) {
-				$fields = "$this->primary_key";
+
+				if ( ! empty( $meta_query_sql['join'] ) ) {
+					$fields = "{$this->table_name}.{$this->primary_key}";
+				} else {
+					$fields = "$this->primary_key";
+				}
+
 			} elseif ( array_key_exists( $args['fields'], $this->get_columns() ) ) {
-				$fields = $args['fields'];
+
+				if ( ! empty( $meta_query_sql['join'] ) ) {
+					$fields = "{$this->table_name}.{$args['fields']}";
+				} else {
+					$fields = $args['fields'];
+				}
+
 			}
 		}
 
-		if ( ! empty( $meta_query_sql_clauses['join'] ) ) {
-			$join .= $meta_query_sql_clauses['join'];
-			$fields = "{$this->table_name}.{$fields}";
+		if ( ! empty( $meta_query_sql['join'] ) ) {
+			$join .= $meta_query_sql['join'];
 		}
 
 		$key = ( true === $count ) ? md5( 'affwp_affiliates_count' . serialize( $args ) ) : md5( 'affwp_affiliates_' . serialize( $args ) );
