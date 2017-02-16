@@ -90,7 +90,7 @@ class Endpoints extends Controller {
 		$args['referral_id']     = isset( $request['referral_id'] )     ? $request['referral_id'] : 0;
 		$args['referral_status'] = isset( $request['referral_status'] ) ? $request['referral_status'] : '';
 		$args['campaign']        = isset( $request['campaign'] )        ? $request['campaign'] : '';
-		$args['context']         = isset( $request['context'] )         ? $request['context'] : '';
+		$args['context']         = isset( $request['visit_context'] )   ? $request['visit_context'] : '';
 		$args['date']            = isset( $request['date'] )            ? $request['date'] : '';
 		$args['order']           = isset( $request['order'] )           ? $request['order'] : 'ASC';
 		$args['orderby']         = isset( $request['orderby'] )         ? $request['orderby'] : '';
