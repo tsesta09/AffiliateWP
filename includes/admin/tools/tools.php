@@ -454,7 +454,7 @@ function affwp_debug_tab() {
 				<h3><span><?php _e( 'Debug Log', 'affiliate-wp' ); ?></span></h3>
 				<div class="inside">
 					<form id="affwp-debug-log" method="post">
-						<p><?php _e( 'Use this tool to help debug referral tracking.', 'affiliate-wp' ); ?></p>
+						<p><?php _e( 'Use this tool to help debug various operations in AffiliateWP.', 'affiliate-wp' ); ?></p>
 						<textarea class="large-text" rows="15"><?php echo esc_textarea( $logs->get_log() ); ?></textarea>
 						<input type="submit" class="button" name="affwp-clear-debug-log" value="<?php _e( 'Clear Debug Log', 'affiliate-wp' ); ?>"/>
 						<?php wp_nonce_field( 'affwp-clear-debug' ); ?>

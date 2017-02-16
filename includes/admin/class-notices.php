@@ -229,6 +229,12 @@ class Affiliate_WP_Admin_Notices {
 
 					break;
 
+				case 'payout_created' :
+
+					$message = sprintf( __( 'A payout has been created.', 'affiliate-wp' ) );
+
+					break;
+
 				// Creatives.
 				case 'creative_updated' :
 
