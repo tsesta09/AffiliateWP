@@ -1332,7 +1332,8 @@ function affwp_get_affiliate_referral_url( $args = array() ) {
 
 	$url_scheme      = isset( $url_parts['scheme'] ) ? $url_parts['scheme'] : 'http';
 	$url_host        = isset( $url_parts['host'] ) ? $url_parts['host'] : '';
-	$constructed_url = $url_scheme . '://' . $url_host . $url_parts['path'];
+	$url_path        = isset( $url_parts['path'] ) ? $url_parts['path'] : '';
+	$constructed_url = $url_scheme . '://' . $url_host . $url_path;
 	$base_url        = $constructed_url;
 
 	// set up URLs
