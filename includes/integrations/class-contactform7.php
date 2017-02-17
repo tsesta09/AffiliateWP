@@ -59,10 +59,7 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 		// Add PayPal meta to the contact form submision object.
 		add_action( 'wpcf7_submit', array( $this, 'add_paypal_meta' ), 1, 2 );
 
-		// Process paypal redirect after generating the initial referral.
-		remove_action( 'wpcf7_mail_sent', 'cf7pp_after_send_mail' );
-		add_action( 'wpcf7_submit', array( $this, 'add_pending_referral' ), 10, 2 );
-		add_action( 'affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 10, 3 );
+		$this->maybe_unhook_cf7pp();
 
 		// Mark referral complete.
 		add_action( 'wp_footer', array( $this, 'mark_referral_complete' ), 9999 );
@@ -81,6 +78,24 @@ class Affiliate_WP_Contact_Form_7 extends Affiliate_WP_Base {
 	 */
 	public function include_cf7_functions() {
 		require_once ( AFFILIATEWP_PLUGIN_DIR . 'includes/integrations/extras/contactform7-functions.php' );
+	}
+
+	/**
+	 * Unhooks the `cf7pp_after_send_mail` function only if a referring affiliate is found.
+	 *
+	 * If referred, processes the PayPal redirect after generating the initial referral.
+	 *
+	 * @since  2.0.3
+	 *
+	 * @return void
+	 */
+	public function maybe_unhook_cf7pp() {
+
+		if ( $this->was_referred() ) {
+			remove_action( 'wpcf7_mail_sent', 'cf7pp_after_send_mail' );
+			add_action( 'wpcf7_submit', array( $this, 'add_pending_referral' ), 10, 2 );
+			add_action( 'affwp_cf7_submit', 'affwp_cf7_paypal_redirect', 10, 3 );
+		}
 	}
 
 	/**
