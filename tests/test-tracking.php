@@ -12,6 +12,22 @@ use AffWP\Tests\UnitTestCase;
 class Tests extends UnitTestCase {
 
 	/**
+	 * Affiliates fixture.
+	 *
+	 * @access protected
+	 * @var array
+	 * @static
+	 */
+	public static $affiliates = array();
+
+	/**
+	 * Set up fixtures once.
+	 */
+	public static function wpSetUpBeforeClass() {
+		self::$affiliates = parent::affwp()->affiliate->create_many( 4 );
+	}
+
+	/**
 	 * @covers Affiliate_WP_Tracking::strip_referral_from_paged_urls()
 	 */
 	public function test_strip_referral_from_paged_urls_should_remove_query_string_referral_vars() {
@@ -72,4 +88,14 @@ class Tests extends UnitTestCase {
 		affwp_delete_affiliate( $affiliate_id );
 	}
 
+	/**
+	 * @covers \Affiliate_WP_Tracking::get_affiliate_id_from_login()
+	 */
+	public function test_get_affiliate_id_from_login_with_valid_login_should_return_that_affiliate_id() {
+		$username = affwp_get_affiliate_username( self::$affiliates[0] );
+
+		$result = affiliate_wp()->tracking->get_affiliate_id_from_login( $username );
+
+		$this->assertSame( self::$affiliates[0], $result );
+	}
 }
