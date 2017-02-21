@@ -316,15 +316,17 @@ class AffWP_Visits_Table extends List_Table {
 	 */
 	public function visits_data() {
 
-		$page         = isset( $_GET['paged'] )     ? absint( $_GET['paged'] )                 : 1;
+		$page        = isset( $_GET['paged'] )     ? absint( $_GET['paged'] )                 : 1;
+		$referral_id = isset( $_GET['referral'] )  ? absint( $_GET['referral'] )              : false;
+		$campaign    = isset( $_GET['campaign'] )  ? sanitize_text_field( $_GET['campaign'] ) : false;
+		$context     = isset( $_GET['context'] )   ? sanitize_key( $_GET['context'] )         : false;
+		$order       = isset( $_GET['order'] )     ? $_GET['order']                           : 'DESC';
+		$orderby     = isset( $_GET['orderby'] )   ? $_GET['orderby']                         : 'date';
+		$search      = isset( $_GET['s'] )         ? sanitize_text_field( $_GET['s'] )        : '';
+
+		// Kept for back-compat. See $_REQUEST['user_name'].
 		$user_id      = isset( $_GET['user_id'] )   ? absint( $_GET['user_id'] )               : false;
-		$referral_id  = isset( $_GET['referral'] )  ? absint( $_GET['referral'] )              : false;
 		$affiliate_id = isset( $_GET['affiliate'] ) ? absint( $_GET['affiliate'] )             : false;
-		$campaign     = isset( $_GET['campaign'] )  ? sanitize_text_field( $_GET['campaign'] ) : false;
-		$context      = isset( $_GET['context'] )   ? sanitize_key( $_GET['context'] )         : false;
-		$order        = isset( $_GET['order'] )     ? $_GET['order']                           : 'DESC';
-		$orderby      = isset( $_GET['orderby'] )   ? $_GET['orderby']                         : 'date';
-		$search       = isset( $_GET['s'] )         ? sanitize_text_field( $_GET['s'] )        : '';
 
 		$from   = ! empty( $_REQUEST['filter_from'] )   ? $_REQUEST['filter_from']   : '';
 		$to     = ! empty( $_REQUEST['filter_to'] )     ? $_REQUEST['filter_to']     : '';
@@ -338,9 +340,17 @@ class AffWP_Visits_Table extends List_Table {
 			$date['end']   = $to . ' 23:59:59';
 		}
 
-		if( ! empty( $user_id ) && empty( $affiliate_id ) ) {
+		if ( $user_id && ! $affiliate_id ) {
 
 			$affiliate_id = affiliate_wp()->affiliates->get_column_by( 'affiliate_id', 'user_id', $user_id );
+
+		} elseif ( ! $user_id && ! $affiliate_id && isset( $_REQUEST['user_name'] ) ) {
+
+			$data = affiliate_wp()->utils->process_request_data( $_REQUEST, 'user_name' );
+
+			if( ! empty( $data['user_id'] ) ) {
+				$affiliate_id = affiliate_wp()->affiliates->get_column_by( 'affiliate_id', 'user_id', $data['user_id'] );
+			}
 
 		}
 
