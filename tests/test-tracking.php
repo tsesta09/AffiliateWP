@@ -34,4 +34,42 @@ class Tests extends UnitTestCase {
 
 		$this->assertSame( WP_TESTS_DOMAIN . '/foobar/page/3/', $stripped );
 	}
+
+	/**
+	 * @covers \Affiliate_WP_Tracking::get_affiliate_id_from_login()
+	 */
+	public function test_get_affiliate_id_from_login_with_empty_login_should_return_zero() {
+		$result = affiliate_wp()->tracking->get_affiliate_id_from_login( '' );
+
+		$this->assertSame( 0, $result );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Tracking::get_affiliate_id_from_login()
+	 */
+	public function test_get_affiliate_id_from_login_with_invalid_login_should_return_zero() {
+		$result = affiliate_wp()->tracking->get_affiliate_id_from_login( 'foobar' );
+
+		$this->assertSame( 0, $result );
+	}
+
+	/**
+	 * @covers \Affiliate_WP_Tracking::get_affiliate_id_from_login()
+	 */
+	public function test_get_affiliate_id_from_login_with_urlencoded_login_should_return_that_affiliate() {
+		$username = 'foo bar';
+		$affiliate_id = $this->factory->affiliate->create( array(
+			'user_id' => $this->factory->user->create( array(
+				'user_login' => $username
+			) )
+		) );
+
+		$result = affiliate_wp()->tracking->get_affiliate_id_from_login( urlencode( $username ) );
+
+		$this->assertSame( $affiliate_id, $result );
+
+		// Clean up.
+		affwp_delete_affiliate( $affiliate_id );
+	}
+
 }
