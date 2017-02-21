@@ -629,18 +629,16 @@ class Affiliate_WP_Tracking {
 
 		$affiliate_id = 0;
 
-		if( ! empty( $login ) ) {
-
-			$user = get_user_by( 'login', sanitize_text_field( urldecode( $login ) ) );
-
-			if( $user ) {
-
-				$affiliate_id = affwp_get_affiliate_id( $user->ID );
-
-			}
-
+		if ( $affiliate = affwp_get_affiliate( urldecode( $login ) ) ) {
+			$affiliate_id = $affiliate->ID;
 		}
 
+		/**
+		 * Filters the affiliate ID retrieved from login in Affiliate_WP_Tracking.
+		 *
+		 * @param int    $affiliate_id Affiliate ID or 0 if no matching affiliate was found.
+		 * @param string $login
+		 */
 		return apply_filters( 'affwp_tracking_get_affiliate_id', $affiliate_id, $login );
 
 	}
