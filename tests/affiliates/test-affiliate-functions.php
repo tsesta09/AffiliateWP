@@ -1599,23 +1599,16 @@ class Tests extends UnitTestCase {
 	 */
 	public function test_update_profile_settings_with_manage_affiliates_cap_and_referral_notifications_meta_should_update_meta() {
 		// Admins have 'manage_affiliates' cap.
-		$user_id = $this->factory->user->create( array(
-			'role' => 'administrator'
-		) );
-		$affiliate_id = affwp_add_affiliate( array(
-			'user_id' => $user_id
-		) );
+		$user_id = affwp_get_affiliate_user_id( self::$affiliates[0] );
+
 		wp_set_current_user( $user_id );
 
 		affwp_update_profile_settings( array(
-			'affiliate_id'           => $affiliate_id,
+			'affiliate_id'           => self::$affiliates[0],
 			'referral_notifications' => true
 		) );
 
 		$this->assertEquals( 1, get_user_meta( $user_id, 'affwp_referral_notifications', true ) );
-
-		// Clean up.
-		affwp_delete_affiliate( $affiliate_id );
 	}
 
 	/**
