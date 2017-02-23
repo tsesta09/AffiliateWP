@@ -115,6 +115,15 @@ class Tests extends UnitTestCase {
 
 	/**
 	 * @covers ::affwp_get_affiliate_id()
+	 */
+	public function test_get_affiliate_id_with_empty_user_id_and_logged_in_affiliate_user_should_return_that_affiliate_id() {
+		wp_set_current_user( self::$users[1] );
+
+		$this->assertEquals( self::$affiliates[1], affwp_get_affiliate_id() );
+	}
+
+	/**
+	 * @covers ::affwp_get_affiliate_id()
 	 * @preserveGlobalState disabled
 	 */
 	public function test_get_affiliate_id_in_admin_with_user_id_empty_should_ignore_the_current_user() {
