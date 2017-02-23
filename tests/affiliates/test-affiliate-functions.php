@@ -114,6 +114,30 @@ class Tests extends UnitTestCase {
 	}
 
 	/**
+	 * @covers ::affwp_get_affiliate_id()
+	 * @preserveGlobalState disabled
+	 */
+	public function test_get_affiliate_id_in_admin_with_user_id_empty_should_ignore_the_current_user() {
+		define( 'WP_ADMIN', true );
+
+		wp_set_current_user( self::$users[1] );
+
+		$this->assertFalse( affwp_get_affiliate_id() );
+	}
+
+	/**
+	 * @covers ::affwp_get_affiliate_id()
+	 * @preserveGlobalState disabled
+	 */
+	public function test_get_affiliate_id_doing_ajax_with_user_id_empty_should_ignore_the_current_user() {
+		define( 'DOING_AJAX', true );
+
+		wp_set_current_user( self::$users[1] );
+
+		$this->assertFalse( affwp_get_affiliate_id() );
+	}
+
+	/**
 	 * @covers ::affwp_get_affiliate_username()
 	 */
 	public function test_get_affiliate_username_with_invalid_user_should_return_false() {
