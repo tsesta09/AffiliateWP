@@ -118,6 +118,53 @@ class Tests extends UnitTestCase {
 	}
 
 	/**
+	 * @covers ::affwp_get_affiliate_id()
+	 *
+	 * See test-affiliate-functions-admin.php for tests with constants.
+	 */
+	public function test_get_affiliate_id_with_empty_user_id_and_logged_in_affiliate_user_should_return_that_affiliate_id() {
+		wp_set_current_user( self::$users[1] );
+
+		$this->assertEquals( self::$affiliates[1], affwp_get_affiliate_id() );
+
+		// Clean up.
+		wp_set_current_user( 0 );
+	}
+
+	/**
+	 * @covers ::affwp_get_affiliate_id()
+	 * @preserveGlobalState disabled
+	 */
+	public function test_get_affiliate_id_in_admin_with_user_id_empty_should_ignore_the_current_user() {
+		// Force is_admin() true.
+		set_current_screen( 'admin.php' );
+		$this->assertTrue( is_admin() );
+
+		wp_set_current_user( self::$users[1] );
+
+		$this->assertFalse( affwp_get_affiliate_id() );
+
+		// Clean up.
+		wp_set_current_user( 0 );
+		set_current_screen( 'front' );
+	}
+
+	/**
+	 * @covers ::affwp_get_affiliate_id()
+	 * @preserveGlobalState disabled
+	 */
+	public function test_get_affiliate_id_doing_ajax_with_user_id_empty_should_ignore_the_current_user() {
+		define( 'DOING_AJAX', true );
+
+		wp_set_current_user( self::$users[1] );
+
+		$this->assertFalse( affwp_get_affiliate_id() );
+
+		// Clean up.
+		wp_set_current_user( 0 );
+	}
+
+	/**
 	 * @covers ::affwp_get_affiliate_username()
 	 */
 	public function test_get_affiliate_username_with_invalid_user_should_return_false() {
@@ -1599,16 +1646,23 @@ class Tests extends UnitTestCase {
 	 */
 	public function test_update_profile_settings_with_manage_affiliates_cap_and_referral_notifications_meta_should_update_meta() {
 		// Admins have 'manage_affiliates' cap.
-		$user_id = affwp_get_affiliate_user_id( self::$affiliates[0] );
-
+		$user_id = $this->factory->user->create( array(
+			'role' => 'administrator'
+		) );
+		$affiliate_id = affwp_add_affiliate( array(
+			'user_id' => $user_id
+		) );
 		wp_set_current_user( $user_id );
 
 		affwp_update_profile_settings( array(
-			'affiliate_id'           => self::$affiliates[0],
+			'affiliate_id'           => $affiliate_id,
 			'referral_notifications' => true
 		) );
 
 		$this->assertEquals( 1, get_user_meta( $user_id, 'affwp_referral_notifications', true ) );
+
+		// Clean up.
+		affwp_delete_affiliate( $affiliate_id );
 	}
 
 	/**
