@@ -56,11 +56,13 @@ function affwp_settings_admin() {
  */
 function affwp_get_settings_tabs() {
 
-	$tabs                 = array();
-	$tabs['general']      = __( 'General', 'affiliate-wp' );
-	$tabs['integrations'] = __( 'Integrations', 'affiliate-wp' );
-	$tabs['emails']       = __( 'Emails', 'affiliate-wp' );
-	$tabs['misc']         = __( 'Misc', 'affiliate-wp' );
+	$tabs = array(
+		'general'      => __( 'General', 'affiliate-wp' ),
+		'integrations' => __( 'Integrations', 'affiliate-wp' ),
+		'emails'       => __( 'Emails', 'affiliate-wp' ),
+		'misc'         => __( 'Misc', 'affiliate-wp' ),
+		'labs'         => __( 'Labs', 'affiliate-wp' ),
+	);
 
 	/**
 	 * Filters the list of settings tabs.
