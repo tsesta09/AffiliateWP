@@ -104,6 +104,15 @@ final class Affiliate_WP {
 	public $visits;
 
 	/**
+	 * The Labs class instance variable.
+	 *
+	 * @access public
+	 * @since  2.0.4
+	 * @var    Affiliate_WP_Labs
+	 */
+	public $labs;
+
+	/**
 	 * The settings instance variable
 	 *
 	 * @access public
@@ -346,6 +355,7 @@ final class Affiliate_WP {
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/class-affwp-visit.php';
 
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/actions.php';
+		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/class-labs.php';
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/admin/settings/class-settings.php';
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/abstracts/class-db.php';
 		require_once AFFILIATEWP_PLUGIN_DIR . 'includes/class-affiliates-db.php';
@@ -463,6 +473,7 @@ final class Affiliate_WP {
 		self::$instance->referrals      = new Affiliate_WP_Referrals_DB;
 		self::$instance->visits         = new Affiliate_WP_Visits_DB;
 		self::$instance->campaigns      = new Affiliate_WP_Campaigns_DB;
+		self::$instance->labs           = new Affiliate_WP_Labs;
 		self::$instance->settings       = new Affiliate_WP_Settings;
 		self::$instance->tracking       = new Affiliate_WP_Tracking;
 		self::$instance->templates      = new Affiliate_WP_Templates;

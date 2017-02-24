@@ -767,13 +767,7 @@ class Affiliate_WP_Settings {
 					)
 				)
 			),
-			'labs' => apply_filters( 'affwp_settings_labs', array(
-				'test_labs_setting' => array(
-					'name' => __( 'Test Labs Setting', 'affiliate-wp' ),
-					'desc' => '',
-					'type' => 'checkbox'
-				)
-			) )
+			'labs' => apply_filters( 'affwp_settings_labs', array() ),
 		);
 
 		/**
